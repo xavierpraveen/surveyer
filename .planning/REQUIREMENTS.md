@@ -34,7 +34,7 @@
 - [ ] **SURVEY-10**: Survey versioning — questions have stable IDs across survey cycles to support trend analysis
 - [ ] **SURVEY-11**: Admin can configure anonymous vs. non-anonymous mode per survey
 - [ ] **SURVEY-12**: Admin can duplicate an existing survey as the basis for a new cycle
-- [ ] **SURVEY-13**: Seed data includes one complete diagnostic survey covering all 12 organizational dimensions with company-wide and role-specific questions
+- [x] **SURVEY-13**: Seed data includes one complete diagnostic survey covering all 12 organizational dimensions with company-wide and role-specific questions
 
 ### Response Collection (RESPONSE)
 
@@ -51,7 +51,7 @@
 
 ### Organizational Diagnostic Dimensions (DIM)
 
-- [ ] **DIM-01**: System has a configurable dimension model with the 12 standard dimensions: organizational clarity, sales-to-engineering handover, architecture & technical governance, engineering productivity, team structure & work allocation, delivery & project management, quality & testing, career growth, leadership & management, culture & work environment, innovation & learning, overall satisfaction
+- [x] **DIM-01**: System has a configurable dimension model with the 12 standard dimensions: organizational clarity, sales-to-engineering handover, architecture & technical governance, engineering productivity, team structure & work allocation, delivery & project management, quality & testing, career growth, leadership & management, culture & work environment, innovation & learning, overall satisfaction
 - [ ] **DIM-02**: Admin can map each question to one or more dimensions
 - [ ] **DIM-03**: Dimension mappings are stored in a `question_dimension_map` table enabling multi-dimensional scoring
 

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-15T13:51:37.011Z"
+stopped_at: Completed 02-survey-engine/02-05-PLAN.md
+last_updated: "2026-03-15T14:17:31.806Z"
 last_activity: 2026-03-15 — Roadmap created; all 92 v1 requirements mapped across 4 phases
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
+  total_plans: 7
+  completed_plans: 3
   percent: 0
 ---
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 6 | 2 tasks | 30 files |
 | Phase 01-foundation P02 | 8 | 2 tasks | 9 files |
+| Phase 02-survey-engine P05 | 3 | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -72,6 +73,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: participation_tokens and responses share ONLY survey_id — no FK, structurally impossible to join them to reconstruct identity
 - [Phase 01-foundation]: current_user_role() reads from JWT app_metadata — never queries profiles table, preventing infinite RLS recursion
 - [Phase 01-foundation]: All analytics for employees/managers routes through SECURITY DEFINER views — no direct SELECT on responses/response_answers
+- [Phase 02-survey-engine]: Secondary cross-cutting dimension weights set to 0.7 to indicate lower signal strength vs primary (1.0)
+- [Phase 02-survey-engine]: Short_text questions excluded from question_dimension_map — open text cannot be scored
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T13:51:37.008Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-survey-engine/02-CONTEXT.md
+Last session: 2026-03-15T14:17:31.803Z
+Stopped at: Completed 02-survey-engine/02-05-PLAN.md
+Resume file: None
