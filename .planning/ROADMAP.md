@@ -12,7 +12,7 @@ Surveyer is built in four sequential phases where each phase is a hard prerequis
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Project scaffold, auth/RBAC, complete DB schema + RLS policies, privacy architecture, DX setup
+- [x] **Phase 1: Foundation** - Project scaffold, auth/RBAC, complete DB schema + RLS policies, privacy architecture, DX setup (completed 2026-03-15)
 - [ ] **Phase 2: Survey Engine** - Survey builder, question editor, response collection with participation tokens, autosave, submission flow
 - [ ] **Phase 3: Analytics and Dashboards** - Scoring engine (Postgres views/RPC), derived_metrics, leadership dashboard, public results page, privacy threshold enforcement
 - [ ] **Phase 4: Actions, Publication and Admin** - Action tracking, immutable publication snapshots, transparency page, admin interfaces, qualitative tagging
@@ -90,7 +90,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/TBD | Complete    | 2026-03-15 |
 | 2. Survey Engine | 0/TBD | Not started | - |
 | 3. Analytics and Dashboards | 0/TBD | Not started | - |
 | 4. Actions, Publication and Admin | 0/TBD | Not started | - |
