@@ -64,11 +64,13 @@ Plans:
   3. The manager dashboard shows team participation rate without individual identities, and shows team dimension scores only when the team respondent count meets the privacy threshold
   4. Any authenticated employee can navigate to /results and see company-wide participation rate, dimension scores, top themes, and committed actions — no role restriction required
   5. Closing a survey cycle triggers derived_metrics computation; all dashboard reads use these pre-computed aggregates rather than re-aggregating raw response_answers at query time
-**Plans**: 2 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — To be planned
-- [ ] 03-02-PLAN.md — To be planned
+- [ ] 03-01-PLAN.md — compute_derived_metrics RPC migration + install recharts/nuqs
+- [ ] 03-02-PLAN.md — Analytics TypeScript types + all data-fetching Server Actions (computeDerivedMetrics, getLeadershipDashboardData, getManagerDashboardData, getPublicResultsData)
+- [ ] 03-03-PLAN.md — Leadership dashboard full UI (KPI strip, dimension bars, heatmap, trends, filter bar, qualitative themes) + SurveyStatusBanner Compute Results state
+- [ ] 03-04-PLAN.md — Manager dashboard + public /results page
 
 ### Phase 4: Actions, Publication and Admin
 **Goal**: Leadership can publish immutable result snapshots that employees trust won't be revised, committed action items are visible on a public transparency page, and admins have the full operational interfaces needed to run the platform across survey cycles
@@ -95,5 +97,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/TBD | Complete    | 2026-03-15 |
 | 2. Survey Engine | 5/5 | Complete    | 2026-03-15 |
-| 3. Analytics and Dashboards | 0/TBD | Not started | - |
+| 3. Analytics and Dashboards | 0/4 | Not started | - |
 | 4. Actions, Publication and Admin | 0/TBD | Not started | - |
