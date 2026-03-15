@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseMiddlewareClient } from '@/lib/supabase/middleware'
 import type { AppRole } from '@/lib/constants/roles'
+import { ROLE_ROUTES } from '@/lib/constants/roles'
 
-const PUBLIC_ROUTES = ['/login', '/magic-link', '/auth/callback']
-
-// Role → route prefix. Used for redirect and protection.
-const ROLE_HOME: Record<AppRole, string> = {
-  employee: '/dashboard',
-  manager: '/manager/dashboard',
-  leadership: '/leadership/dashboard',
-  admin: '/admin',
-  hr_admin: '/admin',
-  survey_analyst: '/admin',
-}
+const PUBLIC_ROUTES = ['/login', '/magic-link', '/auth/callback', '/survey/public/']
 
 export async function middleware(request: NextRequest) {
   const { supabase, response } = createSupabaseMiddlewareClient(request)
@@ -32,7 +23,14 @@ export async function middleware(request: NextRequest) {
   // Authenticated: redirect away from auth pages
   if (PUBLIC_ROUTES.some((r) => pathname.startsWith(r))) {
     const role = user.app_metadata?.role as AppRole | undefined
-    const home = role ? ROLE_HOME[role] : '/dashboard'
+    const home = role ? ROLE_ROUTES[role] : '/dashboard'
+    return NextResponse.redirect(new URL(home, request.url))
+  }
+
+  // Redirect root "/" to role home
+  if (pathname === '/') {
+    const role = user.app_metadata?.role as AppRole | undefined
+    const home = role ? ROLE_ROUTES[role] : '/dashboard'
     return NextResponse.redirect(new URL(home, request.url))
   }
 
@@ -43,7 +41,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=no_role', request.url))
   }
 
-  const home = ROLE_HOME[role]
+  const home = ROLE_ROUTES[role]
 
   // Protect role-specific route prefixes
   const rolePrefix = home.replace('/dashboard', '').replace('/admin', '/admin')
