@@ -50,11 +50,11 @@ Phase 1 has no browser-dependent UI beyond stub pages — Playwright E2E is defe
 | AUTH-08 | CSV import creates users with correct roles | unit | `pnpm vitest run src/lib/actions/import.test.ts` | ❌ Wave 0 | ⬜ pending |
 | AUTH-09 | db reset produces 18 seed users | SQL audit | `psql -c "SELECT count(*) FROM auth.users"` → 18 | — | ⬜ pending |
 | AUTH-10 | signOut clears session | unit | `pnpm vitest run src/lib/actions/auth.test.ts` | ❌ Wave 0 | ⬜ pending |
-| SCHEMA-01 | All 23 tables exist after migration | SQL audit | `psql -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'"` → 23 | — | ⬜ pending |
+| SCHEMA-01 | All 24 tables exist after migration | SQL audit | `psql -c "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'"` → 24 | — | ⬜ pending |
 | SCHEMA-02 | All tables have RLS enabled | SQL audit | `psql -c "SELECT tablename FROM pg_tables WHERE schemaname='public' AND rowsecurity=false"` → 0 rows | — | ⬜ pending |
 | SCHEMA-03 | Analytics views exist | SQL audit | `psql -c "\dv public.*"` → confirm aggregate views present | — | ⬜ pending |
 | SCHEMA-04 | Seed: 18 users, 12 dimensions, 1 survey | SQL audit | `psql -c "SELECT count(*) FROM profiles"` → 18; `SELECT count(*) FROM dimensions` → 12 | — | ⬜ pending |
-| PRIVACY-01 | responses table has no user_id column | SQL audit | `psql -c "\d responses"` → confirm no user_id column | — | ⬜ pending |
+| PRIVACY-01 | responses.user_id is nullable (NULL for anonymous submissions) | SQL audit | `psql -c "SELECT is_nullable FROM information_schema.columns WHERE table_name='responses' AND column_name='user_id'"` → YES | — | ⬜ pending |
 | PRIVACY-02 | No policy joins participation_tokens to responses | code review | Review `_rls.sql` — no cross-table join between these tables | — | ⬜ pending |
 | PRIVACY-03 | Text responses hidden below threshold in views | SQL audit | Run analytics view with <10 response filter → no text returned | — | ⬜ pending |
 | PRIVACY-04 | Manager threshold enforcement | deferred | Phase 3 — views not yet populated | — | ⬜ deferred |
@@ -117,10 +117,10 @@ FROM pg_tables
 WHERE schemaname = 'public' AND rowsecurity = false;
 -- Expected: 0 rows
 
--- schema_check.sql: All 23 tables exist
+-- schema_check.sql: All 24 tables exist
 SELECT count(*) FROM information_schema.tables
 WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
--- Expected: 23
+-- Expected: 24
 
 -- seed_check.sql: Seed data complete
 SELECT
