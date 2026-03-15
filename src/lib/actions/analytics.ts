@@ -140,38 +140,90 @@ export async function getLeadershipDashboardData(
     year: 'numeric',
   })
 
-  // ── 3. Dimension scores (company-wide, threshold-enforced via RPC) ─────────
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: rawDimScores, error: dimError } = await (supabase as any).rpc(
-    'get_dimension_scores_for_survey',
-    { p_survey_id: targetSurveyId, p_min_respondents: 5 }
-  )
+  // ── 3. Dimension scores ────────────────────────────────────────────────────
+  // When a role or tenure band filter is active, read the pre-computed segment
+  // rows from derived_metrics directly (threshold applied at final filtered count).
+  // Otherwise use the company-wide RPC which also handles threshold enforcement.
+  let dimensionScores: DimensionScore[]
 
-  if (dimError) return { success: false, error: dimError.message }
+  const activeSegmentType = filters.role
+    ? 'role'
+    : filters.tenureBand
+    ? 'tenure_band'
+    : null
+  const activeSegmentValue = filters.role ?? filters.tenureBand ?? null
 
-  const dimensionScores: DimensionScore[] = (
-    (rawDimScores as Array<{
-      dimension_id: string
-      dimension_name: string
-      dimension_slug: string
-      avg_score: number | null
-      favorable_pct: number | null
-      neutral_pct: number | null
-      unfavorable_pct: number | null
-      respondent_count: number
-      below_threshold: boolean
-    }>) ?? []
-  ).map((row) => ({
-    dimensionId: row.dimension_id,
-    dimensionName: row.dimension_name,
-    dimensionSlug: row.dimension_slug,
-    avgScore: row.avg_score,
-    favorablePct: row.favorable_pct,
-    neutralPct: row.neutral_pct,
-    unfavorablePct: row.unfavorable_pct,
-    respondentCount: Number(row.respondent_count),
-    belowThreshold: row.below_threshold,
-  }))
+  if (activeSegmentType && activeSegmentValue) {
+    // Fetch pre-computed segment from derived_metrics + dimension names via join
+    const { data: dimRows, error: dimError } = await db
+      .from('derived_metrics')
+      .select(
+        'dimension_id, avg_score, favorable_pct, neutral_pct, unfavorable_pct, respondent_count, dimensions(name, slug)'
+      )
+      .eq('survey_id', targetSurveyId)
+      .eq('segment_type', activeSegmentType)
+      .eq('segment_value', activeSegmentValue)
+
+    if (dimError) return { success: false, error: dimError.message }
+
+    dimensionScores = (
+      (dimRows as Array<{
+        dimension_id: string
+        avg_score: number | null
+        favorable_pct: number | null
+        neutral_pct: number | null
+        unfavorable_pct: number | null
+        respondent_count: number
+        dimensions: { name: string; slug: string } | null
+      }>) ?? []
+    ).map((row) => {
+      const belowThreshold = Number(row.respondent_count) < 5
+      return {
+        dimensionId: row.dimension_id,
+        dimensionName: row.dimensions?.name ?? row.dimension_id,
+        dimensionSlug: row.dimensions?.slug ?? row.dimension_id,
+        avgScore: belowThreshold ? null : (row.avg_score !== null ? Number(row.avg_score) : null),
+        favorablePct: belowThreshold ? null : (row.favorable_pct !== null ? Number(row.favorable_pct) : null),
+        neutralPct: belowThreshold ? null : (row.neutral_pct !== null ? Number(row.neutral_pct) : null),
+        unfavorablePct: belowThreshold ? null : (row.unfavorable_pct !== null ? Number(row.unfavorable_pct) : null),
+        respondentCount: Number(row.respondent_count),
+        belowThreshold,
+      }
+    })
+  } else {
+    // Company-wide scores via RPC (handles threshold enforcement internally)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: rawDimScores, error: dimError } = await (supabase as any).rpc(
+      'get_dimension_scores_for_survey',
+      { p_survey_id: targetSurveyId, p_min_respondents: 5 }
+    )
+
+    if (dimError) return { success: false, error: dimError.message }
+
+    dimensionScores = (
+      (rawDimScores as Array<{
+        dimension_id: string
+        dimension_name: string
+        dimension_slug: string
+        avg_score: number | null
+        favorable_pct: number | null
+        neutral_pct: number | null
+        unfavorable_pct: number | null
+        respondent_count: number
+        below_threshold: boolean
+      }>) ?? []
+    ).map((row) => ({
+      dimensionId: row.dimension_id,
+      dimensionName: row.dimension_name,
+      dimensionSlug: row.dimension_slug,
+      avgScore: row.avg_score,
+      favorablePct: row.favorable_pct,
+      neutralPct: row.neutral_pct,
+      unfavorablePct: row.unfavorable_pct,
+      respondentCount: Number(row.respondent_count),
+      belowThreshold: row.below_threshold,
+    }))
+  }
 
   // ── 4. Participation (from v_participation_rates) ─────────────────────────
   const { data: participationRows, error: partError } = await db
