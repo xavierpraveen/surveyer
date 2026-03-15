@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 04-02-PLAN.md — Phase 4 Server Actions (actions, publication, settings, tagging, analytics)
-last_updated: "2026-03-15T21:13:31.253Z"
+stopped_at: Completed 04-03-PLAN.md — Action Item Management UI (list page, detail page, ActionItemForm, ActionUpdateTimeline)
+last_updated: "2026-03-15T21:18:04.713Z"
 last_activity: "2026-03-15 — Phase 3 complete: all 4 plans executed, 1 inline gap fix (role/tenure_band filter segments), verified 5/5 success criteria"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 16
-  completed_plans: 13
+  completed_plans: 14
   percent: 75
 ---
 
@@ -62,6 +62,7 @@ Progress: [███████░░░] 75%
 | Phase 03-analytics-and-dashboards P04 | 3 | 2 tasks | 3 files |
 | Phase 04-actions-publication-and-admin P01 | 3min | 2 tasks | 6 files |
 | Phase 04-actions-publication-and-admin P02 | 7min | 2 tasks | 9 files |
+| Phase 04-actions-publication-and-admin P03 | 8min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,8 @@ Recent decisions affecting current work:
 - [Phase 04-actions-publication-and-admin]: createPublicationSnapshot validates closed+computed before INSERT — application-layer guard since supabaseAdmin bypasses RLS
 - [Phase 04-actions-publication-and-admin]: getPublicResultsData extended with cycleId param — loads from publication_snapshots when cycleId provided, falls through to live data otherwise
 - [Phase 04-actions-publication-and-admin]: importEmployees treats HTTP 422 as graceful skip — enables idempotent CSV re-imports
+- [Phase 04-actions-publication-and-admin]: ActionItemForm owns router.refresh() — called directly after onSuccess?.() without a wrapper component
+- [Phase 04-actions-publication-and-admin]: Status filter tabs use Link href with ?status= query param — RSC re-renders on navigation; All tab links to /admin/actions (no param)
 
 ### Pending Todos
 
@@ -125,6 +128,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T21:13:31.250Z
-Stopped at: Completed 04-02-PLAN.md — Phase 4 Server Actions (actions, publication, settings, tagging, analytics)
+Last session: 2026-03-15T21:18:04.710Z
+Stopped at: Completed 04-03-PLAN.md — Action Item Management UI (list page, detail page, ActionItemForm, ActionUpdateTimeline)
 Resume file: None
