@@ -65,8 +65,8 @@
 - [x] **ANALYTICS-06**: System computes participation rate as: submitted responses / eligible participants per survey
 - [x] **ANALYTICS-07**: `derived_metrics` table stores batch-computed aggregates, refreshed when a survey closes
 - [x] **ANALYTICS-08**: Privacy threshold enforcement: no aggregate data is returned when filtered result has fewer than the configured minimum respondents (default: 5); enforced server-side at the final filtered count, not per-filter
-- [ ] **ANALYTICS-09**: Qualitative analysis: analyst can manually tag open-text responses with themes
-- [ ] **ANALYTICS-10**: Qualitative analysis: system surfaces most frequent tags as "top recurring issues" and "top improvement suggestions"
+- [x] **ANALYTICS-09**: Qualitative analysis: analyst can manually tag open-text responses with themes
+- [x] **ANALYTICS-10**: Qualitative analysis: system surfaces most frequent tags as "top recurring issues" and "top improvement suggestions"
 - [ ] **ANALYTICS-11**: AI summarization abstraction layer (provider interface) designed but no live LLM integration in v1; interface accepts raw text and returns structured themes
 
 ### Dashboards (DASH)
@@ -88,7 +88,7 @@
 - [x] **ACTIONS-03**: Action status has five states: identified → planned → in-progress → blocked → completed
 - [x] **ACTIONS-04**: Action item owners can post progress updates to a timeline log
 - [x] **ACTIONS-05**: Each action has a public visibility toggle; only public actions appear on the employee-facing transparency page
-- [ ] **ACTIONS-06**: Employees can view the "Open Results and Actions" page showing: identified issues, committed actions, in-progress work, blocked items, completed items
+- [x] **ACTIONS-06**: Employees can view the "Open Results and Actions" page showing: identified issues, committed actions, in-progress work, blocked items, completed items
 
 ### Privacy & Safety (PRIVACY)
 

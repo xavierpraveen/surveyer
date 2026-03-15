@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 04-03-PLAN.md — Action Item Management UI (list page, detail page, ActionItemForm, ActionUpdateTimeline)
-last_updated: "2026-03-15T21:18:04.713Z"
+stopped_at: Completed 04-05-PLAN.md — Publication UI, Cycle Selector, and Tagging Workspace
+last_updated: "2026-03-15T21:20:14.351Z"
 last_activity: "2026-03-15 — Phase 3 complete: all 4 plans executed, 1 inline gap fix (role/tenure_band filter segments), verified 5/5 success criteria"
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 16
-  completed_plans: 14
+  completed_plans: 15
   percent: 75
 ---
 
@@ -63,6 +63,7 @@ Progress: [███████░░░] 75%
 | Phase 04-actions-publication-and-admin P01 | 3min | 2 tasks | 6 files |
 | Phase 04-actions-publication-and-admin P02 | 7min | 2 tasks | 9 files |
 | Phase 04-actions-publication-and-admin P03 | 8min | 2 tasks | 4 files |
+| Phase 04-actions-publication-and-admin P05 | 15min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -114,6 +115,9 @@ Recent decisions affecting current work:
 - [Phase 04-actions-publication-and-admin]: importEmployees treats HTTP 422 as graceful skip — enables idempotent CSV re-imports
 - [Phase 04-actions-publication-and-admin]: ActionItemForm owns router.refresh() — called directly after onSuccess?.() without a wrapper component
 - [Phase 04-actions-publication-and-admin]: Status filter tabs use Link href with ?status= query param — RSC re-renders on navigation; All tab links to /admin/actions (no param)
+- [Phase 04-actions-publication-and-admin]: PublishResultsButton renders nothing for non-closed surveys — button only appears in correct lifecycle state
+- [Phase 04-actions-publication-and-admin]: CycleSelector uses router.push URL-only navigation — RSC re-renders with fresh server data, no client fetch needed
+- [Phase 04-actions-publication-and-admin]: window.location.reload() after generateThemes for v1 simplicity — theme list is a post-generate view
 
 ### Pending Todos
 
@@ -128,6 +132,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T21:18:04.710Z
-Stopped at: Completed 04-03-PLAN.md — Action Item Management UI (list page, detail page, ActionItemForm, ActionUpdateTimeline)
+Last session: 2026-03-15T21:20:14.348Z
+Stopped at: Completed 04-05-PLAN.md — Publication UI, Cycle Selector, and Tagging Workspace
 Resume file: None
