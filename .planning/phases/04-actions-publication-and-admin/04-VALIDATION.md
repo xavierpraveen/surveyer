@@ -38,15 +38,15 @@ created: 2026-03-16
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 4-01-01 | 01 | 0 | ACTIONS-01,02,03,04,05 | unit | `npm test -- src/__tests__/actions/actions.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-02 | 01 | 0 | PUBLISH-01,02,04,05 | unit | `npm test -- src/__tests__/actions/publication.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-03 | 01 | 0 | ADMIN-04,05 | unit | `npm test -- src/__tests__/actions/settings.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-04 | 01 | 0 | ADMIN-09 | unit | `npm test -- src/__tests__/actions/tagging.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-05 | 01 | 1 | ACTIONS-01,02,03 | unit | `npm test -- src/__tests__/actions/actions.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-06 | 01 | 1 | ACTIONS-04,05 | unit | `npm test -- src/__tests__/actions/actions.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-07 | 01 | 1 | PUBLISH-01,02,03,04,05 | unit | `npm test -- src/__tests__/actions/publication.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-08 | 01 | 1 | ADMIN-04,05,06 | unit | `npm test -- src/__tests__/actions/settings.test.ts` | Wave 0 | ⬜ pending |
-| 4-01-09 | 01 | 1 | ADMIN-09 | unit | `npm test -- src/__tests__/actions/tagging.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-01 | 01 | 0 | ACTIONS-01,02,03,04,05 | unit | `npm test -- src/lib/actions/actions.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-02 | 01 | 0 | PUBLISH-01,02,04,05 | unit | `npm test -- src/lib/actions/publication.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-03 | 01 | 0 | ADMIN-04,05 | unit | `npm test -- src/lib/actions/settings.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-04 | 01 | 0 | ADMIN-09 | unit | `npm test -- src/lib/actions/tagging.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-05 | 01 | 1 | ACTIONS-01,02,03 | unit | `npm test -- src/lib/actions/actions.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-06 | 01 | 1 | ACTIONS-04,05 | unit | `npm test -- src/lib/actions/actions.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-07 | 01 | 1 | PUBLISH-01,02,03,04,05 | unit | `npm test -- src/lib/actions/publication.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-08 | 01 | 1 | ADMIN-04,05,06 | unit | `npm test -- src/lib/actions/settings.test.ts` | Wave 0 | ⬜ pending |
+| 4-01-09 | 01 | 1 | ADMIN-09 | unit | `npm test -- src/lib/actions/tagging.test.ts` | Wave 0 | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -54,10 +54,10 @@ created: 2026-03-16
 
 ## Wave 0 Requirements
 
-- [ ] `src/__tests__/actions/actions.test.ts` — stubs for ACTIONS-01 through ACTIONS-05
-- [ ] `src/__tests__/actions/publication.test.ts` — stubs for PUBLISH-01, PUBLISH-02, PUBLISH-04, PUBLISH-05
-- [ ] `src/__tests__/actions/settings.test.ts` — stubs for ADMIN-04, ADMIN-05
-- [ ] `src/__tests__/actions/tagging.test.ts` — stubs for ADMIN-09 (generateThemes logic)
+- [ ] `src/lib/actions/actions.test.ts` — stubs for ACTIONS-01 through ACTIONS-05
+- [ ] `src/lib/actions/publication.test.ts` — stubs for PUBLISH-01, PUBLISH-02, PUBLISH-04, PUBLISH-05
+- [ ] `src/lib/actions/settings.test.ts` — stubs for ADMIN-04, ADMIN-05
+- [ ] `src/lib/actions/tagging.test.ts` — stubs for ADMIN-09 (generateThemes logic)
 
 All Server Actions are pure async functions — mock with `vi.mock('@/lib/supabase/admin')` and `vi.mock('@/lib/supabase/server')`.
 
