@@ -75,11 +75,11 @@
 - [ ] **DASH-02**: Leadership dashboard shows heatmap of scores by department
 - [ ] **DASH-03**: Leadership dashboard shows trend lines across survey cycles per dimension
 - [ ] **DASH-04**: Leadership dashboard supports filters by department, role, tenure band, and survey period
-- [ ] **DASH-05**: Manager dashboard shows team participation rate (using participation tokens, no individual identities)
-- [ ] **DASH-06**: Manager dashboard shows team-level dimension scores only when team respondent count meets the privacy threshold
+- [x] **DASH-05**: Manager dashboard shows team participation rate (using participation tokens, no individual identities)
+- [x] **DASH-06**: Manager dashboard shows team-level dimension scores only when team respondent count meets the privacy threshold
 - [ ] **DASH-07**: Manager dashboard shows action plans relevant to their team/department
-- [ ] **DASH-08**: Public internal results dashboard (`/results`) shows: participation rate, company-wide dimension scores, top themes, committed actions, action progress, transparency notes
-- [ ] **DASH-09**: Public internal results dashboard is accessible to all authenticated employees without role restriction
+- [x] **DASH-08**: Public internal results dashboard (`/results`) shows: participation rate, company-wide dimension scores, top themes, committed actions, action progress, transparency notes
+- [x] **DASH-09**: Public internal results dashboard is accessible to all authenticated employees without role restriction
 
 ### Action Tracking & Transparency (ACTIONS)
 
