@@ -1,9 +1,14 @@
 import { notFound } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { supabaseAdmin } from '@/lib/supabase/admin'
 import type { Survey, SurveySection, SurveyQuestion, Dimension } from '@/lib/types/survey'
 import SurveyStatusBanner from '@/components/admin/SurveyStatusBanner'
 import SectionSidebar from '@/components/admin/SectionSidebar'
 import QuestionEditor from '@/components/admin/QuestionEditor'
+import PublishResultsButton from '@/components/admin/PublishResultsButton'
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const dbAdmin = supabaseAdmin as any
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -68,6 +73,62 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
     .order('display_order', { ascending: true })
   const dimensions = (dimensionsData ?? []) as Dimension[]
 
+  // ── Publication data ──────────────────────────────────────────────────────
+
+  // Check for existing snapshot
+  const { data: snapshotData } = await dbAdmin
+    .from('publication_snapshots')
+    .select('id')
+    .eq('survey_id', id)
+    .single()
+  const hasExistingSnapshot = Boolean(snapshotData?.id)
+
+  // Snapshot preview counts
+  const [
+    { count: dimensionScoreCount },
+    { data: partData },
+    { count: actionItemCount },
+    { count: themeCount },
+  ] = await Promise.all([
+    dbAdmin
+      .from('derived_metrics')
+      .select('*', { count: 'exact', head: true })
+      .eq('survey_id', id)
+      .eq('segment_type', 'overall'),
+    dbAdmin
+      .from('v_participation_rates')
+      .select('token_count')
+      .eq('survey_id', id),
+    dbAdmin
+      .from('action_items')
+      .select('*', { count: 'exact', head: true })
+      .eq('survey_id', id)
+      .eq('is_public', true),
+    dbAdmin
+      .from('qualitative_themes')
+      .select('*', { count: 'exact', head: true })
+      .eq('survey_id', id),
+  ])
+
+  // Calculate participation rate
+  const totalResponses = ((partData as Array<{ token_count: number }> | null) ?? [])
+    .reduce((sum: number, r: { token_count: number }) => sum + Number(r.token_count), 0)
+  const { count: eligibleCount } = await dbAdmin
+    .from('profiles')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_active', true)
+  const participationRate =
+    eligibleCount && eligibleCount > 0
+      ? Math.round((totalResponses / eligibleCount) * 100)
+      : 0
+
+  const snapshotPreview = {
+    dimensionScoreCount: dimensionScoreCount ?? 0,
+    participationRate,
+    actionItemCount: actionItemCount ?? 0,
+    themeCount: themeCount ?? 0,
+  }
+
   // Determine active section
   const activeSectionId = activeSectionParam ?? rawSections[0]?.id ?? null
   const activeSection = rawSections.find((s) => s.id === activeSectionId) ?? null
@@ -103,6 +164,25 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
       <div className="px-6 pt-4">
         <SurveyStatusBanner survey={survey} />
       </div>
+
+      {/* Publication actions (only for closed surveys) */}
+      {survey.status === 'closed' && (
+        <div className="px-6 pt-3 flex items-center gap-3">
+          <PublishResultsButton
+            surveyId={survey.id}
+            surveyTitle={survey.title}
+            surveyStatus={survey.status}
+            hasExistingSnapshot={hasExistingSnapshot}
+            snapshotPreview={snapshotPreview}
+          />
+          <a
+            href={`/admin/surveys/${survey.id}/tags`}
+            className="text-sm text-gray-600 border border-gray-300 rounded px-3 py-1 hover:bg-gray-50"
+          >
+            Tag Responses
+          </a>
+        </div>
+      )}
 
       {/* Builder layout */}
       <div className="flex" style={{ height: 'calc(100vh - 130px)' }}>
