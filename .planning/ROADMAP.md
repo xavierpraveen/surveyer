@@ -67,7 +67,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — compute_derived_metrics RPC migration + install recharts/nuqs
+- [x] 03-01-PLAN.md — compute_derived_metrics RPC migration + install recharts/nuqs (completed 2026-03-15)
 - [ ] 03-02-PLAN.md — Analytics TypeScript types + all data-fetching Server Actions (computeDerivedMetrics, getLeadershipDashboardData, getManagerDashboardData, getPublicResultsData)
 - [ ] 03-03-PLAN.md — Leadership dashboard full UI (KPI strip, dimension bars, heatmap, trends, filter bar, qualitative themes) + SurveyStatusBanner Compute Results state
 - [ ] 03-04-PLAN.md — Manager dashboard + public /results page
@@ -97,5 +97,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/TBD | Complete    | 2026-03-15 |
 | 2. Survey Engine | 5/5 | Complete    | 2026-03-15 |
-| 3. Analytics and Dashboards | 0/4 | Not started | - |
+| 3. Analytics and Dashboards | 1/4 | In Progress | - |
 | 4. Actions, Publication and Admin | 0/TBD | Not started | - |
