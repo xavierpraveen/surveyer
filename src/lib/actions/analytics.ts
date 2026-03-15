@@ -660,11 +660,12 @@ export async function getManagerDashboardData(): Promise<
 /**
  * Fetches company-wide aggregates for the public /results page.
  * No role restriction — any authenticated user can call this.
+ * If cycleId is provided and a published snapshot exists, returns snapshot data.
  * Returns hasData=false if no closed+computed survey exists.
  */
-export async function getPublicResultsData(): Promise<
-  { success: true; data: PublicResultsData } | { success: false; error: string }
-> {
+export async function getPublicResultsData(
+  cycleId?: string | null
+): Promise<{ success: true; data: PublicResultsData } | { success: false; error: string }> {
   const supabase = await createSupabaseServerClient()
   const {
     data: { user },
@@ -673,6 +674,36 @@ export async function getPublicResultsData(): Promise<
 
   if (authError || !user) {
     return { success: false, error: 'Unauthorized' }
+  }
+
+  // ── 0. If cycleId provided, try to load from published snapshot ────────────
+  if (cycleId) {
+    const { data: snapData, error: snapError } = await db
+      .from('publication_snapshots')
+      .select('snapshot_data')
+      .eq('survey_id', cycleId)
+      .single()
+
+    if (!snapError && snapData) {
+      const snap = (snapData as { snapshot_data: Record<string, unknown> }).snapshot_data
+      return {
+        success: true,
+        data: {
+          hasData: true,
+          surveyTitle: (snap.surveyTitle as string) ?? null,
+          surveyClosedAt: null,
+          kpis: {
+            overallHealthScore: null,
+            participationRate: (snap.participationRate as number) ?? 0,
+            totalResponses: (snap.totalResponses as number) ?? 0,
+          },
+          dimensionScores: (snap.dimensionScores as DimensionScore[]) ?? [],
+          qualitativeThemes: (snap.qualitativeThemes as QualitativeTheme[]) ?? [],
+          publicActions: (snap.publicActions as PublicAction[]) ?? [],
+        },
+      }
+    }
+    // If snapshot not found for this cycleId, fall through to live path
   }
 
   // ── 1. Most recent closed+computed survey ─────────────────────────────────
