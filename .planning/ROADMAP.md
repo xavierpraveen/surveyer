@@ -82,11 +82,14 @@ Plans:
   3. Any authenticated employee can view the transparency page showing identified issues, committed actions, in-progress work, blocked items, and completed items — sourced from public-flagged action items only
   4. An admin can import an employee roster from CSV, configure privacy thresholds, monitor live participation rates while a survey is open, archive completed cycles, and manage all survey/question/dimension configuration through admin interfaces
   5. A survey analyst can review, tag, and edit qualitative theme tags on open-text responses; the system surfaces the most frequent tags as top recurring issues and improvement suggestions
-**Plans**: 2 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — To be planned
-- [ ] 04-02-PLAN.md — To be planned
+- [ ] 04-01-PLAN.md — Schema migration (surveys.archived, action_items.dimension_ids) + Phase 4 TypeScript types + Wave 0 test stubs
+- [ ] 04-02-PLAN.md — All Phase 4 Server Actions: action CRUD, publication snapshot creation, settings (import/privacy/participation/archive), tagging + theme generation; extend getPublicResultsData for cycle selector
+- [ ] 04-03-PLAN.md — Action items UI: /admin/actions list table with status filter tabs + /admin/actions/[id] edit form + progress update timeline
+- [ ] 04-04-PLAN.md — Admin settings UI: /admin/settings with 4 tabs (Employees CSV import, Privacy thresholds, Participation monitor with auto-refresh, Cycles archive)
+- [ ] 04-05-PLAN.md — Publication workflow (Publish Results button + confirm modal on survey detail) + /results cycle selector for snapshot browsing + /admin/surveys/[id]/tags qualitative tagging workspace
 
 ## Progress
 
@@ -98,4 +101,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 0/TBD | Complete    | 2026-03-15 |
 | 2. Survey Engine | 5/5 | Complete    | 2026-03-15 |
 | 3. Analytics and Dashboards | 4/4 | Complete    | 2026-03-15 |
-| 4. Actions, Publication and Admin | 0/TBD | Not started | - |
+| 4. Actions, Publication and Admin | 0/5 | Not started | - |
