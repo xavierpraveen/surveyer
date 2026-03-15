@@ -107,7 +107,7 @@
 - [ ] **ADMIN-03**: Admin can map questions to dimensions
 - [x] **ADMIN-04**: Admin can import and manage employee directory
 - [x] **ADMIN-05**: Admin can configure privacy thresholds
-- [ ] **ADMIN-06**: Admin can monitor participation rates in real time while a survey is open
+- [x] **ADMIN-06**: Admin can monitor participation rates in real time while a survey is open
 - [ ] **ADMIN-07**: Admin can manage action items (create, assign, update status)
 - [x] **ADMIN-08**: Admin can archive completed survey cycles
 - [x] **ADMIN-09**: Survey analyst can review and edit qualitative theme tags
