@@ -26,9 +26,9 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 3 of 4 (Analytics and Dashboards)
-Plan: 1 of 4 in current phase
+Plan: 2 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-15 — Phase 3 Plan 01 complete: compute_derived_metrics RPC migration + recharts/nuqs installed
+Last activity: 2026-03-15 — Phase 3 Plan 02 complete: analytics TypeScript types + four Server Actions (computeDerivedMetrics, getLeadershipDashboardData, getManagerDashboardData, getPublicResultsData)
 
 Progress: [████░░░░░░] 40%
 
@@ -50,6 +50,7 @@ Progress: [████░░░░░░] 40%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 03-analytics-and-dashboards P02 | 3min | 2 tasks | 3 files |
 | Phase 03-analytics-and-dashboards P01 | 5min | 2 tasks | 3 files |
 | Phase 01-foundation P01 | 6 | 2 tasks | 30 files |
 | Phase 01-foundation P02 | 8 | 2 tasks | 9 files |
@@ -93,6 +94,9 @@ Recent decisions affecting current work:
 - [Phase 03-analytics-and-dashboards]: recharts pinned to ^2.x (v3 breaks Phase 3 chart API); nuqs@^2.x for Next.js 15 App Router URL filter state
 - [Phase 03-analytics-and-dashboards]: response_answers.numeric_value is correct column name — not answer_value; schema uses separate numeric_value NUMERIC and text_value TEXT columns
 - [Phase 03-analytics-and-dashboards]: compute_derived_metrics uses DELETE-then-INSERT idempotency; called via supabaseAdmin.rpc() from Server Actions (service_role only, not authenticated)
+- [Phase 03-analytics-and-dashboards]: supabase as any for RPC calls in analytics — get_dimension_scores_for_survey not in generated Database types stub; consistent with supabaseAdmin as any pattern
+- [Phase 03-analytics-and-dashboards]: getManagerDashboardData uses org-wide scores as proxy for team view — team-level segment_type in derived_metrics requires future enhancement to compute_derived_metrics RPC
+- [Phase 03-analytics-and-dashboards]: v_public_actions queried with OR survey_id IS NULL — action items may have no survey FK (created independently by leadership)
 
 ### Pending Todos
 
@@ -107,6 +111,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T15:26:49Z
-Stopped at: Completed 03-01-PLAN.md
-Resume file: .planning/phases/03-analytics-and-dashboards/03-02-PLAN.md
+Last session: 2026-03-15T15:32:57Z
+Stopped at: Completed 03-02-PLAN.md
+Resume file: .planning/phases/03-analytics-and-dashboards/03-03-PLAN.md
