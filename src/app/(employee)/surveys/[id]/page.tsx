@@ -110,7 +110,7 @@ export default async function SurveyPage({ params }: PageProps) {
   const sectionIds = filteredSections.map((s) => s.id)
 
   const { data: questionsData } = await db
-    .from('survey_questions')
+    .from('questions')
     .select('*')
     .in('section_id', sectionIds)
     .order('display_order', { ascending: true })
