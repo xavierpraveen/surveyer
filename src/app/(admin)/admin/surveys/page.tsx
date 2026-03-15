@@ -8,12 +8,15 @@ export default async function SurveysPage() {
   const { data, error } = await (supabase as unknown as {
     from: (t: string) => {
       select: (c: string) => {
-        order: (col: string, opts: object) => Promise<{ data: Survey[] | null; error: unknown }>
+        eq: (col: string, val: unknown) => {
+          order: (col: string, opts: object) => Promise<{ data: Survey[] | null; error: unknown }>
+        }
       }
     }
   })
     .from('surveys')
     .select('*')
+    .eq('archived', false)
     .order('created_at', { ascending: false })
 
   const surveys: Survey[] = error ? [] : (data ?? [])
