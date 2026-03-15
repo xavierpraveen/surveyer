@@ -38,16 +38,16 @@
 
 ### Response Collection (RESPONSE)
 
-- [ ] **RESPONSE-01**: Employee can view and take any open survey targeted to their role
-- [ ] **RESPONSE-02**: Survey UI shows section-by-section progress indicator
-- [ ] **RESPONSE-03**: Survey autosaves draft responses in a separate `response_drafts` table (never linked to final anonymous responses)
-- [ ] **RESPONSE-04**: Employee can resume an in-progress survey from where they left off
+- [x] **RESPONSE-01**: Employee can view and take any open survey targeted to their role
+- [x] **RESPONSE-02**: Survey UI shows section-by-section progress indicator
+- [x] **RESPONSE-03**: Survey autosaves draft responses in a separate `response_drafts` table (never linked to final anonymous responses)
+- [x] **RESPONSE-04**: Employee can resume an in-progress survey from where they left off
 - [x] **RESPONSE-05**: Employee can submit a survey only once (resubmission requires admin to re-open)
 - [x] **RESPONSE-06**: For anonymous surveys: final submitted response contains no user identifier — the participation token (who responded) is stored separately and detached from response content (what they responded)
 - [x] **RESPONSE-07**: For non-anonymous surveys: respondent identity is retained for follow-up analysis
 - [x] **RESPONSE-08**: System stores segmentation metadata with each response: department, role, tenure band, work type (derived from profile at submission time, not a live FK)
-- [ ] **RESPONSE-09**: System tracks participation rate per department using participation tokens (anonymous) or direct FK (non-anonymous), without revealing identities in anonymous mode
-- [ ] **RESPONSE-10**: Employee is shown a confirmation screen after submission
+- [x] **RESPONSE-09**: System tracks participation rate per department using participation tokens (anonymous) or direct FK (non-anonymous), without revealing identities in anonymous mode
+- [x] **RESPONSE-10**: Employee is shown a confirmation screen after submission
 
 ### Organizational Diagnostic Dimensions (DIM)
 

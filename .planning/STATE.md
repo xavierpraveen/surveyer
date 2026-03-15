@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-survey-engine 02-01-PLAN.md
-last_updated: "2026-03-15T14:20:20.097Z"
+stopped_at: Completed 02-survey-engine 02-03-PLAN.md
+last_updated: "2026-03-15T14:26:07.388Z"
 last_activity: 2026-03-15 — Roadmap created; all 92 v1 requirements mapped across 4 phases
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation P02 | 8 | 2 tasks | 9 files |
 | Phase 02-survey-engine P05 | 3 | 1 tasks | 1 files |
 | Phase 02-survey-engine P01 | 4 | 2 tasks | 6 files |
+| Phase 02-survey-engine P03 | 4 | 2 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,8 @@ Recent decisions affecting current work:
 - [Phase 02-survey-engine]: supabaseAdmin cast to any for DB calls — database.types.ts is a stub; Supabase CLI generates real types in Phase 3
 - [Phase 02-survey-engine]: Profile metadata snapshotted at submission time from profiles table into responses row columns — not live FKs
 - [Phase 02-survey-engine]: duplicateSurvey preserves stable_question_id on copied questions for longitudinal analytics continuity
+- [Phase 02-survey-engine]: ConfirmationClient auto-redirect gated on surveyStatus === 'open' — deliberate View Submission navigation preserves read-only view
+- [Phase 02-survey-engine]: ConditionalQuestion keeps children mounted using CSS max-h-0 overflow-hidden to avoid re-mounting inputs and losing state
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T14:20:20.093Z
-Stopped at: Completed 02-survey-engine 02-01-PLAN.md
+Last session: 2026-03-15T14:26:07.386Z
+Stopped at: Completed 02-survey-engine 02-03-PLAN.md
 Resume file: None
