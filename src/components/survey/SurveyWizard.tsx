@@ -21,6 +21,12 @@ interface SurveyWizardProps {
   optionsMap: Record<string, QuestionOption[]>
   initialDraft: ResponseDraft | null
   initialSectionIndex: number
+  /** When false, disables autosave useEffect (for public/unauthenticated flows with no user_id). Default: true */
+  autosaveEnabled?: boolean
+  /** Custom submit handler — overrides the default submitResponse action (used for public flow). */
+  onSubmit?: (surveyId: string, answers: Record<string, unknown>) => Promise<{ success: boolean; error?: string }>
+  /** Path to redirect to on successful submission. Default: /surveys/<id>/confirmation */
+  confirmationPath?: string
 }
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
@@ -32,6 +38,9 @@ export default function SurveyWizard({
   optionsMap,
   initialDraft,
   initialSectionIndex,
+  autosaveEnabled = true,
+  onSubmit,
+  confirmationPath,
 }: SurveyWizardProps) {
   const router = useRouter()
 
@@ -83,6 +92,7 @@ export default function SurveyWizard({
   )
 
   useEffect(() => {
+    if (!autosaveEnabled) return
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
       void performSave(answers, currentSectionIndex)
@@ -91,7 +101,7 @@ export default function SurveyWizard({
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current)
     }
-  }, [answers, currentSectionIndex, performSave])
+  }, [answers, currentSectionIndex, performSave, autosaveEnabled])
 
   // Clean up timers on unmount
   useEffect(() => {
@@ -125,21 +135,29 @@ export default function SurveyWizard({
     if (isLastSection) {
       // Submit
       setIsSubmitting(true)
-      const result = await submitResponse({
-        survey_id: survey.id,
-        answers,
-      })
+      let result: { success: boolean; error?: string }
+      if (onSubmit) {
+        result = await onSubmit(survey.id, answers)
+      } else {
+        result = await submitResponse({
+          survey_id: survey.id,
+          answers,
+        })
+      }
       setIsSubmitting(false)
 
       if (result.success) {
-        router.push(`/surveys/${survey.id}/confirmation`)
+        const destination = confirmationPath ?? `/surveys/${survey.id}/confirmation`
+        router.push(destination)
       } else {
         setSubmitError(result.error ?? 'Submission failed. Please try again.')
       }
     } else {
       // Save immediately (not debounced) before advancing
-      if (debounceRef.current) clearTimeout(debounceRef.current)
-      void performSave(answers, currentSectionIndex)
+      if (autosaveEnabled) {
+        if (debounceRef.current) clearTimeout(debounceRef.current)
+        void performSave(answers, currentSectionIndex)
+      }
       setCurrentSectionIndex((prev) => prev + 1)
     }
   }
