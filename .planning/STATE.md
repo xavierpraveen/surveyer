@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-analytics-and-dashboards 03-04-PLAN.md
-last_updated: "2026-03-15T15:39:57.632Z"
-last_activity: "2026-03-15 — Phase 3 Plan 02 complete: analytics TypeScript types + four Server Actions (computeDerivedMetrics, getLeadershipDashboardData, getManagerDashboardData, getPublicResultsData)"
+stopped_at: Completed 03-analytics-and-dashboards 03-03-PLAN.md
+last_updated: "2026-03-15T15:41:15.000Z"
+last_activity: "2026-03-15 — Phase 3 Plan 03 complete: leadership dashboard full UI (7 components, 7 sections, nuqs filter bar, Compute Results button)"
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 11
   completed_plans: 10
-  percent: 40
+  percent: 45
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-15)
 ## Current Position
 
 Phase: 3 of 4 (Analytics and Dashboards)
-Plan: 2 of 4 in current phase
+Plan: 3 of 4 in current phase
 Status: In progress
-Last activity: 2026-03-15 — Phase 3 Plan 02 complete: analytics TypeScript types + four Server Actions (computeDerivedMetrics, getLeadershipDashboardData, getManagerDashboardData, getPublicResultsData)
+Last activity: 2026-03-15 — Phase 3 Plan 03 complete: leadership dashboard full UI (7 analytics components, 7 sections, nuqs filter bar, Compute Results button in SurveyStatusBanner)
 
-Progress: [████░░░░░░] 40%
+Progress: [████░░░░░░] 45%
 
 ## Performance Metrics
 
@@ -100,6 +100,9 @@ Recent decisions affecting current work:
 - [Phase 03-analytics-and-dashboards]: v_public_actions queried with OR survey_id IS NULL — action items may have no survey FK (created independently by leadership)
 - [Phase 03-analytics-and-dashboards]: Default import pattern for analytics components: DimensionBarChart, QualitativeThemePanel, ThresholdPlaceholder all use export default
 - [Phase 03-analytics-and-dashboards]: Action status bucket mapping: 'identified' and 'planned' both map to 'Planned' display group; order is In Progress, Planned, Blocked, Completed
+- [Phase 03-analytics-and-dashboards]: FilterBarWrapper pattern — RSC passes initial data to 'use client' wrapper managing useState; FilterBar calls Server Action on nuqs param change and passes result up via onFilterChange
+- [Phase 03-analytics-and-dashboards]: NuqsAdapter in (leadership)/layout.tsx — created minimal layout to scope nuqs URL state to leadership routes; no pre-existing layout existed
+- [Phase 03-analytics-and-dashboards]: Recharts custom Tooltip via content prop (not formatter) — avoids ValueType vs number|null incompatibility in strict TypeScript
 
 ### Pending Todos
 
@@ -114,6 +117,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T15:39:57.629Z
-Stopped at: Completed 03-analytics-and-dashboards 03-04-PLAN.md
+Last session: 2026-03-15T15:41:15.000Z
+Stopped at: Completed 03-analytics-and-dashboards 03-03-PLAN.md
 Resume file: None

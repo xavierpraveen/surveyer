@@ -69,7 +69,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — compute_derived_metrics RPC migration + install recharts/nuqs (completed 2026-03-15)
 - [x] 03-02-PLAN.md — Analytics TypeScript types + all data-fetching Server Actions (computeDerivedMetrics, getLeadershipDashboardData, getManagerDashboardData, getPublicResultsData) (completed 2026-03-15)
-- [ ] 03-03-PLAN.md — Leadership dashboard full UI (KPI strip, dimension bars, heatmap, trends, filter bar, qualitative themes) + SurveyStatusBanner Compute Results state
+- [x] 03-03-PLAN.md — Leadership dashboard full UI (KPI strip, dimension bars, heatmap, trends, filter bar, qualitative themes) + SurveyStatusBanner Compute Results state (completed 2026-03-15)
 - [ ] 03-04-PLAN.md — Manager dashboard + public /results page
 
 ### Phase 4: Actions, Publication and Admin
