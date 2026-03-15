@@ -83,11 +83,11 @@
 
 ### Action Tracking & Transparency (ACTIONS)
 
-- [ ] **ACTIONS-01**: Leadership/admin can create action items linked to survey cycle and one or more dimensions
-- [ ] **ACTIONS-02**: Each action item has: title, problem statement, owner, department/team, priority, target date, status, measurable success criteria
-- [ ] **ACTIONS-03**: Action status has five states: identified → planned → in-progress → blocked → completed
-- [ ] **ACTIONS-04**: Action item owners can post progress updates to a timeline log
-- [ ] **ACTIONS-05**: Each action has a public visibility toggle; only public actions appear on the employee-facing transparency page
+- [x] **ACTIONS-01**: Leadership/admin can create action items linked to survey cycle and one or more dimensions
+- [x] **ACTIONS-02**: Each action item has: title, problem statement, owner, department/team, priority, target date, status, measurable success criteria
+- [x] **ACTIONS-03**: Action status has five states: identified → planned → in-progress → blocked → completed
+- [x] **ACTIONS-04**: Action item owners can post progress updates to a timeline log
+- [x] **ACTIONS-05**: Each action has a public visibility toggle; only public actions appear on the employee-facing transparency page
 - [ ] **ACTIONS-06**: Employees can view the "Open Results and Actions" page showing: identified issues, committed actions, in-progress work, blocked items, completed items
 
 ### Privacy & Safety (PRIVACY)
@@ -105,12 +105,12 @@
 - [ ] **ADMIN-01**: Admin can create, edit, publish, schedule, and close surveys
 - [ ] **ADMIN-02**: Admin can manage questions: create, edit, reorder, delete, set type and targeting
 - [ ] **ADMIN-03**: Admin can map questions to dimensions
-- [ ] **ADMIN-04**: Admin can import and manage employee directory
-- [ ] **ADMIN-05**: Admin can configure privacy thresholds
+- [x] **ADMIN-04**: Admin can import and manage employee directory
+- [x] **ADMIN-05**: Admin can configure privacy thresholds
 - [ ] **ADMIN-06**: Admin can monitor participation rates in real time while a survey is open
 - [ ] **ADMIN-07**: Admin can manage action items (create, assign, update status)
-- [ ] **ADMIN-08**: Admin can archive completed survey cycles
-- [ ] **ADMIN-09**: Survey analyst can review and edit qualitative theme tags
+- [x] **ADMIN-08**: Admin can archive completed survey cycles
+- [x] **ADMIN-09**: Survey analyst can review and edit qualitative theme tags
 
 ### Data Schema & Infrastructure (SCHEMA)
 
@@ -121,11 +121,11 @@
 
 ### Publication Workflow (PUBLISH)
 
-- [ ] **PUBLISH-01**: Analyst/leadership can create an immutable publication snapshot after a survey closes
-- [ ] **PUBLISH-02**: Snapshot is a versioned JSONB blob capturing dimension scores, participation, themes, and action items at time of publication
-- [ ] **PUBLISH-03**: Published snapshot is attached to committed action items
-- [ ] **PUBLISH-04**: Employees can view a published snapshot even after live data changes
-- [ ] **PUBLISH-05**: Survey must be in `closed` state before a snapshot can be created (DB-enforced)
+- [x] **PUBLISH-01**: Analyst/leadership can create an immutable publication snapshot after a survey closes
+- [x] **PUBLISH-02**: Snapshot is a versioned JSONB blob capturing dimension scores, participation, themes, and action items at time of publication
+- [x] **PUBLISH-03**: Published snapshot is attached to committed action items
+- [x] **PUBLISH-04**: Employees can view a published snapshot even after live data changes
+- [x] **PUBLISH-05**: Survey must be in `closed` state before a snapshot can be created (DB-enforced)
 
 ### Developer Experience (DX)
 
