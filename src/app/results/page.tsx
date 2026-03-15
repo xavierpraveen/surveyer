@@ -1,7 +1,15 @@
 import { getPublicResultsData } from '@/lib/actions/analytics'
+import { getPublishedCycles } from '@/lib/actions/publication'
 import DimensionBarChart from '@/components/analytics/DimensionBarChart'
 import QualitativeThemePanel from '@/components/analytics/QualitativeThemePanel'
+import CycleSelector from '@/components/results/CycleSelector'
 import type { PublicAction } from '@/lib/types/analytics'
+
+// ─── Page props ───────────────────────────────────────────────────────────────
+
+interface PageProps {
+  searchParams: Promise<{ cycle?: string }>
+}
 
 // ─── Action status grouping ───────────────────────────────────────────────────
 
@@ -51,8 +59,16 @@ function healthScoreColor(score: number): string {
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default async function ResultsPage() {
-  const result = await getPublicResultsData()
+export default async function ResultsPage({ searchParams }: PageProps) {
+  const { cycle } = await searchParams
+
+  // Fetch published cycles for the selector and live data in parallel
+  const [publishedCyclesResult, result] = await Promise.all([
+    getPublishedCycles(),
+    getPublicResultsData(cycle || null),
+  ])
+
+  const publishedCycles = publishedCyclesResult.success ? publishedCyclesResult.data : []
 
   // Error or no data state
   if (!result.success || !result.data.hasData) {
@@ -63,6 +79,15 @@ export default async function ResultsPage() {
           <p className="text-gray-500">
             Results will appear here after the first survey cycle closes and metrics are computed.
           </p>
+          {publishedCycles.length > 0 && (
+            <div className="mt-6">
+              <CycleSelector
+                cycles={publishedCycles.map((c) => ({ ...c, isPublished: true }))}
+                currentCycleId={cycle || null}
+                liveSurveyId={null}
+              />
+            </div>
+          )}
         </div>
       </div>
     )
@@ -85,6 +110,17 @@ export default async function ResultsPage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+        {/* Cycle selector */}
+        {publishedCycles.length > 0 && (
+          <div className="mb-4">
+            <CycleSelector
+              cycles={publishedCycles.map((c) => ({ ...c, isPublished: true }))}
+              currentCycleId={cycle || null}
+              liveSurveyId={null}
+            />
+          </div>
+        )}
+
         {/* Hero section */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
           <div className="mb-4">
@@ -95,6 +131,11 @@ export default async function ResultsPage() {
                 {surveyTitle && closedDateLabel && ' · '}
                 {closedDateLabel}
               </p>
+            )}
+            {cycle && (
+              <span className="inline-flex items-center mt-2 text-xs bg-green-100 text-green-700 font-medium px-2 py-0.5 rounded-full">
+                (Published)
+              </span>
             )}
           </div>
 
