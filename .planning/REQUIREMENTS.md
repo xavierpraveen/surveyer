@@ -22,18 +22,18 @@
 
 ### Survey Management (SURVEY)
 
-- [ ] **SURVEY-01**: Admin can create a new survey campaign with title, description, and target audience
-- [ ] **SURVEY-02**: Survey has lifecycle states: draft → scheduled → open → closed, with state transitions enforced
-- [ ] **SURVEY-03**: Admin can schedule a survey to automatically open and close on specified dates
-- [ ] **SURVEY-04**: Admin can create survey sections with title, description, and display order
-- [ ] **SURVEY-05**: Admin can add questions to sections with configurable display order
-- [ ] **SURVEY-06**: System supports question types: Likert 1–5, Likert 1–10, single-select, multi-select, short text, long text
-- [ ] **SURVEY-07**: Admin can mark questions as required or optional
-- [ ] **SURVEY-08**: Admin can configure conditional question visibility based on prior answer values
-- [ ] **SURVEY-09**: Admin can target sections to specific roles (engineering, qa, uiux, project managers, sales/business, architects/technical leadership, hr/operations, marketing, or all)
-- [ ] **SURVEY-10**: Survey versioning — questions have stable IDs across survey cycles to support trend analysis
-- [ ] **SURVEY-11**: Admin can configure anonymous vs. non-anonymous mode per survey
-- [ ] **SURVEY-12**: Admin can duplicate an existing survey as the basis for a new cycle
+- [x] **SURVEY-01**: Admin can create a new survey campaign with title, description, and target audience
+- [x] **SURVEY-02**: Survey has lifecycle states: draft → scheduled → open → closed, with state transitions enforced
+- [x] **SURVEY-03**: Admin can schedule a survey to automatically open and close on specified dates
+- [x] **SURVEY-04**: Admin can create survey sections with title, description, and display order
+- [x] **SURVEY-05**: Admin can add questions to sections with configurable display order
+- [x] **SURVEY-06**: System supports question types: Likert 1–5, Likert 1–10, single-select, multi-select, short text, long text
+- [x] **SURVEY-07**: Admin can mark questions as required or optional
+- [x] **SURVEY-08**: Admin can configure conditional question visibility based on prior answer values
+- [x] **SURVEY-09**: Admin can target sections to specific roles (engineering, qa, uiux, project managers, sales/business, architects/technical leadership, hr/operations, marketing, or all)
+- [x] **SURVEY-10**: Survey versioning — questions have stable IDs across survey cycles to support trend analysis
+- [x] **SURVEY-11**: Admin can configure anonymous vs. non-anonymous mode per survey
+- [x] **SURVEY-12**: Admin can duplicate an existing survey as the basis for a new cycle
 - [x] **SURVEY-13**: Seed data includes one complete diagnostic survey covering all 12 organizational dimensions with company-wide and role-specific questions
 
 ### Response Collection (RESPONSE)
@@ -42,18 +42,18 @@
 - [ ] **RESPONSE-02**: Survey UI shows section-by-section progress indicator
 - [ ] **RESPONSE-03**: Survey autosaves draft responses in a separate `response_drafts` table (never linked to final anonymous responses)
 - [ ] **RESPONSE-04**: Employee can resume an in-progress survey from where they left off
-- [ ] **RESPONSE-05**: Employee can submit a survey only once (resubmission requires admin to re-open)
-- [ ] **RESPONSE-06**: For anonymous surveys: final submitted response contains no user identifier — the participation token (who responded) is stored separately and detached from response content (what they responded)
-- [ ] **RESPONSE-07**: For non-anonymous surveys: respondent identity is retained for follow-up analysis
-- [ ] **RESPONSE-08**: System stores segmentation metadata with each response: department, role, tenure band, work type (derived from profile at submission time, not a live FK)
+- [x] **RESPONSE-05**: Employee can submit a survey only once (resubmission requires admin to re-open)
+- [x] **RESPONSE-06**: For anonymous surveys: final submitted response contains no user identifier — the participation token (who responded) is stored separately and detached from response content (what they responded)
+- [x] **RESPONSE-07**: For non-anonymous surveys: respondent identity is retained for follow-up analysis
+- [x] **RESPONSE-08**: System stores segmentation metadata with each response: department, role, tenure band, work type (derived from profile at submission time, not a live FK)
 - [ ] **RESPONSE-09**: System tracks participation rate per department using participation tokens (anonymous) or direct FK (non-anonymous), without revealing identities in anonymous mode
 - [ ] **RESPONSE-10**: Employee is shown a confirmation screen after submission
 
 ### Organizational Diagnostic Dimensions (DIM)
 
 - [x] **DIM-01**: System has a configurable dimension model with the 12 standard dimensions: organizational clarity, sales-to-engineering handover, architecture & technical governance, engineering productivity, team structure & work allocation, delivery & project management, quality & testing, career growth, leadership & management, culture & work environment, innovation & learning, overall satisfaction
-- [ ] **DIM-02**: Admin can map each question to one or more dimensions
-- [ ] **DIM-03**: Dimension mappings are stored in a `question_dimension_map` table enabling multi-dimensional scoring
+- [x] **DIM-02**: Admin can map each question to one or more dimensions
+- [x] **DIM-03**: Dimension mappings are stored in a `question_dimension_map` table enabling multi-dimensional scoring
 
 ### Analytics Engine (ANALYTICS)
 
