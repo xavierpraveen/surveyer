@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 02-survey-engine 02-02-PLAN.md
-last_updated: "2026-03-15T14:27:49.932Z"
+stopped_at: Completed 02-survey-engine 02-04-PLAN.md
+last_updated: "2026-03-15T14:32:26.764Z"
 last_activity: 2026-03-15 — Roadmap created; all 92 v1 requirements mapped across 4 phases
 progress:
   total_phases: 4
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 7
-  completed_plans: 6
+  completed_plans: 7
   percent: 0
 ---
 
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-survey-engine P01 | 4 | 2 tasks | 6 files |
 | Phase 02-survey-engine P03 | 4 | 2 tasks | 8 files |
 | Phase 02-survey-engine P02 | 5min | 2 tasks | 8 files |
+| Phase 02-survey-engine P04 | 2min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -85,6 +86,9 @@ Recent decisions affecting current work:
 - [Phase 02-survey-engine]: ConditionalQuestion keeps children mounted using CSS max-h-0 overflow-hidden to avoid re-mounting inputs and losing state
 - [Phase 02-survey-engine]: RSC data fetch in builder page — survey+sections+questions+dimensions fetched server-side in one RSC, passed as props to client components for clean separation
 - [Phase 02-survey-engine]: URL search param ?section=<id> tracks active section in survey builder — avoids client state lost on router.refresh()
+- [Phase 02-survey-engine]: supabaseAdmin used in public RSC pages — createSupabaseServerClient requires auth session cookie unavailable for unauthenticated visitors
+- [Phase 02-survey-engine]: Cookie dedup checked in both RSC (fast path) AND Server Action (race condition guard) for public survey submissions
+- [Phase 02-survey-engine]: autosaveEnabled=false in public SurveyWizard — saveDraft requires user session; disabling prevents unauthorized calls on every keystroke
 
 ### Pending Todos
 
@@ -99,6 +103,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T14:27:49.930Z
-Stopped at: Completed 02-survey-engine 02-02-PLAN.md
+Last session: 2026-03-15T14:32:26.762Z
+Stopped at: Completed 02-survey-engine 02-04-PLAN.md
 Resume file: None
