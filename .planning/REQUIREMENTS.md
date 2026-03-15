@@ -195,10 +195,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ADMIN-01 – ADMIN-09 | Phase 4 | Pending |
 
 **Coverage:**
-- v1 requirements: 75 total
-- Mapped to phases: 75
+- v1 requirements: 92 total (AUTH:10, SCHEMA:4, PRIVACY:7, DX:5, SURVEY:13, RESPONSE:10, DIM:3, ANALYTICS:11, DASH:9, ACTIONS:6, PUBLISH:5, ADMIN:9)
+- Mapped to phases: 92
 - Unmapped: 0 ✓
+
+Note: The original header stated 75 requirements; the actual count of numbered v1 requirement IDs is 92. Roadmap covers all 92.
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-15 after initial definition*
+*Last updated: 2026-03-15 after roadmap creation*
