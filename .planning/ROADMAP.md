@@ -52,7 +52,7 @@ Plans:
 - [ ] 02-02-PLAN.md — Admin survey builder UI: survey list, new survey form, section sidebar, inline question editor, status banner, dimension mapping
 - [ ] 02-03-PLAN.md — Employee survey wizard: dashboard card grid, section-by-section wizard, autosave, resume, conditional questions, submission, confirmation
 - [ ] 02-04-PLAN.md — Public (unauthenticated) survey route: middleware whitelist, public page, cookie deduplication, anonymous submission
-- [ ] 02-05-PLAN.md — Phase 2 seed migration: open diagnostic survey, all 12 dimension mappings, role-specific sections
+- [x] 02-05-PLAN.md — Phase 2 seed migration: open diagnostic survey, all 12 dimension mappings, role-specific sections (completed 2026-03-15)
 
 ### Phase 3: Analytics and Dashboards
 **Goal**: Leadership can see the full organizational health picture — dimension scores, participation rates, trends, and qualitative themes — computed entirely in Postgres and displayed through privacy-enforced dashboards; employees can see company-wide results on the public results page
@@ -94,6 +94,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/TBD | Complete    | 2026-03-15 |
-| 2. Survey Engine | 5/5 | Complete   | 2026-03-15 |
+| 2. Survey Engine | 5/5 | Complete    | 2026-03-15 |
 | 3. Analytics and Dashboards | 0/TBD | Not started | - |
 | 4. Actions, Publication and Admin | 0/TBD | Not started | - |
