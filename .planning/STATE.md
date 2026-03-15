@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-15T11:47:11.006Z"
+stopped_at: Completed 01-foundation-01-PLAN.md
+last_updated: "2026-03-15T12:22:41.289Z"
 last_activity: 2026-03-15 — Roadmap created; all 92 v1 requirements mapped across 4 phases
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
   percent: 0
 ---
 
@@ -50,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: —
 
 *Updated after each plan completion*
+| Phase 01-foundation P01 | 6 | 2 tasks | 30 files |
 
 ## Accumulated Context
 
@@ -62,6 +63,10 @@ Recent decisions affecting current work:
 - Participation token pattern — separate table tracks who responded without linking to response content
 - Analytics in Postgres views/RPC only — derived_metrics table computed at cycle close; no client-side aggregation ever
 - Publication snapshots are immutable JSONB blobs — survey must be closed before snapshot; wrapped in REPEATABLE READ transaction
+- [Phase 01-foundation]: next@15.5.12 instead of 15.2.2 — CVE-2025-66478 security patch
+- [Phase 01-foundation]: vitest@2.1.9 + vite@5.4.21 pinned — vitest@3 uses vite@7 (ESM-only) breaking CJS config loader
+- [Phase 01-foundation]: getUser() over getSession() in middleware — verifies JWT server-side, avoids trusting unverified session data
+- [Phase 01-foundation]: SUPABASE_SERVICE_ROLE_KEY isolated to admin.ts only behind import 'server-only'
 
 ### Pending Todos
 
@@ -76,6 +81,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T11:47:11.003Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundation/01-CONTEXT.md
+Last session: 2026-03-15T12:22:41.287Z
+Stopped at: Completed 01-foundation-01-PLAN.md
+Resume file: None

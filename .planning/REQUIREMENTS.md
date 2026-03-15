@@ -9,16 +9,16 @@
 
 ### Authentication & Access Control (AUTH)
 
-- [ ] **AUTH-01**: User can sign in with email and password via Supabase Auth
-- [ ] **AUTH-02**: User can sign in with magic link (passwordless email)
-- [ ] **AUTH-03**: System restricts sign-up to company email domain (configurable)
-- [ ] **AUTH-04**: User session persists across browser refresh via Supabase SSR cookie-based sessions
-- [ ] **AUTH-05**: Role is stored in JWT `app_metadata` and enforced by middleware without DB queries
-- [ ] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin)
-- [ ] **AUTH-07**: Admin can assign roles: employee, manager, leadership, admin, hr_admin, survey_analyst
-- [ ] **AUTH-08**: Admin can import employee roster via CSV (name, email, department, role, tenure band)
-- [ ] **AUTH-09**: Admin can seed initial employee data for local development and testing
-- [ ] **AUTH-10**: User can sign out from any page
+- [x] **AUTH-01**: User can sign in with email and password via Supabase Auth
+- [x] **AUTH-02**: User can sign in with magic link (passwordless email)
+- [x] **AUTH-03**: System restricts sign-up to company email domain (configurable)
+- [x] **AUTH-04**: User session persists across browser refresh via Supabase SSR cookie-based sessions
+- [x] **AUTH-05**: Role is stored in JWT `app_metadata` and enforced by middleware without DB queries
+- [x] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin)
+- [x] **AUTH-07**: Admin can assign roles: employee, manager, leadership, admin, hr_admin, survey_analyst
+- [x] **AUTH-08**: Admin can import employee roster via CSV (name, email, department, role, tenure band)
+- [x] **AUTH-09**: Admin can seed initial employee data for local development and testing
+- [x] **AUTH-10**: User can sign out from any page
 
 ### Survey Management (SURVEY)
 
@@ -129,11 +129,11 @@
 
 ### Developer Experience (DX)
 
-- [ ] **DX-01**: README with local setup, Supabase setup, and environment variable documentation
-- [ ] **DX-02**: `.env.example` template with all required environment variables
+- [x] **DX-01**: README with local setup, Supabase setup, and environment variable documentation
+- [x] **DX-02**: `.env.example` template with all required environment variables
 - [ ] **DX-03**: Architecture overview and RLS policy explanations in documentation
 - [ ] **DX-04**: Seed scripts produce realistic test data for all roles and survey responses
-- [ ] **DX-05**: TypeScript types generated from Supabase schema (`supabase gen types`)
+- [x] **DX-05**: TypeScript types generated from Supabase schema (`supabase gen types`)
 
 ---
 
