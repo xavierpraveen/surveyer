@@ -45,11 +45,14 @@ Plans:
   3. Submitting an anonymous survey produces a response record with no user_id and a detached participation token — running the anonymity audit query against the DB confirms zero joins are possible between participation and response content
   4. An employee cannot submit twice; attempting to revisit the survey after submission shows a confirmation state; resubmission requires an admin to re-open
   5. The seed data includes one complete diagnostic survey covering all 12 organizational dimensions with company-wide and role-specific questions, ready for testing analytics
-**Plans**: 2 plans
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Next.js 15 scaffold, Supabase SSR auth (email+password + magic link), role-based middleware, Server Actions, Wave 0 test stubs
-- [ ] 01-02-PLAN.md — Database schema (23 tables), RLS policies with JWT claims, analytics views, seed data (18 users, 12 dimensions, 1 survey)
+- [ ] 02-01-PLAN.md — Shared TypeScript types + survey admin Server Actions + response Server Actions + Wave 0 test stubs
+- [ ] 02-02-PLAN.md — Admin survey builder UI: survey list, new survey form, section sidebar, inline question editor, status banner, dimension mapping
+- [ ] 02-03-PLAN.md — Employee survey wizard: dashboard card grid, section-by-section wizard, autosave, resume, conditional questions, submission, confirmation
+- [ ] 02-04-PLAN.md — Public (unauthenticated) survey route: middleware whitelist, public page, cookie deduplication, anonymous submission
+- [ ] 02-05-PLAN.md — Phase 2 seed migration: open diagnostic survey, all 12 dimension mappings, role-specific sections
 
 ### Phase 3: Analytics and Dashboards
 **Goal**: Leadership can see the full organizational health picture — dimension scores, participation rates, trends, and qualitative themes — computed entirely in Postgres and displayed through privacy-enforced dashboards; employees can see company-wide results on the public results page
@@ -64,8 +67,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Next.js 15 scaffold, Supabase SSR auth (email+password + magic link), role-based middleware, Server Actions, Wave 0 test stubs
-- [ ] 01-02-PLAN.md — Database schema (23 tables), RLS policies with JWT claims, analytics views, seed data (18 users, 12 dimensions, 1 survey)
+- [ ] 03-01-PLAN.md — To be planned
+- [ ] 03-02-PLAN.md — To be planned
 
 ### Phase 4: Actions, Publication and Admin
 **Goal**: Leadership can publish immutable result snapshots that employees trust won't be revised, committed action items are visible on a public transparency page, and admins have the full operational interfaces needed to run the platform across survey cycles
@@ -80,8 +83,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Next.js 15 scaffold, Supabase SSR auth (email+password + magic link), role-based middleware, Server Actions, Wave 0 test stubs
-- [ ] 01-02-PLAN.md — Database schema (23 tables), RLS policies with JWT claims, analytics views, seed data (18 users, 12 dimensions, 1 survey)
+- [ ] 04-01-PLAN.md — To be planned
+- [ ] 04-02-PLAN.md — To be planned
 
 ## Progress
 
@@ -91,6 +94,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 0/TBD | Complete    | 2026-03-15 |
-| 2. Survey Engine | 0/TBD | Not started | - |
+| 2. Survey Engine | 0/5 | Not started | - |
 | 3. Analytics and Dashboards | 0/TBD | Not started | - |
 | 4. Actions, Publication and Admin | 0/TBD | Not started | - |
