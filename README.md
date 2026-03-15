@@ -58,24 +58,24 @@ All seed users have password: `password123`
 
 | Email | Role | Department |
 |-------|------|------------|
-| alice.johnson@acme.dev | employee | Engineering |
-| bob.smith@acme.dev | employee | Engineering |
-| carol.white@acme.dev | employee | QA |
-| david.brown@acme.dev | employee | Sales |
-| eve.davis@acme.dev | employee | HR Operations |
-| frank.miller@acme.dev | employee | Engineering |
-| grace.wilson@acme.dev | employee | QA |
-| henry.moore@acme.dev | employee | Sales |
-| iris.taylor@acme.dev | employee | Engineering |
-| jack.anderson@acme.dev | employee | HR Operations |
-| karen.thomas@acme.dev | manager | Engineering |
-| liam.jackson@acme.dev | manager | QA |
-| mia.harris@acme.dev | manager | Sales |
-| noah.martin@acme.dev | leadership | Leadership |
-| olivia.garcia@acme.dev | leadership | Leadership |
-| peter.martinez@acme.dev | hr_admin | HR Operations |
-| quinn.robinson@acme.dev | survey_analyst | Leadership |
-| admin@acme.dev | admin | Leadership |
+| alice.chen@acme.dev | employee | Engineering |
+| bob.kim@acme.dev | employee | Engineering |
+| carol.patel@acme.dev | employee | QA |
+| david.nguyen@acme.dev | employee | Sales |
+| eve.rodriguez@acme.dev | employee | HR Operations |
+| frank.osei@acme.dev | employee | Engineering |
+| grace.li@acme.dev | employee | QA |
+| henry.muller@acme.dev | employee | Sales |
+| ruby.santos@acme.dev | employee | Sales |
+| iris.yamamoto@acme.dev | manager | Engineering |
+| jake.solomon@acme.dev | manager | QA / Sales |
+| karen.brooks@acme.dev | manager | HR Operations |
+| leo.torres@acme.dev | leadership | Leadership |
+| maya.johnson@acme.dev | leadership | Leadership |
+| noah.hassan@acme.dev | admin | HR Operations |
+| olivia.park@acme.dev | admin | Engineering |
+| peter.white@acme.dev | hr_admin | HR Operations |
+| quinn.garcia@acme.dev | survey_analyst | Engineering |
 
 ---
 
