@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: planning
-stopped_at: Completed 01-foundation-01-PLAN.md
-last_updated: "2026-03-15T12:22:41.289Z"
+stopped_at: Completed 01-foundation-02-PLAN.md
+last_updated: "2026-03-15T12:34:05.453Z"
 last_activity: 2026-03-15 — Roadmap created; all 92 v1 requirements mapped across 4 phases
 progress:
   total_phases: 4
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -51,6 +51,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation P01 | 6 | 2 tasks | 30 files |
+| Phase 01-foundation P02 | 8 | 2 tasks | 9 files |
 
 ## Accumulated Context
 
@@ -67,6 +68,10 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: vitest@2.1.9 + vite@5.4.21 pinned — vitest@3 uses vite@7 (ESM-only) breaking CJS config loader
 - [Phase 01-foundation]: getUser() over getSession() in middleware — verifies JWT server-side, avoids trusting unverified session data
 - [Phase 01-foundation]: SUPABASE_SERVICE_ROLE_KEY isolated to admin.ts only behind import 'server-only'
+- [Phase 01-foundation]: responses.user_id is NULL for anonymous surveys — anonymity enforced at schema level, not application layer
+- [Phase 01-foundation]: participation_tokens and responses share ONLY survey_id — no FK, structurally impossible to join them to reconstruct identity
+- [Phase 01-foundation]: current_user_role() reads from JWT app_metadata — never queries profiles table, preventing infinite RLS recursion
+- [Phase 01-foundation]: All analytics for employees/managers routes through SECURITY DEFINER views — no direct SELECT on responses/response_answers
 
 ### Pending Todos
 
@@ -81,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-15T12:22:41.287Z
-Stopped at: Completed 01-foundation-01-PLAN.md
+Last session: 2026-03-15T12:34:05.450Z
+Stopped at: Completed 01-foundation-02-PLAN.md
 Resume file: None

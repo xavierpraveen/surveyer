@@ -92,13 +92,13 @@
 
 ### Privacy & Safety (PRIVACY)
 
-- [ ] **PRIVACY-01**: Anonymous survey responses are architecturally unattributable — `responses` and `response_answers` tables have no `user_id` column in anonymous mode
-- [ ] **PRIVACY-02**: RLS policies prevent any role (including admin) from joining participation tokens to response content
-- [ ] **PRIVACY-03**: Open-text responses respect the same privacy threshold as numeric responses; text is hidden when respondent count is below threshold
-- [ ] **PRIVACY-04**: Manager dashboards suppress all segmented data for teams below the privacy threshold
-- [ ] **PRIVACY-05**: Supabase service role client is isolated with `import 'server-only'`; never accessible client-side
-- [ ] **PRIVACY-06**: Privacy threshold is admin-configurable (default: 5 respondents minimum for numeric, 10 for open-text)
-- [ ] **PRIVACY-07**: All RLS policies use JWT claims for role checks (no same-table policy recursion on `profiles`)
+- [x] **PRIVACY-01**: Anonymous survey responses are architecturally unattributable — `responses` and `response_answers` tables have no `user_id` column in anonymous mode
+- [x] **PRIVACY-02**: RLS policies prevent any role (including admin) from joining participation tokens to response content
+- [x] **PRIVACY-03**: Open-text responses respect the same privacy threshold as numeric responses; text is hidden when respondent count is below threshold
+- [x] **PRIVACY-04**: Manager dashboards suppress all segmented data for teams below the privacy threshold
+- [x] **PRIVACY-05**: Supabase service role client is isolated with `import 'server-only'`; never accessible client-side
+- [x] **PRIVACY-06**: Privacy threshold is admin-configurable (default: 5 respondents minimum for numeric, 10 for open-text)
+- [x] **PRIVACY-07**: All RLS policies use JWT claims for role checks (no same-table policy recursion on `profiles`)
 
 ### Admin Interfaces (ADMIN)
 
@@ -114,10 +114,10 @@
 
 ### Data Schema & Infrastructure (SCHEMA)
 
-- [ ] **SCHEMA-01**: Complete Supabase Postgres schema with migrations for all tables: profiles, departments, roles, teams, surveys, survey_sections, questions, question_options, survey_audiences, responses, response_answers, response_drafts, response_metadata, participation_tokens, dimensions, question_dimension_map, derived_metrics, qualitative_tags, qualitative_themes, action_items, action_updates, publication_snapshots, audit_logs
-- [ ] **SCHEMA-02**: RLS policies implemented for all tables; sensitive tables use JWT claim-based role checks
-- [ ] **SCHEMA-03**: Postgres views and RPC functions for analytics aggregation
-- [ ] **SCHEMA-04**: Seed SQL scripts including complete diagnostic survey with questions, sections, dimension mappings, and sample employee data
+- [x] **SCHEMA-01**: Complete Supabase Postgres schema with migrations for all tables: profiles, departments, roles, teams, surveys, survey_sections, questions, question_options, survey_audiences, responses, response_answers, response_drafts, response_metadata, participation_tokens, dimensions, question_dimension_map, derived_metrics, qualitative_tags, qualitative_themes, action_items, action_updates, publication_snapshots, audit_logs
+- [x] **SCHEMA-02**: RLS policies implemented for all tables; sensitive tables use JWT claim-based role checks
+- [x] **SCHEMA-03**: Postgres views and RPC functions for analytics aggregation
+- [x] **SCHEMA-04**: Seed SQL scripts including complete diagnostic survey with questions, sections, dimension mappings, and sample employee data
 
 ### Publication Workflow (PUBLISH)
 
@@ -131,8 +131,8 @@
 
 - [x] **DX-01**: README with local setup, Supabase setup, and environment variable documentation
 - [x] **DX-02**: `.env.example` template with all required environment variables
-- [ ] **DX-03**: Architecture overview and RLS policy explanations in documentation
-- [ ] **DX-04**: Seed scripts produce realistic test data for all roles and survey responses
+- [x] **DX-03**: Architecture overview and RLS policy explanations in documentation
+- [x] **DX-04**: Seed scripts produce realistic test data for all roles and survey responses
 - [x] **DX-05**: TypeScript types generated from Supabase schema (`supabase gen types`)
 
 ---
