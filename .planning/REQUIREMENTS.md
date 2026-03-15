@@ -34,7 +34,7 @@
 - [ ] **SURVEY-10**: Survey versioning — questions have stable IDs across survey cycles to support trend analysis
 - [ ] **SURVEY-11**: Admin can configure anonymous vs. non-anonymous mode per survey
 - [ ] **SURVEY-12**: Admin can duplicate an existing survey as the basis for a new cycle
-- [ ] **SURVEY-13**: Seed data includes one complete diagnostic survey covering all 13 organizational dimensions with company-wide and role-specific questions
+- [ ] **SURVEY-13**: Seed data includes one complete diagnostic survey covering all 12 organizational dimensions with company-wide and role-specific questions
 
 ### Response Collection (RESPONSE)
 
