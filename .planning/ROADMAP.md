@@ -29,7 +29,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Every database table exists with migrations applied; RLS policies are in place and verified to prevent any role (including admin) from joining participation tokens to response content
   4. The responses and response_answers tables have no user_id column in anonymous mode — anonymity is architecturally enforced at the schema level, not the application layer
   5. A developer can clone the repo, follow README instructions, run seed scripts, and have a fully working local environment with all roles testable within one session
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js 15 scaffold, Supabase SSR auth (email+password + magic link), role-based middleware, Server Actions, Wave 0 test stubs
+- [ ] 01-02-PLAN.md — Database schema (23 tables), RLS policies with JWT claims, analytics views, seed data (18 users, 12 dimensions, 1 survey)
 
 ### Phase 2: Survey Engine
 **Goal**: Surveys can be created, configured, targeted, and completed end-to-end — employees submit anonymous responses that are architecturally unattributable, and participation is tracked without revealing individual identity
@@ -41,7 +45,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Submitting an anonymous survey produces a response record with no user_id and a detached participation token — running the anonymity audit query against the DB confirms zero joins are possible between participation and response content
   4. An employee cannot submit twice; attempting to revisit the survey after submission shows a confirmation state; resubmission requires an admin to re-open
   5. The seed data includes one complete diagnostic survey covering all 12 organizational dimensions with company-wide and role-specific questions, ready for testing analytics
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js 15 scaffold, Supabase SSR auth (email+password + magic link), role-based middleware, Server Actions, Wave 0 test stubs
+- [ ] 01-02-PLAN.md — Database schema (23 tables), RLS policies with JWT claims, analytics views, seed data (18 users, 12 dimensions, 1 survey)
 
 ### Phase 3: Analytics and Dashboards
 **Goal**: Leadership can see the full organizational health picture — dimension scores, participation rates, trends, and qualitative themes — computed entirely in Postgres and displayed through privacy-enforced dashboards; employees can see company-wide results on the public results page
@@ -53,7 +61,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The manager dashboard shows team participation rate without individual identities, and shows team dimension scores only when the team respondent count meets the privacy threshold
   4. Any authenticated employee can navigate to /results and see company-wide participation rate, dimension scores, top themes, and committed actions — no role restriction required
   5. Closing a survey cycle triggers derived_metrics computation; all dashboard reads use these pre-computed aggregates rather than re-aggregating raw response_answers at query time
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js 15 scaffold, Supabase SSR auth (email+password + magic link), role-based middleware, Server Actions, Wave 0 test stubs
+- [ ] 01-02-PLAN.md — Database schema (23 tables), RLS policies with JWT claims, analytics views, seed data (18 users, 12 dimensions, 1 survey)
 
 ### Phase 4: Actions, Publication and Admin
 **Goal**: Leadership can publish immutable result snapshots that employees trust won't be revised, committed action items are visible on a public transparency page, and admins have the full operational interfaces needed to run the platform across survey cycles
@@ -65,7 +77,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Any authenticated employee can view the transparency page showing identified issues, committed actions, in-progress work, blocked items, and completed items — sourced from public-flagged action items only
   4. An admin can import an employee roster from CSV, configure privacy thresholds, monitor live participation rates while a survey is open, archive completed cycles, and manage all survey/question/dimension configuration through admin interfaces
   5. A survey analyst can review, tag, and edit qualitative theme tags on open-text responses; the system surfaces the most frequent tags as top recurring issues and improvement suggestions
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Next.js 15 scaffold, Supabase SSR auth (email+password + magic link), role-based middleware, Server Actions, Wave 0 test stubs
+- [ ] 01-02-PLAN.md — Database schema (23 tables), RLS policies with JWT claims, analytics views, seed data (18 users, 12 dimensions, 1 survey)
 
 ## Progress
 
