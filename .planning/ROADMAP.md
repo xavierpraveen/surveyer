@@ -85,7 +85,7 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Schema migration (surveys.archived, action_items.dimension_ids) + Phase 4 TypeScript types + Wave 0 test stubs
+- [x] 04-01-PLAN.md — Schema migration (surveys.archived, action_items.dimension_ids) + Phase 4 TypeScript types + Wave 0 test stubs (completed 2026-03-15)
 - [ ] 04-02-PLAN.md — All Phase 4 Server Actions: action CRUD, publication snapshot creation, settings (import/privacy/participation/archive), tagging + theme generation; extend getPublicResultsData for cycle selector
 - [ ] 04-03-PLAN.md — Action items UI: /admin/actions list table with status filter tabs + /admin/actions/[id] edit form + progress update timeline
 - [ ] 04-04-PLAN.md — Admin settings UI: /admin/settings with 4 tabs (Employees CSV import, Privacy thresholds, Participation monitor with auto-refresh, Cycles archive)

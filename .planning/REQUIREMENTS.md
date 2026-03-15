@@ -102,7 +102,7 @@
 
 ### Admin Interfaces (ADMIN)
 
-- [ ] **ADMIN-01**: Admin can create, edit, publish, schedule, and close surveys
+- [x] **ADMIN-01**: Admin can create, edit, publish, schedule, and close surveys
 - [ ] **ADMIN-02**: Admin can manage questions: create, edit, reorder, delete, set type and targeting
 - [ ] **ADMIN-03**: Admin can map questions to dimensions
 - [x] **ADMIN-04**: Admin can import and manage employee directory
