@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Survey, SurveyStatus } from '@/lib/types/survey'
 import { transitionSurveyStatus } from '@/lib/actions/survey'
+import { computeDerivedMetrics } from '@/lib/actions/analytics'
 
 interface Props {
   survey: Survey
@@ -30,6 +31,21 @@ export default function SurveyStatusBanner({ survey }: Props) {
   const [showScheduleForm, setShowScheduleForm] = useState(false)
   const [opensAt, setOpensAt] = useState('')
   const [closesAt, setClosesAt] = useState('')
+  const [computing, setComputing] = useState(false)
+  const [computeResult, setComputeResult] = useState<string | null>(null)
+
+  async function handleComputeMetrics() {
+    setComputing(true)
+    setError(null)
+    const result = await computeDerivedMetrics(survey.id)
+    setComputing(false)
+    if (!result.success) {
+      setError(result.error ?? 'Computation failed')
+    } else {
+      setComputeResult(`Results computed — ${result.data.rowsInserted} metrics calculated.`)
+      router.refresh()
+    }
+  }
 
   async function handleTransition(toStatus: SurveyStatus, extra?: { opens_at?: string; closes_at?: string }) {
     setLoading(true)
@@ -103,7 +119,18 @@ export default function SurveyStatusBanner({ survey }: Props) {
           )}
 
           {survey.status === 'closed' && (
-            <span className="text-sm text-slate-500 italic">Survey closed</span>
+            <div className="flex items-center gap-3">
+              {computeResult && (
+                <p className="text-xs text-green-700 mr-2">{computeResult}</p>
+              )}
+              <button
+                onClick={handleComputeMetrics}
+                disabled={computing}
+                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {computing ? 'Computing...' : 'Compute Results'}
+              </button>
+            </div>
           )}
         </div>
       </div>
