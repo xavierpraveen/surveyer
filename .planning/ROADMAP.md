@@ -125,7 +125,12 @@ Plans:
   2. `ROLE_ROUTES` and `AppRole` explicitly document v1 role consolidation; AUTH-06 checkbox is `[x]` with clear inline comment on intentional scope
   3. REQUIREMENTS.md shows `[x]` for all 9 previously-unchecked-but-implemented requirements (DASH-01–04, ANALYTICS-04, ADMIN-02, ADMIN-03) and new BRAND-01–07 section added
   4. Coverage count at bottom of REQUIREMENTS.md is updated to reflect true implemented count
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — BUG-01 fix: rename section_id → survey_section_id across all 7 query/type/component files
+- [ ] 06-02-PLAN.md — BUG-02 fix: expand AppRole to all 6 roles, annotate ROLE_ROUTES with v1 consolidation, update middleware normalization (AUTH-06)
+- [ ] 06-03-PLAN.md — REQUIREMENTS.md checkbox sync: check AUTH-06, DASH-01–04, ANALYTICS-04, ADMIN-02, ADMIN-03; update coverage count
 
 ### Phase 7: Feature Gap Closure
 **Goal**: The two genuinely unimplemented v1 requirements are delivered — the manager dashboard shows department-relevant action items, and an AI summarization provider interface exists as a clean integration point for v2 LLM work
@@ -155,5 +160,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Analytics and Dashboards | 4/4 | Complete    | 2026-03-15 |
 | 4. Actions, Publication and Admin | 5/5 | Complete   | 2026-03-15 |
 | 5. Brand Redesign | 5/5 | Complete   | 2026-03-16 |
-| 6. Critical Bug Fixes | 0/TBD | Not Started | — |
+| 6. Critical Bug Fixes | 0/3 | Not Started | — |
 | 7. Feature Gap Closure | 0/2 | Not Started | — |
