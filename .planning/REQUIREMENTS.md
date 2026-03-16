@@ -14,7 +14,7 @@
 - [x] **AUTH-03**: System restricts sign-up to company email domain (configurable)
 - [x] **AUTH-04**: User session persists across browser refresh via Supabase SSR cookie-based sessions
 - [x] **AUTH-05**: Role is stored in JWT `app_metadata` and enforced by middleware without DB queries
-- [ ] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin)
+- [x] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin)
 - [x] **AUTH-07**: Admin can assign roles: employee, manager, leadership, admin, hr_admin, survey_analyst
 - [x] **AUTH-08**: Admin can import employee roster via CSV (name, email, department, role, tenure band)
 - [x] **AUTH-09**: Admin can seed initial employee data for local development and testing
@@ -192,7 +192,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | AUTH-01 – AUTH-05, AUTH-07 – AUTH-10 | Phase 1 | Complete |
-| AUTH-06 | Phase 6 | Pending |
+| AUTH-06 | Phase 6 | Complete |
 | SCHEMA-01 – SCHEMA-04 | Phase 1 | Complete |
 | PRIVACY-01 – PRIVACY-07 | Phase 1 | Complete |
 | DX-01 – DX-05 | Phase 1 | Complete |
