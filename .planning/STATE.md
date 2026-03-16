@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 06-02-PLAN.md — AUTH-06 closed, AppRole expanded to 6 roles, ROLE_ROUTES-driven middleware normalization
-last_updated: "2026-03-16T10:50:25.640Z"
+stopped_at: Completed 06-01-PLAN.md — BUG-01 fixed, survey_section_id column name now used everywhere
+last_updated: "2026-03-16T08:10:09.000Z"
 last_activity: "2026-03-16 — Phase 5 complete: all 5 plans executed, full brand redesign shipped, 16 page files + 14 components + 6 infra files restyled"
 progress:
   total_phases: 7
@@ -70,6 +70,7 @@ Progress: [██████████] 100%
 | Phase 05-brand-redesign P02 | 7min | 2 tasks | 14 files |
 | Phase 05-brand-redesign P04 | 3min | 2 tasks | 8 files |
 | Phase 05-brand-redesign P05 | 7min | 2 tasks | 16 files |
+| Phase 06-critical-bug-fixes P01 | 3min | 3 tasks | 7 files |
 | Phase 06-critical-bug-fixes P02 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
@@ -137,6 +138,7 @@ Recent decisions affecting current work:
 - [Phase 05-brand-redesign]: TrendLineChart dimension palette reordered: brand (#6366F1) and accent (#8B5CF6) lead colors
 - [Phase 05-brand-redesign]: Employee confirmation card restyled in ConfirmationClient.tsx directly — it is the client component rendered by RSC page, not the page.tsx itself
 - [Phase 05-brand-redesign]: Actions page badge colors updated to spec semantic tokens (error/warning/success/brand-muted) replacing ad-hoc Tailwind palette classes
+- [Phase 06-critical-bug-fixes]: survey_section_id is the canonical DB column name — PostgREST silently ignores unknown filter columns causing full-table returns; all section_id references renamed
 - [Phase 06-critical-bug-fixes]: AppRole expanded to 6 roles with ROLE_ROUTES as single source of truth; ADMIN_ROLES export added; v1 consolidation documented inline in roles.ts and middleware.ts
 
 ### Pending Todos
@@ -152,6 +154,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T10:50:25.638Z
-Stopped at: Completed 06-02-PLAN.md — AUTH-06 closed, AppRole expanded to 6 roles, ROLE_ROUTES-driven middleware normalization
+Last session: 2026-03-16T08:10:09.000Z
+Stopped at: Completed 06-01-PLAN.md — BUG-01 fixed, survey_section_id column name now used everywhere
 Resume file: None
