@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Critical Bug Fixes** - Fix `section_id`→`survey_section_id` column mismatch in all query code, extend ROLE_ROUTES to document v1 role consolidation and satisfy AUTH-06, sync REQUIREMENTS.md checkboxes for already-implemented requirements, add BRAND requirements to REQUIREMENTS.md (completed 2026-03-16)
 - [x] **Phase 7: Feature Gap Closure** - Implement manager dashboard action plans section (DASH-07) and AI summarization provider interface stub (ANALYTICS-11) (completed 2026-03-16)
 - [x] **Phase 8: Response and Role Normalization Fixes** - Fix response_answers column names to unblock analytics pipeline (BUG-03); revert AppRole to employee|admin with normalizeRole() utility used by Server Actions (BUG-04 simplified) (completed 2026-03-16)
-- [ ] **Phase 9: Server Action Role Guard Propagation** - Propagate normalizeRole() fix to all remaining Phase 04 Server Actions (publication.ts, actions.ts, settings.ts, tagging.ts) so leadership/hr_admin/survey_analyst users can publish results and manage action items
+- [x] **Phase 9: Server Action Role Guard Propagation** - Propagate normalizeRole() fix to all remaining Phase 04 Server Actions (publication.ts, actions.ts, settings.ts, tagging.ts) so leadership/hr_admin/survey_analyst users can publish results and manage action items (completed 2026-03-16)
 
 ## Phase Details
 
@@ -196,4 +196,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 6. Critical Bug Fixes | 3/3 | Complete   | 2026-03-16 |
 | 7. Feature Gap Closure | 2/2 | Complete   | 2026-03-16 |
 | 8. Response and Role Normalization Fixes | 2/2 | Complete   | 2026-03-16 |
-| 9. Server Action Role Guard Propagation | 0/2 | Pending    | — |
+| 9. Server Action Role Guard Propagation | 2/2 | Complete   | 2026-03-16 |

@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: completed
-stopped_at: Completed 08-02-PLAN.md — AppRole 2-role model with normalizeRole, BUG-04 closed, analytics guards fixed
-last_updated: "2026-03-16T11:42:03.187Z"
+stopped_at: Completed 09-01-PLAN.md — createPublicationSnapshot role guard fixed with normalizeRole
+last_updated: "2026-03-16T12:33:37.528Z"
 last_activity: "2026-03-16 — Phase 8 plan 01: fixed answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in both submission paths"
 progress:
-  total_phases: 8
-  completed_phases: 8
-  total_plans: 28
-  completed_plans: 28
+  total_phases: 9
+  completed_phases: 9
+  total_plans: 30
+  completed_plans: 30
   percent: 100
 ---
 
@@ -76,6 +76,8 @@ Progress: [██████████] 100%
 | Phase 07-feature-gap-closure P01 | 3min | 2 tasks | 2 files |
 | Phase 07-feature-gap-closure P02 | 5min | 2 tasks | 2 files |
 | Phase 08-response-and-role-fixes P02 | 8min | 4 tasks | 3 files |
+| Phase 09-server-action-role-guards P02 | 1min | 3 tasks | 3 files |
+| Phase 09-server-action-role-guards P01 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -153,6 +155,8 @@ Recent decisions affecting current work:
 - [Phase 08-response-and-role-fixes]: AppRole collapses to 'employee' | 'admin' — normalizeRole() is the bridge between raw Supabase JWT strings and AppRole; no_role middleware redirect removed
 - [Phase 08-response-and-role-fixes]: ADMIN_ROLES typed as readonly string[] not readonly AppRole[] — holds raw JWT values before normalization
 - [Phase 08-response-and-role-fixes]: getManagerDashboardData guard is role \!== 'admin' only — the old ['admin','employee'] whitelist was a bug; employees use /dashboard not this action
+- [Phase 09-server-action-role-guards]: All Phase 04 Server Action files (actions.ts, settings.ts, tagging.ts) use normalizeRole() bridge pattern — consistent with analytics.ts and publication.ts from Phase 08
+- [Phase 09-server-action-role-guards]: normalizeRole() used in createPublicationSnapshot — any user with JWT role in ADMIN_ROLES (manager, leadership, hr_admin, survey_analyst, admin) can now publish snapshots
 
 ### Pending Todos
 
@@ -167,6 +171,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T11:41:44.699Z
-Stopped at: Completed 08-02-PLAN.md — AppRole 2-role model with normalizeRole, BUG-04 closed, analytics guards fixed
+Last session: 2026-03-16T12:33:37.525Z
+Stopped at: Completed 09-01-PLAN.md — createPublicationSnapshot role guard fixed with normalizeRole
 Resume file: None
