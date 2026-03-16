@@ -3,6 +3,7 @@ import 'server-only'
 import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { normalizeRole } from '@/lib/constants/roles'
 import type { QualitativeTag, TaggableAnswer } from '@/lib/types/phase4'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,9 +128,9 @@ export async function upsertTag(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   const { data, error } = await db
@@ -165,9 +166,9 @@ export async function deleteTag(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   const { error } = await db.from('qualitative_tags').delete().eq('id', tagId)
@@ -188,9 +189,9 @@ export async function generateThemes(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   // 1. Fetch all tags for this survey's response_answers (nested IN query)
@@ -255,9 +256,9 @@ export async function updateTheme(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

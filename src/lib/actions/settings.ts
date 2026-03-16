@@ -2,6 +2,7 @@
 import 'server-only'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { normalizeRole } from '@/lib/constants/roles'
 import type { AppSettings, EmployeeImportRow, ImportResult, ParticipationRow } from '@/lib/types/phase4'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,9 +65,9 @@ export async function updateAppSettings(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   const { error } = await db
@@ -90,9 +91,9 @@ export async function importEmployees(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   let imported = 0
@@ -155,9 +156,9 @@ export async function archiveSurvey(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   // Verify survey is closed before archiving
