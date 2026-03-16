@@ -64,7 +64,7 @@ const questionOptionInputSchema = z.object({
 })
 
 export const createQuestionSchema = z.object({
-  section_id: z.string().uuid(),
+  survey_section_id: z.string().uuid(),
   text: z.string().min(1, 'Question text is required').max(1000, 'Question text must be at most 1000 characters'),
   question_type: questionTypeSchema,
   is_required: z.boolean(),

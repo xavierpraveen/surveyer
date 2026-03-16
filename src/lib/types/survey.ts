@@ -62,7 +62,7 @@ export interface QuestionOption {
 
 export interface SurveyQuestion {
   id: string
-  section_id: string
+  survey_section_id: string
   text: string
   question_type: QuestionType
   is_required: boolean
