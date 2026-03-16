@@ -20,6 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 6: Critical Bug Fixes** - Fix `section_id`→`survey_section_id` column mismatch in all query code, extend ROLE_ROUTES to document v1 role consolidation and satisfy AUTH-06, sync REQUIREMENTS.md checkboxes for already-implemented requirements, add BRAND requirements to REQUIREMENTS.md (completed 2026-03-16)
 - [x] **Phase 7: Feature Gap Closure** - Implement manager dashboard action plans section (DASH-07) and AI summarization provider interface stub (ANALYTICS-11) (completed 2026-03-16)
 - [x] **Phase 8: Response and Role Normalization Fixes** - Fix response_answers column names to unblock analytics pipeline (BUG-03); revert AppRole to employee|admin with normalizeRole() utility used by Server Actions (BUG-04 simplified) (completed 2026-03-16)
+- [ ] **Phase 9: Server Action Role Guard Propagation** - Propagate normalizeRole() fix to all remaining Phase 04 Server Actions (publication.ts, actions.ts, settings.ts, tagging.ts) so leadership/hr_admin/survey_analyst users can publish results and manage action items
 
 ## Phase Details
 
@@ -165,10 +166,25 @@ Plans:
 - [x] 08-01-PLAN.md — BUG-03 fix: rename answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in response.ts and public-response.ts
 - [ ] 08-02-PLAN.md — BUG-04 fix: revert AppRole to employee|admin with normalizeRole utility; update middleware.ts and analytics.ts role guards
 
+### Phase 9: Server Action Role Guard Propagation
+**Goal**: Every Server Action that gates on role uses `normalizeRole()` — so that users with raw JWT roles `leadership`, `hr_admin`, and `survey_analyst` can publish survey results, manage action items, import employees, configure settings, archive surveys, and tag responses
+**Depends on**: Phase 8
+**Gap Closure**: Closes BUG-05 and BUG-06 from v1.0 milestone audit (third run)
+**Requirements**: PUBLISH-01, PUBLISH-02, PUBLISH-03, PUBLISH-04, PUBLISH-05, ACTIONS-01, ACTIONS-02, ACTIONS-03, ACTIONS-04, ACTIONS-06, ADMIN-04, ADMIN-05, ADMIN-06, ADMIN-07, ADMIN-08, ADMIN-09
+**Success Criteria** (what must be TRUE):
+  1. `publication.ts` uses `normalizeRole()` in all 3 role guards — `createPublicationSnapshot`, `getPublicationSnapshot`, `getPublishedCycles` are accessible to any user whose JWT role normalizes to 'admin'
+  2. `actions.ts`, `settings.ts`, and `tagging.ts` use `normalizeRole()` in all 11 role guard sites — no raw `['admin'].includes(role)` pattern remains in any Phase 04 Server Action file
+  3. TypeScript compiles with zero errors; `normalizeRole` import is consistent with the pattern established in Phase 08
+**Plans**: 2 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Fix publication.ts role guards (3 guards: createPublicationSnapshot, getPublicationSnapshot, getPublishedCycles)
+- [ ] 09-02-PLAN.md — Fix actions.ts, settings.ts, tagging.ts role guards (11 guards across 3 files)
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -180,3 +196,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 6. Critical Bug Fixes | 3/3 | Complete   | 2026-03-16 |
 | 7. Feature Gap Closure | 2/2 | Complete   | 2026-03-16 |
 | 8. Response and Role Normalization Fixes | 2/2 | Complete   | 2026-03-16 |
+| 9. Server Action Role Guard Propagation | 0/2 | Pending    | — |
