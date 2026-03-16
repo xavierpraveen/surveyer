@@ -203,21 +203,21 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANALYTICS-11 | Phase 7 | Done |
 | DASH-01 – DASH-06, DASH-08 – DASH-09 | Phase 3 | Complete |
 | DASH-07 | Phase 7 | Done |
-| ACTIONS-01 – ACTIONS-04, ACTIONS-06 | Phase 4 → Phase 9 | Pending |
+| ACTIONS-01 – ACTIONS-04, ACTIONS-06 | Phase 4 → Phase 9 | Complete |
 | ACTIONS-05 | Phase 4 | Complete |
-| PUBLISH-01 – PUBLISH-05 | Phase 4 → Phase 9 | Pending |
+| PUBLISH-01 – PUBLISH-05 | Phase 4 → Phase 9 | Complete |
 | ADMIN-01 – ADMIN-03 | Phase 4 | Complete |
-| ADMIN-04 – ADMIN-09 | Phase 4 → Phase 9 | Pending |
+| ADMIN-04 – ADMIN-09 | Phase 4 → Phase 9 | Complete |
 | BRAND-01 – BRAND-07 | Phase 5 | Complete |
 
 **Coverage:**
 - v1 requirements: 99 total (AUTH:10, SCHEMA:4, PRIVACY:7, DX:5, SURVEY:13, RESPONSE:10, DIM:3, ANALYTICS:11, DASH:9, ACTIONS:6, PUBLISH:5, ADMIN:9, BRAND:7)
-- Implemented [x]: 83/99
-- Pending [ ]: 16 (ACTIONS-01–04, ACTIONS-06, ADMIN-04–09, PUBLISH-01–05 — role guard propagation in Phase 9)
+- Implemented [x]: 99/99
+- Pending [ ]: 0
 - Unmapped: 0 ✓
 
-Note: BRAND-01–07 added to REQUIREMENTS.md via Phase 6 gap closure. AUTH-06 closed in Phase 6. ANALYTICS-11 and DASH-07 closed in Phase 7. RESPONSE-06–08, ANALYTICS-01, DASH-01, DASH-05 fixed in Phase 8. ACTIONS-01–04, ACTIONS-06, ADMIN-04–09, PUBLISH-01–05 reset pending Phase 9 role guard propagation fix (BUG-05, BUG-06).
+Note: BRAND-01–07 added to REQUIREMENTS.md via Phase 6 gap closure. AUTH-06 closed in Phase 6. ANALYTICS-11 and DASH-07 closed in Phase 7. RESPONSE-06–08, ANALYTICS-01, DASH-01, DASH-05 fixed in Phase 8. ACTIONS-01–04, ACTIONS-06, ADMIN-04–09, PUBLISH-01–05 closed in Phase 9 (BUG-05, BUG-06 role guard propagation).
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-16 after Phase 9 gap closure phases created*
+*Last updated: 2026-03-16 after Phase 9 execution complete — all 99/99 satisfied*
