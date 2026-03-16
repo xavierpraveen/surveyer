@@ -16,6 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Survey Engine** - Survey builder, question editor, response collection with participation tokens, autosave, submission flow (completed 2026-03-15)
 - [x] **Phase 3: Analytics and Dashboards** - Scoring engine (Postgres views/RPC), derived_metrics, leadership dashboard, public results page, privacy threshold enforcement (completed 2026-03-15)
 - [x] **Phase 4: Actions, Publication and Admin** - Action tracking, immutable publication snapshots, transparency page, admin interfaces, qualitative tagging (completed 2026-03-15)
+- [ ] **Phase 5: Brand Redesign** - Full visual identity update: semantic design token system, Tailwind config, globals.css, TopNav component, all component restylings across admin and employee surfaces
 
 ## Phase Details
 
@@ -91,10 +92,24 @@ Plans:
 - [ ] 04-04-PLAN.md — Admin settings UI: /admin/settings with 4 tabs (Employees CSV import, Privacy thresholds, Participation monitor with auto-refresh, Cycles archive)
 - [ ] 04-05-PLAN.md — Publication workflow (Publish Results button + confirm modal on survey detail) + /results cycle selector for snapshot browsing + /admin/surveys/[id]/tags qualitative tagging workspace
 
+### Phase 5: Brand Redesign
+**Goal**: Every user-facing page in the admin and employee surfaces uses the new Bold & Confident visual identity — semantic CSS custom properties in globals.css, a mapped Tailwind config, Inter typeface, and a consistent TopNav — so the platform looks production-ready and on-brand
+**Depends on**: Phase 4
+**Requirements**: BRAND-01, BRAND-02, BRAND-03, BRAND-04, BRAND-05, BRAND-06, BRAND-07
+**Success Criteria** (what must be TRUE):
+  1. `src/app/globals.css` defines all 21 semantic CSS custom properties from the spec; `tailwind.config.ts` maps every token to a Tailwind class; Inter loads via `next/font/google`
+  2. A new `TopNav` component renders on all admin and employee pages — logo, nav links, user avatar — using only the design token classes from the spec
+  3. All button instances across admin and employee pages use one of the four spec-defined button variants (Primary, Secondary, Ghost, Danger) — no ad-hoc bg-blue-500 or similar
+  4. All badge/status pill instances use the spec-defined badge variants with `bg-*-muted` + `text-*-text` token pairs
+  5. All form inputs follow the spec pattern; survey Likert scale buttons use the spec-defined selected/unselected/hover states
+  6. No regressions: all admin flows (survey CRUD, action items, settings) and employee flows (dashboard, survey wizard, confirmation) remain fully functional after restyling
+  7. The app loads without console errors; no Tailwind class warnings for undefined tokens
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -102,3 +117,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Survey Engine | 5/5 | Complete    | 2026-03-15 |
 | 3. Analytics and Dashboards | 4/4 | Complete    | 2026-03-15 |
 | 4. Actions, Publication and Admin | 5/5 | Complete   | 2026-03-15 |
+| 5. Brand Redesign | 0/TBD | Pending | — |
