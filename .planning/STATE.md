@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: completed
 stopped_at: Completed 09-01-PLAN.md — createPublicationSnapshot role guard fixed with normalizeRole
-last_updated: "2026-03-16T12:36:41.509Z"
+last_updated: "2026-03-16T12:58:54.780Z"
 last_activity: "2026-03-16 — Phase 8 plan 01: fixed answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in both submission paths"
 progress:
   total_phases: 9
@@ -18,17 +18,16 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-15)
+See: .planning/PROJECT.md (updated 2026-03-16 after v1.0 milestone)
 
 **Core value:** Leadership gets honest, actionable organizational insights from employees, and employees trust the process because results and actions are published transparently with accountability.
-**Current focus:** COMPLETE — all 5 phases, 21 plans shipped
+**Current focus:** v1.0 COMPLETE — 9 phases, 30 plans shipped. Planning v2.0 next.
 
 ## Current Position
 
-Phase: 8 of 8 (Response and Role Fixes) — IN PROGRESS
-Next: 08-02-PLAN.md — role guard fixes
-Status: Phase 8 plan 01 complete — response_answers column names fixed, analytics pipeline unblocked
-Last activity: 2026-03-16 — Phase 8 plan 01: fixed answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in both submission paths
+Phase: 9 of 9 (Server Action Role Guard Propagation) — COMPLETE
+Status: v1.0 milestone archived. All 99 requirements satisfied. Ready for v2.0 planning.
+Last activity: 2026-03-16 — v1.0 milestone complete — all phases archived, git tagged v1.0
 
 Progress: [██████████] 100%
 
