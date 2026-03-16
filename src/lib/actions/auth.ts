@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { signInSchema, magicLinkSchema } from '@/lib/validations/auth'
-import { ROLE_ROUTES, normalizeRole } from '@/lib/constants/roles'
+import { ROLE_ROUTES, normalizeRole, type AppRole } from '@/lib/constants/roles'
 
 function isDomainAllowed(email: string): boolean {
   const domain = process.env.ALLOWED_EMAIL_DOMAIN
