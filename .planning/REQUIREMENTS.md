@@ -14,7 +14,7 @@
 - [x] **AUTH-03**: System restricts sign-up to company email domain (configurable)
 - [x] **AUTH-04**: User session persists across browser refresh via Supabase SSR cookie-based sessions
 - [x] **AUTH-05**: Role is stored in JWT `app_metadata` and enforced by middleware without DB queries
-- [x] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin)
+- [x] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin) — v1 consolidation: manager, leadership, hr_admin, survey_analyst all route to /admin (see src/lib/constants/roles.ts ROLE_ROUTES)
 - [x] **AUTH-07**: Admin can assign roles: employee, manager, leadership, admin, hr_admin, survey_analyst
 - [x] **AUTH-08**: Admin can import employee roster via CSV (name, email, department, role, tenure band)
 - [x] **AUTH-09**: Admin can seed initial employee data for local development and testing
@@ -210,12 +210,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 - v1 requirements: 99 total (AUTH:10, SCHEMA:4, PRIVACY:7, DX:5, SURVEY:13, RESPONSE:10, DIM:3, ANALYTICS:11, DASH:9, ACTIONS:6, PUBLISH:5, ADMIN:9, BRAND:7)
-- Implemented [x]: 96/99
-- Pending [ ]: 3 (AUTH-06, ANALYTICS-11, DASH-07 — closing in Phases 6–7)
+- Implemented [x]: 97/99
+- Pending [ ]: 2 (ANALYTICS-11, DASH-07 — closing in Phase 7)
 - Unmapped: 0 ✓
 
-Note: BRAND-01–07 added to REQUIREMENTS.md via Phase 6 gap closure. AUTH-06 reset to Pending (BUG-02 role routing gap). ANALYTICS-11 and DASH-07 closing in Phase 7.
+Note: BRAND-01–07 added to REQUIREMENTS.md via Phase 6 gap closure. AUTH-06 closed in Phase 6 (BUG-02 role routing fixed; v1 consolidation: manager/leadership/hr_admin/survey_analyst all route to /admin via ROLE_ROUTES). ANALYTICS-11 and DASH-07 closing in Phase 7.
 
 ---
 *Requirements defined: 2026-03-15*
-*Last updated: 2026-03-15 after roadmap creation*
+*Last updated: 2026-03-16 after Phase 6 gap closure*
