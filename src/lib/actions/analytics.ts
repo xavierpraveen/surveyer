@@ -2,6 +2,7 @@
 import 'server-only'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { normalizeRole } from '@/lib/constants/roles'
 import type {
   LeadershipDashboardData,
   ManagerDashboardData,
@@ -40,9 +41,9 @@ export async function computeDerivedMetrics(
     return { success: false, error: 'Unauthorized' }
   }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   const { data, error } = await db.rpc('compute_derived_metrics', {
@@ -75,9 +76,9 @@ export async function getLeadershipDashboardData(
     return { success: false, error: 'Unauthorized' }
   }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   // ── 1. Determine target survey ────────────────────────────────────────────
@@ -501,9 +502,9 @@ export async function getManagerDashboardData(): Promise<
     return { success: false, error: 'Unauthorized' }
   }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin', 'employee'].includes(role)) {
-    return { success: false, error: 'Forbidden: insufficient role' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   // ── 1. Find manager's profile ─────────────────────────────────────────────
