@@ -126,7 +126,7 @@ describe('createPublicationSnapshot', () => {
   })
 
   test('snapshot_data contains dimensionScores, participationRate, qualitativeThemes, publicActions', async () => {
-    mockUserWithRole('leadership')
+    mockUserWithRole('admin')
     let callCount = 0
     mockDb.from.mockImplementation(() => {
       callCount++

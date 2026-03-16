@@ -41,8 +41,8 @@ export async function computeDerivedMetrics(
   }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin', 'leadership', 'survey_analyst'].includes(role)) {
-    return { success: false, error: 'Forbidden: insufficient role to compute metrics' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   const { data, error } = await db.rpc('compute_derived_metrics', {
@@ -76,8 +76,8 @@ export async function getLeadershipDashboardData(
   }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin', 'leadership', 'survey_analyst'].includes(role)) {
-    return { success: false, error: 'Forbidden: leadership or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   // ── 1. Determine target survey ────────────────────────────────────────────
@@ -225,28 +225,20 @@ export async function getLeadershipDashboardData(
     }))
   }
 
-  // ── 4. Participation (from v_participation_rates) ─────────────────────────
-  const { data: participationRows, error: partError } = await db
+  // ── 4. Participation (from v_participation_rates, supports old+new schema) ──
+  const { data: participationRows } = await db
     .from('v_participation_rates')
-    .select('token_count, department_id, department_name')
+    .select('*')
     .eq('survey_id', targetSurveyId)
 
-  if (partError) return { success: false, error: partError.message }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const partRows = (participationRows as any[]) ?? []
+  const totalResponses = partRows.reduce((sum: number, r: any) => sum + Number(r.token_count ?? r.submitted_count ?? 0), 0)
 
-  const partRows = (
-    participationRows as Array<{
-      token_count: number
-      department_id: string | null
-      department_name: string | null
-    }>
-  ) ?? []
-
-  const totalResponses = partRows.reduce((sum, r) => sum + Number(r.token_count), 0)
-
-  const participationBreakdown: ParticipationBreakdown[] = partRows.map((r) => ({
-    department: r.department_name ?? 'Unknown',
-    departmentId: r.department_id,
-    respondentCount: Number(r.token_count),
+  const participationBreakdown: ParticipationBreakdown[] = partRows.map((r: any) => ({
+    department: r.department_name ?? r.title ?? 'Unknown',
+    departmentId: r.department_id ?? null,
+    respondentCount: Number(r.token_count ?? r.submitted_count ?? 0),
   }))
 
   // ── 5. Department heatmap (from derived_metrics WHERE segment_type='department') ─
@@ -380,13 +372,26 @@ export async function getLeadershipDashboardData(
     tagCount: (t.tag_cluster ?? []).length,
   }))
 
-  // ── 8. Public action items (from v_public_actions) ────────────────────────
-  const { data: actionsRaw, error: actionsError } = await db
-    .from('v_public_actions')
-    .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_name, survey_id')
-    .or(`survey_id.eq.${targetSurveyId},survey_id.is.null`)
+  // ── 8. Public action items (from v_public_actions or fallback to action_items) ─
+  let actionsRaw: unknown[] = []
+  {
+    const { data, error: viewErr } = await db
+      .from('v_public_actions')
+      .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_name, survey_id')
+      .or(`survey_id.eq.${targetSurveyId},survey_id.is.null`)
 
-  if (actionsError) return { success: false, error: actionsError.message }
+    if (!viewErr) {
+      actionsRaw = data ?? []
+    } else {
+      // View not yet created — fall back to action_items directly
+      const { data: fallback } = await db
+        .from('action_items')
+        .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_id, survey_id')
+        .eq('is_public', true)
+        .or(`survey_id.eq.${targetSurveyId},survey_id.is.null`)
+      actionsRaw = fallback ?? []
+    }
+  }
 
   const publicActions: PublicAction[] = (
     (actionsRaw as Array<{
@@ -497,8 +502,8 @@ export async function getManagerDashboardData(): Promise<
   }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['manager', 'admin', 'leadership'].includes(role)) {
-    return { success: false, error: 'Forbidden: manager role required' }
+  if (!role || !['admin', 'employee'].includes(role)) {
+    return { success: false, error: 'Forbidden: insufficient role' }
   }
 
   // ── 1. Find manager's profile ─────────────────────────────────────────────
@@ -707,17 +712,26 @@ export async function getPublicResultsData(
   }
 
   // ── 1. Most recent closed+computed survey ─────────────────────────────────
-  const { data: latestSurveyRaw, error: latestError } = await db
+  // Fetch survey_ids that have derived_metrics first (subqueries not supported in supabase-js)
+  const { data: surveyIdsWithMetrics } = await db
+    .from('derived_metrics')
+    .select('survey_id')
+  const surveyIdsArr = [...new Set(
+    ((surveyIdsWithMetrics as Array<{ survey_id: string }>) ?? []).map((r) => r.survey_id)
+  )]
+
+  const latestQuery = db
     .from('surveys')
     .select('id, title, closes_at')
     .eq('status', 'closed')
-    .in(
-      'id',
-      db.from('derived_metrics').select('survey_id')
-    )
     .order('closes_at', { ascending: false })
     .limit(1)
-    .single()
+
+  if (surveyIdsArr.length > 0) {
+    latestQuery.in('id', surveyIdsArr)
+  }
+
+  const { data: latestSurveyRaw, error: latestError } = await latestQuery.single()
 
   if (latestError || !latestSurveyRaw) {
     return {
@@ -773,17 +787,15 @@ export async function getPublicResultsData(
     belowThreshold: row.below_threshold,
   }))
 
-  // ── 3. Participation (total across all departments) ───────────────────────
-  const { data: partRaw, error: partError } = await db
+  // ── 3. Participation (total, supports old+new view schema) ───────────────
+  const { data: partRaw } = await db
     .from('v_participation_rates')
-    .select('token_count')
+    .select('*')
     .eq('survey_id', latestSurvey.id)
 
-  if (partError) return { success: false, error: partError.message }
-
-  const totalResponses = (
-    (partRaw as Array<{ token_count: number }>) ?? []
-  ).reduce((sum, r) => sum + Number(r.token_count), 0)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const totalResponses = ((partRaw as any[]) ?? [])
+    .reduce((sum: number, r: any) => sum + Number(r.token_count ?? r.submitted_count ?? 0), 0)
 
   const { count: eligibleCount } = await db
     .from('profiles')
@@ -829,12 +841,23 @@ export async function getPublicResultsData(
   }))
 
   // ── 5. Public action items ─────────────────────────────────────────────────
-  const { data: actionsRaw, error: actionsError } = await db
-    .from('v_public_actions')
-    .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_name, survey_id')
-    .or(`survey_id.eq.${latestSurvey.id},survey_id.is.null`)
-
-  if (actionsError) return { success: false, error: actionsError.message }
+  let actionsRaw: unknown[] = []
+  {
+    const { data, error: viewErr } = await db
+      .from('v_public_actions')
+      .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_name, survey_id')
+      .or(`survey_id.eq.${latestSurvey.id},survey_id.is.null`)
+    if (!viewErr) {
+      actionsRaw = data ?? []
+    } else {
+      const { data: fallback } = await db
+        .from('action_items')
+        .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_id, survey_id')
+        .eq('is_public', true)
+        .or(`survey_id.eq.${latestSurvey.id},survey_id.is.null`)
+      actionsRaw = fallback ?? []
+    }
+  }
 
   const publicActions: PublicAction[] = (
     (actionsRaw as Array<{

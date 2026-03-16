@@ -22,16 +22,16 @@ export async function middleware(request: NextRequest) {
 
   // Authenticated: redirect away from auth pages
   if (PUBLIC_ROUTES.some((r) => pathname.startsWith(r))) {
-    const role = user.app_metadata?.role as AppRole | undefined
-    const home = role ? ROLE_ROUTES[role] : '/dashboard'
-    return NextResponse.redirect(new URL(home, request.url))
+    const rawRole = user.app_metadata?.role as string | undefined
+    const nr: AppRole = rawRole === 'employee' ? 'employee' : (rawRole ? 'admin' : 'employee')
+    return NextResponse.redirect(new URL(ROLE_ROUTES[nr], request.url))
   }
 
   // Redirect root "/" to role home
   if (pathname === '/') {
-    const role = user.app_metadata?.role as AppRole | undefined
-    const home = role ? ROLE_ROUTES[role] : '/dashboard'
-    return NextResponse.redirect(new URL(home, request.url))
+    const rawRole = user.app_metadata?.role as string | undefined
+    const nr: AppRole = rawRole === 'employee' ? 'employee' : (rawRole ? 'admin' : 'employee')
+    return NextResponse.redirect(new URL(ROLE_ROUTES[nr], request.url))
   }
 
   // Role-based route protection — reads JWT app_metadata, zero DB queries
@@ -41,28 +41,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=no_role', request.url))
   }
 
-  const home = ROLE_ROUTES[role]
+  // Normalize legacy roles (leadership, manager, hr_admin, survey_analyst) to admin
+  const normalizedRole: AppRole = role === 'employee' ? 'employee' : 'admin'
+  const home = ROLE_ROUTES[normalizedRole]
 
-  // Protect role-specific route prefixes
-  const rolePrefix = home.replace('/dashboard', '').replace('/admin', '/admin')
-  // Simple protection: employees can't access /admin, /leadership, /manager routes
-  if (pathname.startsWith('/admin') && role === 'employee') {
+  // Employees cannot access /admin routes
+  if (pathname.startsWith('/admin') && normalizedRole === 'employee') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
-  if (
-    pathname.startsWith('/leadership') &&
-    !(['leadership', 'admin'] as AppRole[]).includes(role)
-  ) {
-    return NextResponse.redirect(new URL(home, request.url))
-  }
-  if (
-    pathname.startsWith('/manager') &&
-    !(['manager', 'leadership', 'admin'] as AppRole[]).includes(role)
-  ) {
-    return NextResponse.redirect(new URL(home, request.url))
-  }
 
-  void rolePrefix
   return response
 }
 

@@ -34,8 +34,8 @@ export async function createPublicationSnapshot(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['leadership', 'admin', 'survey_analyst'].includes(role)) {
-    return { success: false, error: 'Forbidden: leadership or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   // 1. Fetch survey and verify it is closed
@@ -114,16 +114,15 @@ export async function createPublicationSnapshot(
     }
   })
 
-  // 4b. Participation from v_participation_rates
-  const { data: partData, error: partError } = await db
+  // 4b. Participation from v_participation_rates (supports old and new schema)
+  const { data: partData } = await db
     .from('v_participation_rates')
-    .select('token_count')
+    .select('*')
     .eq('survey_id', surveyId)
 
-  if (partError) return { success: false, error: partError.message }
-
-  const totalResponses = ((partData as Array<{ token_count: number }>) ?? [])
-    .reduce((sum, r) => sum + Number(r.token_count), 0)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const totalResponses = ((partData as any[]) ?? [])
+    .reduce((sum: number, r: any) => sum + Number(r.token_count ?? r.submitted_count ?? 0), 0)
 
   const { count: eligibleCount } = await db
     .from('profiles')
@@ -160,13 +159,24 @@ export async function createPublicationSnapshot(
     tagCount: (t.tag_cluster ?? []).length,
   }))
 
-  // 4d. Public action items from v_public_actions
-  const { data: actionsData, error: actionsError } = await db
-    .from('v_public_actions')
-    .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_name, survey_id')
-    .or(`survey_id.eq.${surveyId},survey_id.is.null`)
-
-  if (actionsError) return { success: false, error: actionsError.message }
+  // 4d. Public action items (v_public_actions with fallback to action_items)
+  let actionsData: unknown[] = []
+  {
+    const { data, error: viewErr } = await db
+      .from('v_public_actions')
+      .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_name, survey_id')
+      .or(`survey_id.eq.${surveyId},survey_id.is.null`)
+    if (!viewErr) {
+      actionsData = data ?? []
+    } else {
+      const { data: fallback } = await db
+        .from('action_items')
+        .select('id, title, problem_statement, status, priority, target_date, success_criteria, department_id, survey_id')
+        .eq('is_public', true)
+        .or(`survey_id.eq.${surveyId},survey_id.is.null`)
+      actionsData = fallback ?? []
+    }
+  }
 
   const publicActions: PublicAction[] = (
     (actionsData as Array<{

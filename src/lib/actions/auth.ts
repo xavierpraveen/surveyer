@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { signInSchema, magicLinkSchema } from '@/lib/validations/auth'
 import type { AppRole } from '@/lib/constants/roles'
+import { ROLE_ROUTES } from '@/lib/constants/roles'
 
 function isDomainAllowed(email: string): boolean {
   const domain = process.env.ALLOWED_EMAIL_DOMAIN
@@ -26,9 +27,11 @@ export async function signIn(formData: FormData): Promise<{ error?: string }> {
   }
 
   const supabase = await createSupabaseServerClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) return { error: error.message }
-  redirect('/')
+
+  const role = data.user?.app_metadata?.role as AppRole | undefined
+  redirect(role ? ROLE_ROUTES[role] : '/dashboard')
 }
 
 export async function signInWithMagicLink(

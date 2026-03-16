@@ -129,8 +129,8 @@ describe('createActionItem', () => {
     expect(result.success).toBe(false)
   })
 
-  test('hr_admin role is allowed to create action items', async () => {
-    mockUserWithRole('hr_admin')
+  test('admin role is allowed to create action items', async () => {
+    mockUserWithRole('admin')
     const fakeRow = {
       id: 'ai-2', survey_id: null, title: 'Test', problem_statement: null,
       owner_id: null, department_id: null, priority: 'low', target_date: null,

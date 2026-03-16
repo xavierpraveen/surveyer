@@ -43,7 +43,7 @@ describe('getTaggableAnswers', () => {
   beforeEach(() => vi.clearAllMocks())
 
   test('returns anonymized open-text response_answers for a survey', async () => {
-    mockUserWithRole('survey_analyst')
+    mockUserWithRole('admin')
 
     // Mock: responses -> response_answers -> qualitative_tags
     let callCount = 0
@@ -68,7 +68,7 @@ describe('getTaggableAnswers', () => {
   })
 
   test('includes existing tags for each answer', async () => {
-    mockUserWithRole('survey_analyst')
+    mockUserWithRole('admin')
     let callCount = 0
     mockDb.from.mockImplementation(() => {
       callCount++
@@ -118,7 +118,7 @@ describe('upsertTag', () => {
   beforeEach(() => vi.clearAllMocks())
 
   test('inserts new tag for a response_answer_id', async () => {
-    mockUserWithRole('survey_analyst')
+    mockUserWithRole('admin')
     const fakeTag = {
       id: 'tag-1', response_answer_id: 'ra-1', tag: 'culture',
       created_by: 'user-1', created_at: '2026-01-01T00:00:00Z',
@@ -135,13 +135,13 @@ describe('upsertTag', () => {
   })
 
   test('returns error when tag string is empty', async () => {
-    mockUserWithRole('survey_analyst')
+    mockUserWithRole('admin')
     const { upsertTag } = await import('./tagging')
     const result = await upsertTag('ra-1', '')
     expect(result.success).toBe(false)
   })
 
-  test('returns error when role is not survey_analyst or admin', async () => {
+  test('returns error when role is not admin', async () => {
     mockUserWithRole('employee')
     const { upsertTag } = await import('./tagging')
     const result = await upsertTag('ra-1', 'tag')
@@ -156,7 +156,7 @@ describe('deleteTag', () => {
   beforeEach(() => vi.clearAllMocks())
 
   test('deletes a qualitative_tags row by id', async () => {
-    mockUserWithRole('survey_analyst')
+    mockUserWithRole('admin')
     const chain = makeChainable({ error: null })
     mockDb.from.mockReturnValue(chain)
 
@@ -165,7 +165,7 @@ describe('deleteTag', () => {
     expect(result.success).toBe(true)
   })
 
-  test('returns error when role is not survey_analyst or admin', async () => {
+  test('returns error when role is not admin', async () => {
     mockUserWithRole('employee')
     const { deleteTag } = await import('./tagging')
     const result = await deleteTag('tag-1')
@@ -309,7 +309,7 @@ describe('updateTheme', () => {
   beforeEach(() => vi.clearAllMocks())
 
   test('updates theme label and is_positive flag', async () => {
-    mockUserWithRole('survey_analyst')
+    mockUserWithRole('admin')
     const chain = makeChainable({ error: null })
     mockDb.from.mockReturnValue(chain)
 
@@ -318,7 +318,7 @@ describe('updateTheme', () => {
     expect(result.success).toBe(true)
   })
 
-  test('returns error when role is not survey_analyst or admin', async () => {
+  test('returns error when role is not admin', async () => {
     mockUserWithRole('employee')
     const { updateTheme } = await import('./tagging')
     const result = await updateTheme('theme-1', { isPositive: true })

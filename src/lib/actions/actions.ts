@@ -72,7 +72,7 @@ function mapActionItem(row: Record<string, unknown>, ownerName?: string | null, 
     isPublic: Boolean(row.is_public),
     dimensionIds: (row.dimension_ids as string[]) ?? [],
     createdAt: row.created_at as string,
-    updatedAt: row.updated_at as string,
+    updatedAt: (row.updated_at as string) ?? (row.created_at as string),
   }
 }
 
@@ -88,11 +88,11 @@ export async function createActionItem(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['leadership', 'admin', 'hr_admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: leadership or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
-  const { dimensionIds, ...fields } = parsed.data
+  const { dimensionIds: _dimensionIds, ...fields } = parsed.data
   const { data, error } = await db
     .from('action_items')
     .insert({
@@ -106,7 +106,7 @@ export async function createActionItem(
       status: fields.status,
       success_criteria: fields.successCriteria ?? null,
       is_public: fields.isPublic,
-      dimension_ids: dimensionIds,
+      // dimension_ids omitted until Phase 4 migration is applied
     })
     .select()
     .single()
@@ -128,8 +128,8 @@ export async function updateActionItem(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['leadership', 'admin', 'hr_admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: leadership or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   const { dimensionIds, isPublic, ownerId, departmentId, surveyId, targetDate, problemStatement, successCriteria, ...rest } = parsed.data
@@ -137,7 +137,7 @@ export async function updateActionItem(
   // Build the patch object with snake_case keys
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const patch: Record<string, any> = { ...rest }
-  if (dimensionIds !== undefined) patch.dimension_ids = dimensionIds
+  // dimension_ids omitted until Phase 4 migration is applied
   if (isPublic !== undefined) patch.is_public = isPublic
   if (ownerId !== undefined) patch.owner_id = ownerId
   if (departmentId !== undefined) patch.department_id = departmentId
@@ -167,8 +167,8 @@ export async function deleteActionItem(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['leadership', 'admin', 'hr_admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: leadership or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   const { error } = await db.from('action_items').delete().eq('id', id)
@@ -225,7 +225,7 @@ export async function getActionItems(
   // Build query with optional status filter
   let query = db
     .from('action_items')
-    .select('id, survey_id, title, problem_statement, owner_id, department_id, priority, target_date, status, success_criteria, is_public, dimension_ids, created_at, updated_at')
+    .select('id, survey_id, title, problem_statement, owner_id, department_id, priority, target_date, status, success_criteria, is_public, created_at')
     .order('created_at', { ascending: false })
 
   if (statusFilter) {
@@ -243,10 +243,10 @@ export async function getActionItems(
   if (ownerIds.length > 0) {
     const { data: profiles } = await db
       .from('profiles')
-      .select('id, name')
+      .select('id, full_name')
       .in('id', ownerIds)
-    for (const p of (profiles as Array<{ id: string; name: string }>) ?? []) {
-      ownerMap.set(p.id, p.name)
+    for (const p of (profiles as Array<{ id: string; full_name: string }>) ?? []) {
+      ownerMap.set(p.id, p.full_name)
     }
   }
 
@@ -285,7 +285,7 @@ export async function getActionItem(
 
   const { data: rowData, error: rowError } = await db
     .from('action_items')
-    .select('id, survey_id, title, problem_statement, owner_id, department_id, priority, target_date, status, success_criteria, is_public, dimension_ids, created_at, updated_at')
+    .select('id, survey_id, title, problem_statement, owner_id, department_id, priority, target_date, status, success_criteria, is_public, created_at')
     .eq('id', id)
     .single()
 

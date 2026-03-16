@@ -128,8 +128,8 @@ export async function upsertTag(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['survey_analyst', 'admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: survey_analyst or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   const { data, error } = await db
@@ -166,8 +166,8 @@ export async function deleteTag(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['survey_analyst', 'admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: survey_analyst or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   const { error } = await db.from('qualitative_tags').delete().eq('id', tagId)
@@ -189,8 +189,8 @@ export async function generateThemes(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['survey_analyst', 'admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: survey_analyst or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   // 1. Fetch all tags for this survey's response_answers (nested IN query)
@@ -256,8 +256,8 @@ export async function updateTheme(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['survey_analyst', 'admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: survey_analyst or admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

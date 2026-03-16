@@ -65,8 +65,8 @@ export async function updateAppSettings(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin', 'hr_admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin or hr_admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   const { error } = await db
@@ -91,8 +91,8 @@ export async function importEmployees(
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin', 'hr_admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin or hr_admin role required' }
+  if (!role || !['admin'].includes(role)) {
+    return { success: false, error: 'Forbidden: admin role required' }
   }
 
   let imported = 0
@@ -179,7 +179,13 @@ export async function archiveSurvey(
     .update({ archived: true })
     .eq('id', surveyId)
 
-  if (error) return { success: false, error: error.message }
+  if (error) {
+    // Column may not exist yet — provide actionable message
+    if (error.message.includes('archived')) {
+      return { success: false, error: 'Database migration pending. Run scripts/production-setup.sql in the Supabase SQL editor first.' }
+    }
+    return { success: false, error: error.message }
+  }
   return { success: true }
 }
 
@@ -210,26 +216,23 @@ export async function getParticipationForOpenSurvey(): Promise<
   const { id: surveyId } = openSurvey as { id: string }
 
   // Fetch participation data from v_participation_rates
+  // View may have either old schema (survey_id, title, submitted_count)
+  // or new schema (survey_id, token_count, department_id, department_name)
   const { data: partData, error: partError } = await db
     .from('v_participation_rates')
-    .select('department_name, department_id, eligible_count, token_count')
+    .select('*')
     .eq('survey_id', surveyId)
 
   if (partError) return { success: false, error: partError.message }
 
-  const rows: ParticipationRow[] = (
-    (partData as Array<{
-      department_name: string | null
-      department_id: string | null
-      eligible_count: number | null
-      token_count: number | null
-    }>) ?? []
-  ).map((r) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows: ParticipationRow[] = ((partData as any[]) ?? []).map((r) => {
+    // Support both old schema (submitted_count) and new schema (token_count)
     const eligible = Number(r.eligible_count ?? 0)
-    const responded = Number(r.token_count ?? 0)
+    const responded = Number(r.token_count ?? r.submitted_count ?? 0)
     const rate = eligible > 0 ? Math.round((responded / eligible) * 100) : 0
     return {
-      department: r.department_name ?? 'Unknown',
+      department: r.department_name ?? r.title ?? 'Unknown',
       departmentId: r.department_id ?? null,
       eligible,
       responded,

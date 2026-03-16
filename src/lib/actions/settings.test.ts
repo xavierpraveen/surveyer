@@ -100,7 +100,7 @@ describe('updateAppSettings', () => {
     expect(result.success).toBe(true)
   })
 
-  test('returns error when role is not admin or hr_admin', async () => {
+  test('returns error when role is not admin', async () => {
     mockUserWithRole('employee')
     const { updateAppSettings } = await import('./settings')
     const result = await updateAppSettings('privacy_threshold_numeric', 7)
@@ -169,7 +169,7 @@ describe('importEmployees', () => {
   })
 
   test('returns imported count, skipped count, and error list', async () => {
-    mockUserWithRole('hr_admin')
+    mockUserWithRole('admin')
     mockDb.auth.admin.createUser.mockResolvedValueOnce({
       data: { user: { id: 'new-user-2' } },
       error: null,
@@ -196,7 +196,7 @@ describe('importEmployees', () => {
     }
   })
 
-  test('returns error when role is not admin or hr_admin', async () => {
+  test('returns error when role is not admin', async () => {
     mockUserWithRole('employee')
     const { importEmployees } = await import('./settings')
     const result = await importEmployees([])
