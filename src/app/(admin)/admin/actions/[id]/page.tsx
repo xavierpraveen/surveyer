@@ -14,16 +14,16 @@ export default async function ActionDetailPage({ params }: PageProps) {
   // Create mode
   if (id === 'new') {
     return (
-      <div className="p-6 max-w-2xl">
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-          <Link href="/admin/actions" className="hover:text-gray-700 transition-colors">
+      <div className="max-w-6xl mx-auto p-8">
+        <div className="flex items-center gap-2 text-sm text-fg-muted mb-6">
+          <Link href="/admin/actions" className="hover:text-fg transition-colors">
             Action Items
           </Link>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">New Action</span>
+          <span className="text-fg-subtle">/</span>
+          <span className="text-fg font-medium">New Action</span>
         </div>
 
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">New Action Item</h1>
+        <h1 className="text-2xl font-extrabold tracking-snug text-fg mb-6">New Action Item</h1>
 
         <ActionItemForm />
       </div>
@@ -40,17 +40,17 @@ export default async function ActionDetailPage({ params }: PageProps) {
   const { item, updates } = result.data
 
   return (
-    <div className="p-6 max-w-2xl">
+    <div className="max-w-6xl mx-auto p-8">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <Link href="/admin/actions" className="hover:text-gray-700 transition-colors">
+      <div className="flex items-center gap-2 text-sm text-fg-muted mb-6">
+        <Link href="/admin/actions" className="hover:text-fg transition-colors">
           Action Items
         </Link>
-        <span>/</span>
-        <span className="text-gray-900 font-medium truncate max-w-xs">{item.title}</span>
+        <span className="text-fg-subtle">/</span>
+        <span className="text-fg font-medium truncate max-w-xs">{item.title}</span>
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{item.title}</h1>
+      <h1 className="text-2xl font-extrabold tracking-snug text-fg mb-6">{item.title}</h1>
 
       <ActionItemForm item={item} />
 

@@ -97,7 +97,7 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
       .eq('segment_type', 'overall'),
     dbAdmin
       .from('v_participation_rates')
-      .select('token_count')
+      .select('*')
       .eq('survey_id', id),
     dbAdmin
       .from('action_items')
@@ -111,8 +111,9 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
   ])
 
   // Calculate participation rate
-  const totalResponses = ((partData as Array<{ token_count: number }> | null) ?? [])
-    .reduce((sum: number, r: { token_count: number }) => sum + Number(r.token_count), 0)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const totalResponses = ((partData as any[] | null) ?? [])
+    .reduce((sum: number, r: any) => sum + Number(r.token_count ?? r.submitted_count ?? 0), 0)
   const { count: eligibleCount } = await dbAdmin
     .from('profiles')
     .select('*', { count: 'exact', head: true })
@@ -148,15 +149,15 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
   })
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div>
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-200 px-6 py-3">
+      <div className="bg-surface border-b border-border px-6 py-3">
         <div className="flex items-center gap-3">
-          <a href="/admin/surveys" className="text-sm text-gray-500 hover:text-gray-700">
+          <a href="/admin/surveys" className="text-sm text-fg-muted hover:text-fg transition-colors">
             ← Surveys
           </a>
-          <span className="text-gray-300">/</span>
-          <h1 className="text-sm font-semibold text-gray-900 truncate">{survey.title}</h1>
+          <span className="text-fg-subtle">/</span>
+          <h1 className="text-sm font-semibold text-fg truncate">{survey.title}</h1>
         </div>
       </div>
 
@@ -177,7 +178,7 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
           />
           <a
             href={`/admin/surveys/${survey.id}/tags`}
-            className="text-sm text-gray-600 border border-gray-300 rounded px-3 py-1 hover:bg-gray-50"
+            className="text-sm text-brand-text hover:underline flex items-center gap-1"
           >
             Tag Responses
           </a>
@@ -198,12 +199,12 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
           {activeSection ? (
             <div>
               <div className="mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">{activeSection.title}</h2>
+                <h2 className="text-xl font-bold tracking-snug text-fg">{activeSection.title}</h2>
                 {activeSection.description && (
-                  <p className="text-sm text-gray-500 mt-1">{activeSection.description}</p>
+                  <p className="text-sm text-fg-muted mt-1">{activeSection.description}</p>
                 )}
                 {activeSection.target_roles.length > 0 && !activeSection.target_roles.includes('all') && (
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-fg-subtle mt-1">
                     Targeted: {activeSection.target_roles.join(', ')}
                   </p>
                 )}
@@ -218,8 +219,8 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
           ) : (
             <div className="flex items-center justify-center h-64">
               <div className="text-center">
-                <p className="text-gray-400 mb-2">No sections yet.</p>
-                <p className="text-sm text-gray-400">Add a section using the sidebar.</p>
+                <p className="text-fg-subtle mb-2">No sections yet.</p>
+                <p className="text-sm text-fg-subtle">Add a section using the sidebar.</p>
               </div>
             </div>
           )}

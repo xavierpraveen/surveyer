@@ -25,14 +25,14 @@ export default async function SettingsPage() {
   // 2. Fetch all surveys for Cycles tab
   const { data: surveysData } = await db
     .from('surveys')
-    .select('id, title, status, archived, created_at')
+    .select('id, title, status, created_at')
     .order('created_at', { ascending: false })
 
-  const initialSurveys = ((surveysData as SurveyRow[] | null) ?? []).map((s) => ({
+  const initialSurveys = ((surveysData as Omit<SurveyRow, 'archived'>[] | null) ?? []).map((s) => ({
     id: s.id,
     title: s.title,
     status: s.status,
-    archived: s.archived,
+    archived: false, // column pending migration
     createdAt: s.created_at,
   }))
 
@@ -43,15 +43,13 @@ export default async function SettingsPage() {
     : []
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Admin Settings</h1>
-        <SettingsTabs
-          initialSettings={initialSettings}
-          initialSurveys={initialSurveys}
-          initialParticipation={initialParticipation}
-        />
-      </div>
+    <div className="max-w-6xl mx-auto p-8">
+      <h1 className="text-2xl font-extrabold tracking-snug text-fg mb-6">Admin Settings</h1>
+      <SettingsTabs
+        initialSettings={initialSettings}
+        initialSurveys={initialSurveys}
+        initialParticipation={initialParticipation}
+      />
     </div>
   )
 }

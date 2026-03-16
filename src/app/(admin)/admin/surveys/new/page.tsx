@@ -62,135 +62,133 @@ export default function NewSurveyPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Create Survey</h1>
-          <p className="text-sm text-gray-500 mt-1">Fill in the details below to create a new survey.</p>
+    <div className="max-w-6xl mx-auto p-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-extrabold tracking-snug text-fg">Create Survey</h1>
+        <p className="text-sm text-fg-muted mt-1">Fill in the details below to create a new survey.</p>
+      </div>
+
+      <form onSubmit={handleSubmit} className="bg-surface border border-border rounded-lg shadow-sm p-6 space-y-5 max-w-xl">
+        {errors.general && (
+          <div className="p-3 bg-error-muted border border-error rounded-md text-sm text-error-text" role="alert">
+            {errors.general}
+          </div>
+        )}
+
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-medium text-fg mb-1">
+            Title <span className="text-error">*</span>
+          </label>
+          <input
+            type="text"
+            value={form.title}
+            onChange={(e) => handleChange('title', e.target.value)}
+            required
+            maxLength={200}
+            placeholder="e.g. Q1 2026 Employee Survey"
+            className={`w-full border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus ${
+              errors.title ? 'border-error focus:ring-red-200' : 'border-border'
+            }`}
+          />
+          {errors.title && <p className="mt-1 text-xs text-error-text" role="alert">{errors.title}</p>}
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-lg border border-gray-200 p-6 space-y-5">
-          {errors.general && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
-              {errors.general}
-            </div>
-          )}
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium text-fg mb-1">
+            Description <span className="text-fg-subtle font-normal">(optional)</span>
+          </label>
+          <textarea
+            value={form.description}
+            onChange={(e) => handleChange('description', e.target.value)}
+            rows={3}
+            placeholder="Brief overview of what this survey covers..."
+            className="w-full border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus resize-none"
+          />
+        </div>
 
-          {/* Title */}
+        {/* Toggles */}
+        <div className="space-y-3">
+          <label className="flex items-center justify-between">
+            <span className="text-sm font-medium text-fg">Anonymous responses</span>
+            <button
+              type="button"
+              onClick={() => handleChange('is_anonymous', !form.is_anonymous)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                form.is_anonymous ? 'bg-brand' : 'bg-border'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  form.is_anonymous ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </label>
+
+          <label className="flex items-center justify-between">
+            <span className="text-sm font-medium text-fg">Public link access</span>
+            <button
+              type="button"
+              onClick={() => handleChange('public_link_enabled', !form.public_link_enabled)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
+                form.public_link_enabled ? 'bg-brand' : 'bg-border'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  form.public_link_enabled ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </label>
+        </div>
+
+        {/* Schedule */}
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-fg mb-1">
+              Opens at <span className="text-fg-subtle font-normal">(optional)</span>
             </label>
             <input
-              type="text"
-              value={form.title}
-              onChange={(e) => handleChange('title', e.target.value)}
-              required
-              maxLength={200}
-              placeholder="e.g. Q1 2026 Employee Survey"
-              className={`w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 ${
-                errors.title ? 'border-red-400' : 'border-gray-300'
-              }`}
+              type="datetime-local"
+              value={form.opens_at}
+              onChange={(e) => handleChange('opens_at', e.target.value)}
+              className="w-full border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
             />
-            {errors.title && <p className="mt-1 text-xs text-red-600">{errors.title}</p>}
+            {errors.opens_at && <p className="mt-1 text-xs text-error-text" role="alert">{errors.opens_at}</p>}
           </div>
-
-          {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-medium text-fg mb-1">
+              Closes at <span className="text-fg-subtle font-normal">(optional)</span>
             </label>
-            <textarea
-              value={form.description}
-              onChange={(e) => handleChange('description', e.target.value)}
-              rows={3}
-              placeholder="Brief overview of what this survey covers..."
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 resize-none"
+            <input
+              type="datetime-local"
+              value={form.closes_at}
+              onChange={(e) => handleChange('closes_at', e.target.value)}
+              className="w-full border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
             />
+            {errors.closes_at && <p className="mt-1 text-xs text-error-text" role="alert">{errors.closes_at}</p>}
           </div>
+        </div>
 
-          {/* Toggles */}
-          <div className="space-y-3">
-            <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Anonymous responses</span>
-              <button
-                type="button"
-                onClick={() => handleChange('is_anonymous', !form.is_anonymous)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                  form.is_anonymous ? 'bg-gray-800' : 'bg-gray-300'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    form.is_anonymous ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </label>
-
-            <label className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Public link access</span>
-              <button
-                type="button"
-                onClick={() => handleChange('public_link_enabled', !form.public_link_enabled)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                  form.public_link_enabled ? 'bg-gray-800' : 'bg-gray-300'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    form.public_link_enabled ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </label>
-          </div>
-
-          {/* Schedule */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Opens at <span className="text-gray-400 font-normal">(optional)</span>
-              </label>
-              <input
-                type="datetime-local"
-                value={form.opens_at}
-                onChange={(e) => handleChange('opens_at', e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
-              />
-              {errors.opens_at && <p className="mt-1 text-xs text-red-600">{errors.opens_at}</p>}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Closes at <span className="text-gray-400 font-normal">(optional)</span>
-              </label>
-              <input
-                type="datetime-local"
-                value={form.closes_at}
-                onChange={(e) => handleChange('closes_at', e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
-              />
-              {errors.closes_at && <p className="mt-1 text-xs text-red-600">{errors.closes_at}</p>}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <a
-              href="/admin/surveys"
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
-            >
-              Cancel
-            </a>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 transition-colors disabled:opacity-50"
-            >
-              {submitting ? 'Creating...' : 'Create Survey'}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="flex items-center justify-end gap-3 pt-2">
+          <a
+            href="/admin/surveys"
+            className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </a>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? 'Creating...' : 'Create Survey'}
+          </button>
+        </div>
+      </form>
     </div>
   )
 }
