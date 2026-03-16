@@ -35,21 +35,21 @@ export default function ActionUpdateTimeline({ actionItemId, initialUpdates }: A
 
   return (
     <div className="mt-8">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Progress Updates</h2>
+      <h2 className="text-base font-bold tracking-tight text-fg mb-4">Progress Updates</h2>
 
       {updates.length === 0 ? (
-        <p className="text-sm text-gray-500 mb-6">No updates yet.</p>
+        <p className="text-sm text-fg-muted mb-6">No updates yet.</p>
       ) : (
         <ol className="space-y-4 mb-6">
           {updates.map((update) => (
             <li key={update.id} className="flex gap-3">
-              <div className="mt-1 flex-shrink-0 h-2.5 w-2.5 rounded-full bg-blue-400" />
+              <div className="mt-1 flex-shrink-0 h-2.5 w-2.5 rounded-full bg-brand-muted border border-brand" />
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm font-medium text-gray-800">
+                  <span className="text-sm font-semibold text-fg">
                     {update.createdByName ?? 'Anonymous'}
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-fg-subtle">
                     {new Date(update.createdAt).toLocaleDateString(undefined, {
                       year: 'numeric',
                       month: 'short',
@@ -57,7 +57,7 @@ export default function ActionUpdateTimeline({ actionItemId, initialUpdates }: A
                     })}
                   </span>
                 </div>
-                <p className="text-sm text-gray-700 whitespace-pre-wrap">{update.content}</p>
+                <p className="text-sm text-fg-muted whitespace-pre-wrap">{update.content}</p>
               </div>
             </li>
           ))}
@@ -69,16 +69,16 @@ export default function ActionUpdateTimeline({ actionItemId, initialUpdates }: A
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="Write a progress update..."
         />
         {error && (
-          <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+          <div className="rounded-md bg-error-muted border border-error px-4 py-3 text-sm text-error-text" role="alert">{error}</div>
         )}
         <button
           type="submit"
           disabled={isPending || !content.trim()}
-          className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+          className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
         >
           {isPending ? 'Posting...' : 'Submit'}
         </button>

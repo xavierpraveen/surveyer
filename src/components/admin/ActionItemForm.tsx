@@ -70,54 +70,54 @@ export default function ActionItemForm({ item, onSuccess }: ActionItemFormProps)
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Title */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Title <span className="text-red-500">*</span>
+        <label className="block text-sm font-semibold text-fg mb-1">
+          Title <span className="text-error-text">*</span>
         </label>
         <input
           type="text"
           required
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="Action item title"
         />
       </div>
 
       {/* Problem Statement */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Problem Statement</label>
+        <label className="block text-sm font-semibold text-fg mb-1">Problem Statement</label>
         <textarea
           value={problemStatement}
           onChange={(e) => setProblemStatement(e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="Describe the problem this action addresses"
         />
       </div>
 
       {/* Owner */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Owner User ID</label>
+        <label className="block text-sm font-semibold text-fg mb-1">Owner User ID</label>
         {item?.ownerName && (
-          <p className="text-xs text-gray-500 mb-1">Current owner: {item.ownerName}</p>
+          <p className="text-xs text-fg-subtle mb-1">Current owner: {item.ownerName}</p>
         )}
         <input
           type="text"
           value={ownerId}
           onChange={(e) => setOwnerId(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="Owner user ID"
         />
       </div>
 
       {/* Department */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Department ID</label>
+        <label className="block text-sm font-semibold text-fg mb-1">Department ID</label>
         <input
           type="text"
           value={departmentId}
           onChange={(e) => setDepartmentId(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="Department ID"
         />
       </div>
@@ -125,11 +125,11 @@ export default function ActionItemForm({ item, onSuccess }: ActionItemFormProps)
       {/* Priority and Status row */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+          <label className="block text-sm font-semibold text-fg mb-1">Priority</label>
           <select
             value={priority}
             onChange={(e) => setPriority(e.target.value as ActionItem['priority'])}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
@@ -138,11 +138,11 @@ export default function ActionItemForm({ item, onSuccess }: ActionItemFormProps)
           </select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <label className="block text-sm font-semibold text-fg mb-1">Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value as ActionItem['status'])}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           >
             <option value="identified">Identified</option>
             <option value="planned">Planned</option>
@@ -155,38 +155,38 @@ export default function ActionItemForm({ item, onSuccess }: ActionItemFormProps)
 
       {/* Target Date */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Target Date</label>
+        <label className="block text-sm font-semibold text-fg mb-1">Target Date</label>
         <input
           type="date"
           value={targetDate}
           onChange={(e) => setTargetDate(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
         />
       </div>
 
       {/* Success Criteria */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Success Criteria</label>
+        <label className="block text-sm font-semibold text-fg mb-1">Success Criteria</label>
         <textarea
           value={successCriteria}
           onChange={(e) => setSuccessCriteria(e.target.value)}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="How will we know this action succeeded?"
         />
       </div>
 
       {/* Dimension IDs */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Dimension IDs</label>
+        <label className="block text-sm font-semibold text-fg mb-1">Dimension IDs</label>
         <input
           type="text"
           value={dimensionIds}
           onChange={(e) => setDimensionIds(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="Comma-separated dimension UUIDs"
         />
-        <p className="text-xs text-gray-400 mt-1">Enter comma-separated UUIDs</p>
+        <p className="text-xs text-fg-subtle mt-1">Enter comma-separated UUIDs</p>
       </div>
 
       {/* Is Public */}
@@ -196,25 +196,25 @@ export default function ActionItemForm({ item, onSuccess }: ActionItemFormProps)
           type="checkbox"
           checked={isPublic}
           onChange={(e) => setIsPublic(e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          className="h-4 w-4 rounded border-border text-brand focus:ring-indigo-200"
         />
-        <label htmlFor="isPublic" className="text-sm font-medium text-gray-700">
+        <label htmlFor="isPublic" className="text-sm font-semibold text-fg">
           Visible on public /results page
         </label>
       </div>
 
       {/* Error / success feedback */}
       {error && (
-        <div className="rounded-md bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div className="rounded-md bg-error-muted border border-error px-4 py-3 text-sm text-error-text" role="alert">{error}</div>
       )}
       {saved && (
-        <div className="rounded-md bg-green-50 px-4 py-3 text-sm text-green-700">Saved</div>
+        <div className="rounded-md bg-success-muted border border-success px-4 py-3 text-sm text-success-text">Saved</div>
       )}
 
       <button
         type="submit"
         disabled={isPending}
-        className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+        className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
       >
         {isPending ? 'Saving...' : item ? 'Save Changes' : 'Create Action'}
       </button>

@@ -113,16 +113,16 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
       {/* Left: tag frequency sidebar */}
       <div className="lg:col-span-1">
-        <div className="bg-white rounded-lg border border-gray-200 p-4 sticky top-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Top Tags</h3>
+        <div className="bg-surface rounded-lg border border-border p-4 sticky top-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-fg mb-3">Top Tags</h3>
           {topTags.length === 0 ? (
-            <p className="text-xs text-gray-400">No tags yet. Tag some responses to see frequency.</p>
+            <p className="text-xs text-fg-subtle">No tags yet. Tag some responses to see frequency.</p>
           ) : (
             <ul className="space-y-1">
               {topTags.map(([tag, count]) => (
-                <li key={tag} className="text-sm text-gray-600 flex justify-between">
+                <li key={tag} className="text-sm text-fg-muted flex justify-between">
                   <span className="truncate mr-2">{tag}</span>
-                  <span className="text-gray-400 text-xs shrink-0">{count} responses</span>
+                  <span className="text-fg-subtle text-xs shrink-0">{count} responses</span>
                 </li>
               ))}
             </ul>
@@ -136,15 +136,15 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
         {answers.map((answer) => (
           <div
             key={answer.responseAnswerId}
-            className="bg-white rounded-lg border border-gray-200 p-4"
+            className="bg-surface rounded-lg border border-border p-4 shadow-sm"
           >
             {/* Question label */}
-            <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.07em] text-fg-subtle mb-2">
               {answer.questionText}
             </p>
 
             {/* Response text */}
-            <blockquote className="text-gray-700 text-sm bg-gray-50 p-3 rounded border-l-4 border-gray-300 mb-3">
+            <blockquote className="text-fg-muted text-sm bg-surface-2 p-3 rounded-md border-l-4 border-border mb-3">
               {answer.textValue}
             </blockquote>
 
@@ -153,13 +153,13 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
               {answer.tags.map((tag: QualitativeTag) => (
                 <span
                   key={tag.id}
-                  className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-sm rounded-full px-2 py-0.5"
+                  className="inline-flex items-center gap-1 bg-brand-muted text-brand-text text-xs font-semibold rounded-full px-2 py-0.5"
                 >
                   {tag.tag}
                   <button
                     type="button"
                     onClick={() => handleDeleteTag(answer.responseAnswerId, tag.id)}
-                    className="hover:text-blue-900 leading-none"
+                    className="hover:text-brand leading-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                     aria-label={`Remove tag ${tag.tag}`}
                   >
                     &times;
@@ -185,12 +185,12 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
                     handleAddTag(answer.responseAnswerId, tagInputs[answer.responseAnswerId] ?? '')
                   }
                 }}
-                className="flex-1 text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus flex-1"
               />
               <button
                 type="button"
                 onClick={() => handleAddTag(answer.responseAnswerId, tagInputs[answer.responseAnswerId] ?? '')}
-                className="text-sm text-white bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded"
+                className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 Add
               </button>
@@ -206,12 +206,12 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
         </datalist>
 
         {/* Generate Themes section */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Qualitative Themes</h3>
+        <div className="bg-surface rounded-lg border border-border p-4 shadow-sm">
+          <h3 className="text-sm font-semibold text-fg mb-3">Qualitative Themes</h3>
 
           {generateError && (
-            <div className="bg-red-50 border border-red-200 rounded p-3 mb-3">
-              <p className="text-sm text-red-700">{generateError}</p>
+            <div className="bg-error-muted border border-error rounded-md p-3 mb-3" role="alert">
+              <p className="text-sm text-error-text">{generateError}</p>
             </div>
           )}
 
@@ -219,12 +219,12 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
             type="button"
             onClick={handleGenerateThemes}
             disabled={isGenerating || !hasAnyTags}
-            className="bg-indigo-600 text-white rounded px-4 py-2 hover:bg-indigo-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             {isGenerating ? 'Generating...' : 'Generate Themes'}
           </button>
           {!hasAnyTags && (
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-fg-subtle mt-2">
               Add tags to responses first to generate themes.
             </p>
           )}
@@ -235,24 +235,24 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
               {themes.map((theme) => (
                 <div
                   key={theme.id}
-                  className="border border-gray-200 rounded p-3 space-y-2"
+                  className="border border-border rounded-md bg-surface p-3 space-y-2"
                 >
                   {/* Editable label */}
                   <input
                     type="text"
                     defaultValue={theme.theme}
                     onBlur={(e) => handleUpdateThemeLabel(theme.id, e.target.value)}
-                    className="w-full text-sm font-medium text-gray-900 border-b border-gray-200 focus:outline-none focus:border-blue-500 pb-1"
+                    className="w-full text-sm font-semibold text-fg border-b border-border focus:outline-none focus:border-border-focus pb-1 bg-transparent"
                   />
 
                   {/* is_positive toggle */}
                   <button
                     type="button"
                     onClick={() => handleToggleIsPositive(theme.id, theme.isPositive)}
-                    className={`text-xs font-medium px-2 py-1 rounded ${
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none ${
                       theme.isPositive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-red-100 text-red-700'
+                        ? 'bg-success-muted text-success-text'
+                        : 'bg-error-muted text-error-text'
                     }`}
                   >
                     {theme.isPositive ? 'Improvement suggestion' : 'Identified issue'}
@@ -260,7 +260,7 @@ export default function TaggingWorkspace({ surveyId, initialAnswers }: TaggingWo
 
                   {/* Tag cluster */}
                   {theme.tagCluster.length > 0 && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-fg-subtle">
                       Tags: {theme.tagCluster.join(', ')}
                     </p>
                   )}

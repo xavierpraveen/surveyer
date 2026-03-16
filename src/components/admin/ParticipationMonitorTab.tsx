@@ -16,18 +16,6 @@ function formatRelativeTime(date: Date): string {
   return `${diffMinutes}m ago`
 }
 
-function rateColorClass(rate: number): string {
-  if (rate >= 70) return 'text-green-700'
-  if (rate >= 40) return 'text-yellow-700'
-  return 'text-red-700'
-}
-
-function rateBarColorClass(rate: number): string {
-  if (rate >= 70) return 'bg-green-500'
-  if (rate >= 40) return 'bg-yellow-500'
-  return 'bg-red-500'
-}
-
 export default function ParticipationMonitorTab({
   initialData,
 }: ParticipationMonitorTabProps) {
@@ -61,20 +49,20 @@ export default function ParticipationMonitorTab({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Live Participation</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
+          <h2 className="text-base font-bold tracking-tight text-fg">Live Participation</h2>
+          <p className="text-xs text-fg-subtle mt-0.5">
             Last updated: {formatRelativeTime(lastUpdated)}
           </p>
         </div>
         <button
           onClick={refresh}
           disabled={isRefreshing}
-          className="flex items-center gap-2 rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none flex items-center gap-2"
         >
           {isRefreshing ? (
             <>
               <svg
-                className="animate-spin h-4 w-4 text-gray-500"
+                className="animate-spin h-4 w-4 text-fg-subtle"
                 fill="none"
                 viewBox="0 0 24 24"
               >
@@ -102,55 +90,59 @@ export default function ParticipationMonitorTab({
 
       {/* Empty state */}
       {data.length === 0 ? (
-        <div className="flex items-center justify-center py-16 text-gray-400 text-sm">
+        <div className="flex items-center justify-center py-16 text-fg-subtle text-sm">
           No survey currently open.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <div className="overflow-x-auto rounded-lg border border-border">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-surface-2 border-b border-border">
               <tr>
                 {['Department', 'Eligible', 'Responded', 'Rate'].map((col) => (
                   <th
                     key={col}
-                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wide"
+                    className="px-4 py-3 text-left text-xs font-semibold text-fg uppercase tracking-wide"
                   >
                     {col}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {data.map((row) => (
                 <tr key={row.departmentId ?? row.department}>
-                  <td className="px-4 py-3 font-medium text-gray-900">{row.department}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.eligible}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.responded}</td>
+                  <td className="px-4 py-3 font-semibold text-fg">{row.department}</td>
+                  <td className="px-4 py-3 text-fg-muted">{row.eligible}</td>
+                  <td className="px-4 py-3 text-fg-muted">{row.responded}</td>
                   <td className="px-4 py-3">
-                    <span className={`font-medium ${rateColorClass(row.rate)}`}>
+                    <span className="font-semibold text-fg">
                       {row.rate}%
                     </span>
-                    <div
-                      className={`h-1 ${rateBarColorClass(row.rate)} rounded mt-1`}
-                      style={{ width: `${row.rate}%` }}
-                    />
+                    <div className="bg-brand-muted h-1.5 rounded-full mt-1">
+                      <div
+                        className="bg-gradient-to-r from-brand to-accent h-1.5 rounded-full"
+                        style={{ width: `${row.rate}%` }}
+                      />
+                    </div>
                   </td>
                 </tr>
               ))}
 
               {/* Total row */}
-              <tr className="bg-gray-50 border-t-2 border-gray-200 font-semibold">
-                <td className="px-4 py-3 text-gray-700">Total</td>
-                <td className="px-4 py-3 text-gray-700">{totalEligible}</td>
-                <td className="px-4 py-3 text-gray-700">{totalResponded}</td>
+              <tr className="bg-surface-2 border-t-2 border-border font-semibold">
+                <td className="px-4 py-3 text-fg">Total</td>
+                <td className="px-4 py-3 text-fg">{totalEligible}</td>
+                <td className="px-4 py-3 text-fg">{totalResponded}</td>
                 <td className="px-4 py-3">
-                  <span className={`font-medium ${rateColorClass(overallRate)}`}>
+                  <span className="font-semibold text-fg">
                     {overallRate}%
                   </span>
-                  <div
-                    className={`h-1 ${rateBarColorClass(overallRate)} rounded mt-1`}
-                    style={{ width: `${overallRate}%` }}
-                  />
+                  <div className="bg-brand-muted h-1.5 rounded-full mt-1">
+                    <div
+                      className="bg-gradient-to-r from-brand to-accent h-1.5 rounded-full"
+                      style={{ width: `${overallRate}%` }}
+                    />
+                  </div>
                 </td>
               </tr>
             </tbody>

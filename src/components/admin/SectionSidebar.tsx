@@ -99,36 +99,42 @@ export default function SectionSidebar({ sections, activeSectionId, surveyId }: 
   }
 
   return (
-    <div className="w-64 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col h-full">
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Sections</h2>
+    <div className="w-64 flex-shrink-0 bg-surface border-r border-border flex flex-col h-full">
+      <div className="p-4 border-b border-border">
+        <h2 className="text-sm font-semibold text-fg">Sections</h2>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {sections.length === 0 ? (
-          <p className="p-4 text-sm text-gray-400">No sections yet.</p>
+          <p className="p-4 text-sm text-fg-subtle">No sections yet.</p>
         ) : (
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-border">
             {sections.map((section, idx) => (
               <li
                 key={section.id}
-                className={`group flex items-center gap-1 px-3 py-3 cursor-pointer hover:bg-gray-50 transition-colors ${
-                  activeSectionId === section.id ? 'bg-gray-100' : ''
+                className={`group flex items-center gap-1 px-3 py-3 cursor-pointer transition-colors ${
+                  activeSectionId === section.id
+                    ? 'bg-brand-muted'
+                    : 'hover:bg-surface-2'
                 }`}
               >
                 <button
-                  className="flex-1 text-left min-w-0"
+                  className="flex-1 text-left min-w-0 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                   onClick={() => handleSectionClick(section.id)}
                 >
-                  <p className={`text-sm font-medium truncate ${activeSectionId === section.id ? 'text-gray-900' : 'text-gray-700'}`}>
+                  <p className={`text-sm font-medium truncate ${
+                    activeSectionId === section.id
+                      ? 'text-brand font-semibold'
+                      : 'text-fg-muted'
+                  }`}>
                     {section.title}
                   </p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-fg-subtle">
                       {section.questionCount} question{section.questionCount !== 1 ? 's' : ''}
                     </span>
                     {section.hasDimensionsCovered && (
-                      <span className="text-xs text-green-600" title="All required questions have dimension mappings">
+                      <span className="text-xs text-success-text" title="All required questions have dimension mappings">
                         ✓
                       </span>
                     )}
@@ -138,7 +144,7 @@ export default function SectionSidebar({ sections, activeSectionId, surveyId }: 
                   <button
                     onClick={(e) => { e.stopPropagation(); handleReorder(section.id, 'up') }}
                     disabled={idx === 0 || reordering}
-                    className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20"
+                    className="p-0.5 text-fg-subtle hover:text-fg-muted disabled:opacity-20 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                     title="Move up"
                   >
                     ↑
@@ -146,7 +152,7 @@ export default function SectionSidebar({ sections, activeSectionId, surveyId }: 
                   <button
                     onClick={(e) => { e.stopPropagation(); handleReorder(section.id, 'down') }}
                     disabled={idx === sections.length - 1 || reordering}
-                    className="p-0.5 text-gray-400 hover:text-gray-600 disabled:opacity-20"
+                    className="p-0.5 text-fg-subtle hover:text-fg-muted disabled:opacity-20 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                     title="Move down"
                   >
                     ↓
@@ -159,11 +165,11 @@ export default function SectionSidebar({ sections, activeSectionId, surveyId }: 
       </div>
 
       {/* Add section */}
-      <div className="p-3 border-t border-gray-200">
+      <div className="p-3 border-t border-border">
         {!showAddForm ? (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full py-2 text-sm font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 transition-colors"
+            className="w-full bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             + Add Section
           </button>
@@ -175,11 +181,11 @@ export default function SectionSidebar({ sections, activeSectionId, surveyId }: 
               onChange={(e) => setNewTitle(e.target.value)}
               placeholder="Section title"
               autoFocus
-              className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800"
+              className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
             />
 
             <div className="space-y-1">
-              <p className="text-xs font-medium text-gray-600">Target roles:</p>
+              <p className="text-sm font-semibold text-fg">Target roles:</p>
               <div className="max-h-28 overflow-y-auto space-y-1">
                 {ROLE_OPTIONS.map((role) => (
                   <label key={role.value} className="flex items-center gap-1.5 cursor-pointer">
@@ -189,26 +195,26 @@ export default function SectionSidebar({ sections, activeSectionId, surveyId }: 
                       onChange={() => toggleRole(role.value)}
                       className="h-3 w-3"
                     />
-                    <span className="text-xs text-gray-700">{role.label}</span>
+                    <span className="text-sm text-fg-muted">{role.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            {addError && <p className="text-xs text-red-600">{addError}</p>}
+            {addError && <p className="text-xs text-error-text" role="alert">{addError}</p>}
 
             <div className="flex gap-2">
               <button
                 type="submit"
                 disabled={adding || !newTitle.trim()}
-                className="flex-1 py-1.5 text-xs font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 disabled:opacity-50 transition-colors"
+                className="flex-1 bg-brand hover:bg-brand-hover text-white font-semibold text-sm py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 {adding ? 'Adding...' : 'Add'}
               </button>
               <button
                 type="button"
                 onClick={() => { setShowAddForm(false); setNewTitle(''); setNewRoles(['all']); setAddError(null) }}
-                className="flex-1 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                className="flex-1 bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 Cancel
               </button>

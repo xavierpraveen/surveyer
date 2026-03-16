@@ -18,13 +18,13 @@ interface CyclesTabProps {
 function statusBadgeClasses(status: string): string {
   switch (status) {
     case 'open':
-      return 'bg-blue-100 text-blue-700'
+      return 'bg-success-muted text-success-text'
     case 'scheduled':
-      return 'bg-yellow-100 text-yellow-700'
+      return 'bg-warning-muted text-warning-text'
     case 'closed':
     case 'draft':
     default:
-      return 'bg-gray-100 text-gray-600'
+      return 'bg-surface-2 text-fg-muted'
   }
 }
 
@@ -52,16 +52,16 @@ export default function CyclesTab({ initialSurveys }: CyclesTabProps) {
 
   if (surveys.length === 0) {
     return (
-      <div className="text-center py-12 text-gray-500 text-sm">No survey cycles found.</div>
+      <div className="text-center py-12 text-fg-muted text-sm">No survey cycles found.</div>
     )
   }
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Survey Cycles</h2>
+      <h2 className="text-base font-bold tracking-tight text-fg mb-4">Survey Cycles</h2>
 
       {errorMsg && (
-        <div className="mb-4 rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="mb-4 rounded-md bg-error-muted border border-error px-4 py-3 text-sm text-error-text" role="alert">
           {errorMsg}
         </div>
       )}
@@ -70,24 +70,24 @@ export default function CyclesTab({ initialSurveys }: CyclesTabProps) {
         {surveys.map((survey) => (
           <div
             key={survey.id}
-            className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-5 py-4"
+            className="flex items-center justify-between rounded-lg border border-border bg-surface px-5 py-4 shadow-sm"
           >
             <div className="flex items-center gap-3">
-              <span className="font-medium text-gray-900">{survey.title}</span>
+              <span className="font-semibold text-fg">{survey.title}</span>
               <span
-                className={`text-xs rounded px-2 py-0.5 font-medium ${statusBadgeClasses(survey.status)}`}
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${statusBadgeClasses(survey.status)}`}
               >
                 {survey.status.charAt(0).toUpperCase() + survey.status.slice(1)}
               </span>
               {survey.archived && (
-                <span className="bg-gray-200 text-gray-600 text-xs rounded px-2 py-0.5">
+                <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-surface-2 text-fg-subtle">
                   Archived
                 </span>
               )}
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-400">
+              <span className="text-xs text-fg-subtle">
                 {new Date(survey.createdAt).toLocaleDateString()}
               </span>
 
@@ -95,7 +95,7 @@ export default function CyclesTab({ initialSurveys }: CyclesTabProps) {
                 <button
                   onClick={() => handleArchive(survey.id)}
                   disabled={archivingId === survey.id}
-                  className="text-sm text-gray-500 border border-gray-300 rounded px-3 py-1 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-error hover:bg-error-text text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                 >
                   {archivingId === survey.id ? 'Archiving...' : 'Archive'}
                 </button>

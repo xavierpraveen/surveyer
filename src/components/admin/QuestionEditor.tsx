@@ -166,68 +166,68 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
   }
 
   return (
-    <div className="border border-gray-200 rounded-md overflow-hidden">
+    <div className="border border-border rounded-md overflow-hidden bg-surface">
       {/* Header row */}
       <div
-        className="flex items-center gap-3 px-4 py-3 bg-white hover:bg-gray-50 cursor-pointer"
+        className="flex items-center gap-3 px-4 py-3 bg-surface hover:bg-surface-2 cursor-pointer transition-colors"
         onClick={() => setOpen((v) => !v)}
       >
         <div className="flex flex-col gap-0.5">
           <button
             onClick={(e) => { e.stopPropagation(); onReorder(question.id, 'up') }}
             disabled={index === 0}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-20 text-xs leading-none"
+            className="text-fg-subtle hover:text-fg-muted disabled:opacity-20 text-xs leading-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             ↑
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onReorder(question.id, 'down') }}
             disabled={isLast}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-20 text-xs leading-none"
+            className="text-fg-subtle hover:text-fg-muted disabled:opacity-20 text-xs leading-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             ↓
           </button>
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-gray-900 truncate">
-            {question.text || <span className="text-gray-400 italic">Untitled question</span>}
+          <p className="text-sm font-semibold text-fg truncate">
+            {question.text || <span className="text-fg-subtle italic">Untitled question</span>}
           </p>
         </div>
-        <span className="flex-shrink-0 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+        <span className="flex-shrink-0 text-xs font-semibold text-fg-muted bg-surface-2 px-2 py-0.5 rounded-full">
           {QUESTION_TYPE_LABELS[question.question_type]}
         </span>
         {question.is_required && (
-          <span className="flex-shrink-0 text-xs text-red-500" title="Required">*</span>
+          <span className="flex-shrink-0 text-xs text-error-text" title="Required">*</span>
         )}
-        <span className="text-gray-400 text-sm">{open ? '▲' : '▼'}</span>
+        <span className="text-fg-subtle text-sm">{open ? '▲' : '▼'}</span>
       </div>
 
       {/* Expanded form */}
       {open && (
-        <div className="px-4 pb-4 pt-3 border-t border-gray-100 bg-gray-50 space-y-4">
+        <div className="px-4 pb-4 pt-3 border-t border-border bg-surface-2 space-y-4">
           {error && (
-            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">{error}</div>
+            <div className="p-2 bg-error-muted border border-error rounded-md text-xs text-error-text" role="alert">{error}</div>
           )}
 
           {/* Text */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Question text *</label>
+            <label className="block text-sm font-semibold text-fg mb-1">Question text *</label>
             <textarea
               value={editState.text}
               onChange={(e) => updateField('text', e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800 resize-none"
+              className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full resize-none"
             />
           </div>
 
           {/* Type + Required */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
+              <label className="block text-sm font-semibold text-fg mb-1">Type</label>
               <select
                 value={editState.question_type}
                 onChange={(e) => updateField('question_type', e.target.value as QuestionType)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800"
+                className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
               >
                 {Object.entries(QUESTION_TYPE_LABELS).map(([val, label]) => (
                   <option key={val} value={val}>{label}</option>
@@ -239,15 +239,15 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
                 <button
                   type="button"
                   onClick={() => updateField('is_required', !editState.is_required)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    editState.is_required ? 'bg-gray-800' : 'bg-gray-300'
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none ${
+                    editState.is_required ? 'bg-brand' : 'bg-surface-2'
                   }`}
                 >
                   <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
                     editState.is_required ? 'translate-x-4.5' : 'translate-x-0.5'
                   }`} />
                 </button>
-                <span className="text-xs font-medium text-gray-600">Required</span>
+                <span className="text-sm font-semibold text-fg">Required</span>
               </label>
             </div>
           </div>
@@ -255,7 +255,7 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
           {/* Options — for single_select / multi_select */}
           {(editState.question_type === 'single_select' || editState.question_type === 'multi_select') && (
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Options</label>
+              <label className="block text-sm font-semibold text-fg mb-1">Options</label>
               <div className="space-y-1">
                 {editState.options.map((opt, i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -264,11 +264,11 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
                       value={opt.text}
                       onChange={(e) => updateOption(i, e.target.value)}
                       placeholder={`Option ${i + 1}`}
-                      className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800"
+                      className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus flex-1"
                     />
                     <button
                       onClick={() => removeOption(i)}
-                      className="text-red-400 hover:text-red-600 text-xs px-1"
+                      className="bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                     >
                       Remove
                     </button>
@@ -276,7 +276,7 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
                 ))}
                 <button
                   onClick={addOption}
-                  className="text-xs text-gray-600 hover:text-gray-800 underline"
+                  className="bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                 >
                   + Add option
                 </button>
@@ -286,10 +286,10 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
 
           {/* Dimensions */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-semibold text-fg mb-1">
               Dimensions (max 3)
               {editState.dimension_ids.length >= 3 && (
-                <span className="ml-1 text-orange-500">— maximum reached</span>
+                <span className="ml-1 text-warning-text">— maximum reached</span>
               )}
             </label>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -302,7 +302,7 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
                     disabled={!editState.dimension_ids.includes(dim.id) && editState.dimension_ids.length >= 3}
                     className="h-3.5 w-3.5"
                   />
-                  <span className="text-xs text-gray-700">{dim.name}</span>
+                  <span className="text-sm text-fg-muted">{dim.name}</span>
                 </label>
               ))}
             </div>
@@ -321,18 +321,18 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
                 }}
                 className="h-3.5 w-3.5"
               />
-              <span className="text-xs font-medium text-gray-600">Show conditionally?</span>
+              <span className="text-sm font-semibold text-fg">Show conditionally?</span>
             </label>
 
             {editState.conditional_enabled && editState.conditional_rule && (
               <div className="flex flex-wrap items-center gap-2 ml-4">
-                <span className="text-xs text-gray-500">Show if</span>
+                <span className="text-sm text-fg-muted">Show if</span>
                 <select
                   value={editState.conditional_rule.question_id}
                   onChange={(e) =>
                     updateField('conditional_rule', { ...editState.conditional_rule!, question_id: e.target.value })
                   }
-                  className="px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-800"
+                  className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
                 >
                   <option value="">-- Select question --</option>
                   {allQuestions
@@ -351,7 +351,7 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
                       operator: e.target.value as ConditionalRule['operator'],
                     })
                   }
-                  className="px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-gray-800"
+                  className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
                 >
                   {OPERATOR_LABELS.map((op) => (
                     <option key={op.value} value={op.value}>{op.label}</option>
@@ -364,32 +364,32 @@ function QuestionRow({ question, isLast, index, dimensions, allQuestions, onReor
                     updateField('conditional_rule', { ...editState.conditional_rule!, value: e.target.value })
                   }
                   placeholder="value"
-                  className="px-2 py-1 text-xs border border-gray-300 rounded w-20 focus:outline-none focus:ring-1 focus:ring-gray-800"
+                  className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-20"
                 />
               </div>
             )}
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+          <div className="flex items-center justify-between pt-2 border-t border-border">
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="px-3 py-1.5 text-xs font-medium text-red-600 bg-white border border-red-200 rounded-md hover:bg-red-50 transition-colors disabled:opacity-50"
+              className="bg-error hover:bg-error-text text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
             >
               {deleting ? 'Deleting...' : 'Delete'}
             </button>
             <div className="flex gap-2">
               <button
                 onClick={() => { setOpen(false); setEditState(fromQuestion(question, editState.dimension_ids)) }}
-                className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-3 py-1.5 text-xs font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 transition-colors disabled:opacity-50"
+                className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 {saving ? 'Saving...' : 'Save'}
               </button>
@@ -481,7 +481,7 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
   return (
     <div className="space-y-2">
       {questions.length === 0 && !showAddForm && (
-        <p className="text-sm text-gray-400 py-4">No questions yet. Click "Add Question" to get started.</p>
+        <p className="text-sm text-fg-subtle py-4">No questions yet. Click &quot;Add Question&quot; to get started.</p>
       )}
 
       {questions.map((question, idx) => (
@@ -499,31 +499,31 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
 
       {/* New question form */}
       {showAddForm && (
-        <form onSubmit={handleAddQuestion} className="border border-blue-200 rounded-md bg-blue-50 p-4 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-800">New Question</h3>
+        <form onSubmit={handleAddQuestion} className="border border-border rounded-md bg-surface-2 p-4 space-y-3">
+          <h3 className="text-sm font-semibold text-fg">New Question</h3>
 
           {addError && (
-            <div className="p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">{addError}</div>
+            <div className="p-2 bg-error-muted border border-error rounded-md text-xs text-error-text" role="alert">{addError}</div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Question text *</label>
+            <label className="block text-sm font-semibold text-fg mb-1">Question text *</label>
             <textarea
               value={newState.text}
               onChange={(e) => updateNewField('text', e.target.value)}
               rows={2}
               autoFocus
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800 resize-none"
+              className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full resize-none"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
+              <label className="block text-sm font-semibold text-fg mb-1">Type</label>
               <select
                 value={newState.question_type}
                 onChange={(e) => updateNewField('question_type', e.target.value as QuestionType)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800"
+                className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
               >
                 {Object.entries(QUESTION_TYPE_LABELS).map(([val, label]) => (
                   <option key={val} value={val}>{label}</option>
@@ -535,22 +535,22 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
                 <button
                   type="button"
                   onClick={() => updateNewField('is_required', !newState.is_required)}
-                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                    newState.is_required ? 'bg-gray-800' : 'bg-gray-300'
+                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none ${
+                    newState.is_required ? 'bg-brand' : 'bg-surface-2'
                   }`}
                 >
                   <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${
                     newState.is_required ? 'translate-x-4.5' : 'translate-x-0.5'
                   }`} />
                 </button>
-                <span className="text-xs font-medium text-gray-600">Required</span>
+                <span className="text-sm font-semibold text-fg">Required</span>
               </label>
             </div>
           </div>
 
           {(newState.question_type === 'single_select' || newState.question_type === 'multi_select') && (
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Options</label>
+              <label className="block text-sm font-semibold text-fg mb-1">Options</label>
               <div className="space-y-1">
                 {newState.options.map((opt, i) => (
                   <div key={i} className="flex items-center gap-2">
@@ -563,12 +563,12 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
                         updateNewField('options', opts)
                       }}
                       placeholder={`Option ${i + 1}`}
-                      className="flex-1 px-2 py-1.5 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800"
+                      className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus flex-1"
                     />
                     <button
                       type="button"
                       onClick={() => updateNewField('options', newState.options.filter((_, j) => j !== i).map((o, j) => ({ ...o, display_order: j })))}
-                      className="text-red-400 hover:text-red-600 text-xs"
+                      className="bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                     >
                       Remove
                     </button>
@@ -577,7 +577,7 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
                 <button
                   type="button"
                   onClick={() => updateNewField('options', [...newState.options, { text: '', display_order: newState.options.length }])}
-                  className="text-xs text-gray-600 hover:text-gray-800 underline"
+                  className="bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                 >
                   + Add option
                 </button>
@@ -586,7 +586,7 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
           )}
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
+            <label className="block text-sm font-semibold text-fg mb-1">
               Dimensions (max 3)
             </label>
             <div className="grid grid-cols-2 gap-x-4 gap-y-1">
@@ -599,24 +599,24 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
                     disabled={!newState.dimension_ids.includes(dim.id) && newState.dimension_ids.length >= 3}
                     className="h-3.5 w-3.5"
                   />
-                  <span className="text-xs text-gray-700">{dim.name}</span>
+                  <span className="text-sm text-fg-muted">{dim.name}</span>
                 </label>
               ))}
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-1 border-t border-blue-200">
+          <div className="flex items-center justify-end gap-2 pt-1 border-t border-border">
             <button
               type="button"
               onClick={() => { setShowAddForm(false); setNewState(makeDefault()); setAddError(null) }}
-              className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={adding || !newState.text.trim()}
-              className="px-3 py-1.5 text-xs font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 transition-colors disabled:opacity-50"
+              className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
             >
               {adding ? 'Adding...' : 'Add Question'}
             </button>
@@ -627,7 +627,7 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
       {!showAddForm && (
         <button
           onClick={() => setShowAddForm(true)}
-          className="w-full py-2.5 text-sm font-medium text-gray-600 bg-gray-50 border border-dashed border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+          className="w-full py-2.5 text-sm font-medium text-fg-muted bg-surface-2 border border-dashed border-border rounded-md hover:bg-border transition-colors focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
         >
           + Add Question
         </button>

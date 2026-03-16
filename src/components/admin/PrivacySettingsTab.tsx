@@ -43,8 +43,8 @@ export default function PrivacySettingsTab({ initialSettings }: PrivacySettingsT
 
   return (
     <div className="max-w-lg">
-      <h2 className="text-lg font-semibold text-gray-900 mb-1">Privacy Thresholds</h2>
-      <p className="text-sm text-gray-500 mb-6">
+      <h2 className="text-base font-bold tracking-tight text-fg mb-1">Privacy Thresholds</h2>
+      <p className="text-sm text-fg-muted mb-6">
         Responses below these thresholds will be hidden to protect respondent anonymity.
       </p>
 
@@ -52,7 +52,7 @@ export default function PrivacySettingsTab({ initialSettings }: PrivacySettingsT
         <div>
           <label
             htmlFor="numeric-threshold"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-semibold text-fg mb-1"
           >
             Minimum respondents for numeric scores (default: 5)
           </label>
@@ -63,14 +63,14 @@ export default function PrivacySettingsTab({ initialSettings }: PrivacySettingsT
             max="50"
             value={numericThreshold}
             onChange={(e) => setNumericThreshold(Number(e.target.value))}
-            className="block w-32 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-32"
           />
         </div>
 
         <div>
           <label
             htmlFor="text-threshold"
-            className="block text-sm font-medium text-gray-700 mb-1"
+            className="block text-sm font-semibold text-fg mb-1"
           >
             Minimum respondents for open-text responses (default: 10)
           </label>
@@ -81,7 +81,7 @@ export default function PrivacySettingsTab({ initialSettings }: PrivacySettingsT
             max="50"
             value={textThreshold}
             onChange={(e) => setTextThreshold(Number(e.target.value))}
-            className="block w-32 rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-32"
           />
         </div>
 
@@ -89,7 +89,7 @@ export default function PrivacySettingsTab({ initialSettings }: PrivacySettingsT
           <button
             type="submit"
             disabled={isSaving}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             {isSaving ? 'Saving...' : 'Save Settings'}
           </button>
@@ -98,8 +98,8 @@ export default function PrivacySettingsTab({ initialSettings }: PrivacySettingsT
             <span
               className={
                 savedMessage.startsWith('Error')
-                  ? 'text-sm text-red-600'
-                  : 'text-sm text-green-600'
+                  ? 'text-sm text-error-text'
+                  : 'text-sm text-success-text'
               }
             >
               {savedMessage}
