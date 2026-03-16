@@ -22,6 +22,15 @@ interface SurveyCard {
   submissionStatus: SubmissionStatus
 }
 
+interface ActionItemRow {
+  id: string
+  title: string
+  status: 'identified' | 'planned' | 'in_progress' | 'blocked' | 'completed'
+  priority: 'low' | 'medium' | 'high' | 'critical' | null
+  target_date: string | null
+  owner_name: string | null
+}
+
 function StatusBadge({
   survey,
   submissionStatus,
@@ -108,6 +117,38 @@ function SurveyCardCTA({
   return null
 }
 
+function ActionStatusBadge({ status }: { status: ActionItemRow['status'] }) {
+  const map: Record<ActionItemRow['status'], { label: string; className: string }> = {
+    identified:  { label: 'Identified',  className: 'bg-surface-2 text-fg-muted' },
+    planned:     { label: 'Planned',     className: 'bg-brand-muted text-brand-text' },
+    in_progress: { label: 'In Progress', className: 'bg-warning-muted text-warning-text' },
+    blocked:     { label: 'Blocked',     className: 'bg-error-muted text-error-text' },
+    completed:   { label: 'Completed',   className: 'bg-success-muted text-success-text' },
+  }
+  const { label, className } = map[status] ?? map.identified
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${className}`}>
+      {label}
+    </span>
+  )
+}
+
+function ActionPriorityBadge({ priority }: { priority: ActionItemRow['priority'] }) {
+  if (!priority) return null
+  const map: Record<string, { label: string; className: string }> = {
+    low:      { label: 'Low',      className: 'bg-surface-2 text-fg-muted' },
+    medium:   { label: 'Medium',   className: 'bg-brand-muted text-brand-text' },
+    high:     { label: 'High',     className: 'bg-warning-muted text-warning-text' },
+    critical: { label: 'Critical', className: 'bg-error-muted text-error-text' },
+  }
+  const { label, className } = map[priority] ?? { label: priority, className: 'bg-surface-2 text-fg-muted' }
+  return (
+    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${className}`}>
+      {label}
+    </span>
+  )
+}
+
 export default async function EmployeeDashboardPage() {
   const supabase = await createSupabaseServerClient()
   const {
@@ -172,6 +213,63 @@ export default async function EmployeeDashboardPage() {
     surveyCards.push({ survey, submissionStatus })
   }
 
+  // ── Action Plans: fetch public action items for the manager's department ──
+  // Reads manager's department_id from their profile, then fetches
+  // is_public action items matching that department (or company-wide if dept is null).
+  let actionItems: ActionItemRow[] = []
+
+  const { data: managerProfile } = await db
+    .from('profiles')
+    .select('department_id')
+    .eq('id', user.id)
+    .single()
+
+  const managerDeptId: string | null =
+    (managerProfile as { department_id: string | null } | null)?.department_id ?? null
+
+  if (managerDeptId) {
+    // Fetch action items where is_public=true AND department matches manager's dept
+    const { data: actionRows } = await db
+      .from('action_items')
+      .select('id, title, status, priority, target_date, owner_id')
+      .eq('is_public', true)
+      .eq('department_id', managerDeptId)
+      .order('target_date', { ascending: true, nullsFirst: false })
+
+    const rawRows = (actionRows as Array<{
+      id: string
+      title: string
+      status: string
+      priority: string | null
+      target_date: string | null
+      owner_id: string | null
+    }> | null) ?? []
+
+    // Resolve owner names in a single query
+    const ownerIds = [...new Set(rawRows.map((r) => r.owner_id).filter((id): id is string => id !== null))]
+    const ownerMap = new Map<string, string>()
+
+    if (ownerIds.length > 0) {
+      const { data: ownerRows } = await db
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', ownerIds)
+
+      for (const o of (ownerRows as Array<{ id: string; full_name: string }> | null) ?? []) {
+        ownerMap.set(o.id, o.full_name)
+      }
+    }
+
+    actionItems = rawRows.map((r) => ({
+      id: r.id,
+      title: r.title,
+      status: r.status as ActionItemRow['status'],
+      priority: r.priority as ActionItemRow['priority'],
+      target_date: r.target_date,
+      owner_name: r.owner_id ? (ownerMap.get(r.owner_id) ?? null) : null,
+    }))
+  }
+
   return (
     <div className="max-w-3xl mx-auto p-8">
       <div className="flex items-center justify-between mb-8">
@@ -230,6 +328,50 @@ export default async function EmployeeDashboardPage() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Action Plans section — only shown to managers (requires department match) */}
+      {managerDeptId !== null && (
+        <div className="mt-10">
+          <h2 className="text-lg font-extrabold tracking-tight text-fg mb-4">Action Plans</h2>
+          {actionItems.length === 0 ? (
+            <div className="text-sm text-fg-muted text-center py-8 bg-surface border border-border rounded-lg">
+              No action plans for your department yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-3">
+              {actionItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="bg-surface border border-border rounded-lg shadow-sm p-4 flex flex-col gap-2"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-semibold text-fg text-sm leading-snug">{item.title}</p>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      <ActionStatusBadge status={item.status} />
+                      <ActionPriorityBadge priority={item.priority} />
+                    </div>
+                  </div>
+                  {(item.owner_name ?? item.target_date) && (
+                    <div className="flex items-center gap-3 text-xs text-fg-muted">
+                      {item.owner_name && <span>Owner: {item.owner_name}</span>}
+                      {item.target_date && (
+                        <span>
+                          Due:{' '}
+                          {new Date(item.target_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
