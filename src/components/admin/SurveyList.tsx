@@ -11,10 +11,10 @@ interface Props {
 }
 
 const STATUS_BADGE: Record<SurveyStatus, string> = {
-  draft: 'bg-gray-100 text-gray-700',
-  scheduled: 'bg-yellow-100 text-yellow-800',
-  open: 'bg-green-100 text-green-800',
-  closed: 'bg-slate-100 text-slate-600',
+  draft: 'bg-surface-2 text-fg-muted',
+  scheduled: 'bg-warning-muted text-warning-text',
+  open: 'bg-success-muted text-success-text',
+  closed: 'bg-surface-2 text-fg-subtle',
 }
 
 export default function SurveyList({ surveys }: Props) {
@@ -38,72 +38,72 @@ export default function SurveyList({ surveys }: Props) {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Surveys</h1>
-          <p className="text-sm text-gray-500 mt-1">{surveys.length} survey{surveys.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-extrabold tracking-snug text-fg">Surveys</h1>
+          <p className="text-sm text-fg-muted mt-1">{surveys.length} survey{surveys.length !== 1 ? 's' : ''}</p>
         </div>
         <Link
           href="/admin/surveys/new"
-          className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 transition-colors"
+          className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
         >
           New Survey
         </Link>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-700">
+        <div className="mb-4 p-3 bg-error-muted border border-error rounded-md text-sm text-error-text">
           {error}
         </div>
       )}
 
       {surveys.length === 0 ? (
-        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-          <p className="text-gray-500 mb-4">No surveys yet.</p>
+        <div className="bg-surface border border-border rounded-lg p-12 text-center shadow-sm">
+          <p className="text-fg-muted mb-4">No surveys yet.</p>
           <Link
             href="/admin/surveys/new"
-            className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 transition-colors"
+            className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             Create your first survey
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="bg-surface rounded-lg border border-border overflow-hidden shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-surface-2 border-b border-border">
               <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Title</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Status</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Anonymous</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Created</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Actions</th>
+                <th className="px-4 py-3 text-left font-semibold text-fg">Title</th>
+                <th className="px-4 py-3 text-left font-semibold text-fg">Status</th>
+                <th className="px-4 py-3 text-left font-semibold text-fg">Anonymous</th>
+                <th className="px-4 py-3 text-left font-semibold text-fg">Created</th>
+                <th className="px-4 py-3 text-left font-semibold text-fg">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-border">
               {surveys.map((survey) => (
-                <tr key={survey.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">{survey.title}</td>
+                <tr key={survey.id} className="hover:bg-surface-2 transition-colors">
+                  <td className="px-4 py-3 font-bold tracking-tight text-fg">{survey.title}</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${STATUS_BADGE[survey.status]}`}>
+                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${STATUS_BADGE[survey.status]}`}>
                       {survey.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-fg-muted">
                     {survey.is_anonymous ? 'Yes' : 'No'}
                   </td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-fg-subtle">
                     {new Date(survey.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Link
                         href={`/admin/surveys/${survey.id}`}
-                        className="px-3 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                        className="bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDuplicate(survey.id)}
                         disabled={duplicating === survey.id}
-                        className="px-3 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors disabled:opacity-50"
+                        className="bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none disabled:opacity-50"
                       >
                         {duplicating === survey.id ? 'Copying...' : 'Duplicate'}
                       </button>

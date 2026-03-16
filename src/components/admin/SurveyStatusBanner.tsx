@@ -11,10 +11,10 @@ interface Props {
 }
 
 const STATUS_STYLE: Record<SurveyStatus, string> = {
-  draft: 'border-gray-400 bg-gray-50',
-  scheduled: 'border-yellow-400 bg-yellow-50',
-  open: 'border-green-500 bg-green-50',
-  closed: 'border-slate-400 bg-slate-50',
+  draft: 'border-fg-subtle bg-surface-2',
+  scheduled: 'border-warning bg-warning-muted',
+  open: 'border-success bg-success-muted',
+  closed: 'border-fg-muted bg-surface-2',
 }
 
 const STATUS_LABEL: Record<SurveyStatus, string> = {
@@ -67,31 +67,31 @@ export default function SurveyStatusBanner({ survey }: Props) {
     <div className={`sticky top-0 z-10 border-l-4 px-4 py-3 mb-4 ${STATUS_STYLE[survey.status]}`}>
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">Status</span>
-          <p className="font-semibold text-gray-900">{STATUS_LABEL[survey.status]}</p>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.07em] text-fg-subtle">Status</span>
+          <p className="font-semibold text-fg">{STATUS_LABEL[survey.status]}</p>
           {survey.status === 'scheduled' && survey.opens_at && (
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-fg-muted mt-0.5">
               Opens: {new Date(survey.opens_at).toLocaleString()}
             </p>
           )}
         </div>
 
         <div className="flex items-center gap-2">
-          {error && <p className="text-xs text-red-600 mr-2">{error}</p>}
+          {error && <p className="text-xs text-error-text mr-2">{error}</p>}
 
           {survey.status === 'draft' && (
             <>
               <button
                 onClick={() => setShowScheduleForm((v) => !v)}
                 disabled={loading}
-                className="px-3 py-1.5 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 transition-colors disabled:opacity-50"
+                className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 Schedule
               </button>
               <button
                 onClick={() => handleTransition('open')}
                 disabled={loading}
-                className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
+                className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 {loading ? 'Opening...' : 'Open Now'}
               </button>
@@ -102,7 +102,7 @@ export default function SurveyStatusBanner({ survey }: Props) {
             <button
               onClick={() => handleTransition('open')}
               disabled={loading}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 transition-colors disabled:opacity-50"
+              className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
             >
               {loading ? 'Opening...' : 'Open Now'}
             </button>
@@ -112,7 +112,7 @@ export default function SurveyStatusBanner({ survey }: Props) {
             <button
               onClick={() => handleTransition('closed')}
               disabled={loading}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-slate-600 rounded-md hover:bg-slate-700 transition-colors disabled:opacity-50"
+              className="bg-error hover:bg-error-text text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
             >
               {loading ? 'Closing...' : 'Close Survey'}
             </button>
@@ -121,12 +121,12 @@ export default function SurveyStatusBanner({ survey }: Props) {
           {survey.status === 'closed' && (
             <div className="flex items-center gap-3">
               {computeResult && (
-                <p className="text-xs text-green-700 mr-2">{computeResult}</p>
+                <p className="text-xs text-success-text mr-2">{computeResult}</p>
               )}
               <button
                 onClick={handleComputeMetrics}
                 disabled={computing}
-                className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
               >
                 {computing ? 'Computing...' : 'Compute Results'}
               </button>
@@ -137,36 +137,36 @@ export default function SurveyStatusBanner({ survey }: Props) {
 
       {/* Schedule inline form */}
       {showScheduleForm && survey.status === 'draft' && (
-        <div className="mt-3 pt-3 border-t border-gray-200">
+        <div className="mt-3 pt-3 border-t border-border">
           <div className="flex items-end gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Opens at</label>
+              <label className="block text-sm font-semibold text-fg mb-1">Opens at</label>
               <input
                 type="datetime-local"
                 value={opensAt}
                 onChange={(e) => setOpensAt(e.target.value)}
-                className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800"
+                className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Closes at (optional)</label>
+              <label className="block text-sm font-semibold text-fg mb-1">Closes at (optional)</label>
               <input
                 type="datetime-local"
                 value={closesAt}
                 onChange={(e) => setClosesAt(e.target.value)}
-                className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-800"
+                className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
               />
             </div>
             <button
               onClick={() => handleTransition('scheduled', { opens_at: opensAt, closes_at: closesAt || undefined })}
               disabled={loading || !opensAt}
-              className="px-3 py-1.5 text-sm font-medium text-white bg-yellow-600 rounded-md hover:bg-yellow-700 transition-colors disabled:opacity-50"
+              className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
             >
               {loading ? 'Scheduling...' : 'Confirm Schedule'}
             </button>
             <button
               onClick={() => setShowScheduleForm(false)}
-              className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+              className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
             >
               Cancel
             </button>

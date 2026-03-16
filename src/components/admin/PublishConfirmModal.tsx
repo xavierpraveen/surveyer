@@ -46,19 +46,19 @@ export default function PublishConfirmModal({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-surface border border-border rounded-lg shadow-md p-6 max-w-md w-full">
         {/* Header */}
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <h2 className="text-base font-bold tracking-tight text-fg mb-4">
           Publish Results: {surveyTitle}
         </h2>
 
         {/* Summary preview */}
         <div className="mb-4">
-          <p className="text-sm text-gray-700 mb-3">
+          <p className="text-sm text-fg-muted mb-3">
             You are about to publish an immutable snapshot of these results:
           </p>
-          <ul className="space-y-1 text-sm text-gray-700 list-disc list-inside">
+          <ul className="space-y-1 text-sm text-fg-muted list-disc list-inside">
             <li>{dimensionScoreCount} dimension scores</li>
             <li>{participationRate}% participation rate</li>
             <li>{actionItemCount} public action items</li>
@@ -67,16 +67,16 @@ export default function PublishConfirmModal({
         </div>
 
         {/* Warning box */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-5">
-          <p className="text-sm text-yellow-800 font-medium">
+        <div className="bg-warning-muted border border-warning rounded-md p-3 mb-5">
+          <p className="text-sm text-warning-text font-medium">
             This action cannot be undone. The snapshot will be permanent.
           </p>
         </div>
 
         {/* Inline error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded p-3 mb-4">
-            <p className="text-sm text-red-700">{error}</p>
+          <div className="bg-error-muted border border-error rounded-md p-3 mb-4" role="alert">
+            <p className="text-sm text-error-text">{error}</p>
           </div>
         )}
 
@@ -86,7 +86,7 @@ export default function PublishConfirmModal({
             type="button"
             onClick={onClose}
             disabled={isPublishing}
-            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+            className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             Cancel
           </button>
@@ -94,7 +94,7 @@ export default function PublishConfirmModal({
             type="button"
             onClick={handlePublish}
             disabled={isPublishing}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50"
+            className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
           >
             {isPublishing ? 'Publishing...' : 'Publish Results'}
           </button>

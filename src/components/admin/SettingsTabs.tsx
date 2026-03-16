@@ -38,18 +38,18 @@ export default function SettingsTabs({
   const [activeTab, setActiveTab] = useState<TabId>('employees')
 
   return (
-    <div className="bg-white rounded-lg shadow-sm">
+    <div className="bg-surface border border-border rounded-lg shadow-sm">
       {/* Tab bar */}
-      <div className="border-b border-gray-200 flex gap-0">
+      <div className="border-b border-border flex gap-0">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={[
-              'px-6 py-3 text-sm transition-colors',
+              'px-6 py-3 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none',
               activeTab === tab.id
-                ? 'border-b-2 border-blue-600 text-blue-600 font-medium'
-                : 'text-gray-500 hover:text-gray-700',
+                ? 'border-b-2 border-brand text-brand font-semibold'
+                : 'text-fg-muted font-medium hover:text-fg',
             ].join(' ')}
           >
             {tab.label}
