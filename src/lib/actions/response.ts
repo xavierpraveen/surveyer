@@ -192,9 +192,9 @@ export async function submitResponse(
   const answerRows = Object.entries(answers).map(([question_id, value]) => ({
     response_id: responseId,
     question_id,
-    answer_text: typeof value === 'string' ? value : null,
-    answer_numeric: typeof value === 'number' ? value : null,
-    answer_options: Array.isArray(value) ? value : null,
+    text_value: typeof value === 'string' ? value : null,
+    numeric_value: typeof value === 'number' ? value : null,
+    selected_options: Array.isArray(value) ? value : null,
   }))
 
   if (answerRows.length > 0) {
