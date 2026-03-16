@@ -162,7 +162,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — BUG-03 fix: rename answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in response.ts and public-response.ts
+- [x] 08-01-PLAN.md — BUG-03 fix: rename answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in response.ts and public-response.ts
 - [ ] 08-02-PLAN.md — BUG-04 fix: revert AppRole to employee|admin with normalizeRole utility; update middleware.ts and analytics.ts role guards
 
 ## Progress
