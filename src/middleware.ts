@@ -23,14 +23,16 @@ export async function middleware(request: NextRequest) {
   // Authenticated: redirect away from auth pages
   if (PUBLIC_ROUTES.some((r) => pathname.startsWith(r))) {
     const rawRole = user.app_metadata?.role as string | undefined
-    const nr: AppRole = rawRole === 'employee' ? 'employee' : (rawRole ? 'admin' : 'employee')
+    // v1 consolidation: all roles are now in ROLE_ROUTES; unknown roles default to employee
+    const nr: AppRole = (rawRole && rawRole in ROLE_ROUTES) ? rawRole as AppRole : 'employee'
     return NextResponse.redirect(new URL(ROLE_ROUTES[nr], request.url))
   }
 
   // Redirect root "/" to role home
   if (pathname === '/') {
     const rawRole = user.app_metadata?.role as string | undefined
-    const nr: AppRole = rawRole === 'employee' ? 'employee' : (rawRole ? 'admin' : 'employee')
+    // v1 consolidation: all roles are now in ROLE_ROUTES; unknown roles default to employee
+    const nr: AppRole = (rawRole && rawRole in ROLE_ROUTES) ? rawRole as AppRole : 'employee'
     return NextResponse.redirect(new URL(ROLE_ROUTES[nr], request.url))
   }
 
@@ -41,8 +43,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login?error=no_role', request.url))
   }
 
-  // Normalize legacy roles (leadership, manager, hr_admin, survey_analyst) to admin
-  const normalizedRole: AppRole = role === 'employee' ? 'employee' : 'admin'
+  // v1 consolidation: all roles map directly via ROLE_ROUTES (see src/lib/constants/roles.ts)
+  // manager, leadership, hr_admin, survey_analyst all route to /admin in v1
+  const normalizedRole: AppRole = role in ROLE_ROUTES ? role : 'employee'
   const home = ROLE_ROUTES[normalizedRole]
 
   // Employees cannot access /admin routes
