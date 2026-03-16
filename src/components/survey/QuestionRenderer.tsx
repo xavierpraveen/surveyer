@@ -17,6 +17,11 @@ const LIKERT_5_LABELS: Record<number, string> = {
   5: 'Strongly Agree',
 }
 
+const LIKERT_UNSELECTED =
+  'border border-border bg-surface text-fg-muted rounded-md py-2 text-sm hover:border-indigo-300 hover:bg-brand-muted transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none'
+const LIKERT_SELECTED =
+  'border-2 border-brand bg-brand-muted text-brand font-bold rounded-md py-2 text-sm focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none'
+
 export default function QuestionRenderer({
   question,
   options,
@@ -27,9 +32,9 @@ export default function QuestionRenderer({
 
   return (
     <div className="mb-6">
-      <p className="text-sm font-medium text-gray-900 mb-3">
+      <p className="text-sm font-semibold text-fg mb-3">
         {text}
-        {is_required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
+        {is_required && <span className="text-error ml-1" aria-label="required">*</span>}
       </p>
 
       {question_type === 'likert_5' && (
@@ -37,10 +42,8 @@ export default function QuestionRenderer({
           {[1, 2, 3, 4, 5].map((n) => (
             <label
               key={n}
-              className={`flex flex-col items-center gap-1 cursor-pointer px-3 py-2 rounded-md border transition-colors ${
-                value === n
-                  ? 'bg-blue-50 border-blue-400 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-400 text-gray-600'
+              className={`flex flex-col items-center gap-1 cursor-pointer px-3 ${
+                value === n ? LIKERT_SELECTED : LIKERT_UNSELECTED
               }`}
             >
               <input
@@ -52,7 +55,7 @@ export default function QuestionRenderer({
                 className="sr-only"
               />
               <span className="text-base font-semibold">{n}</span>
-              <span className="text-xs text-center leading-tight max-w-[60px]">
+              <span className="text-xs text-fg-subtle text-center leading-tight max-w-[60px]">
                 {LIKERT_5_LABELS[n]}
               </span>
             </label>
@@ -65,10 +68,8 @@ export default function QuestionRenderer({
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
             <label
               key={n}
-              className={`flex items-center justify-center w-10 h-10 rounded-md border cursor-pointer transition-colors ${
-                value === n
-                  ? 'bg-blue-50 border-blue-400 text-blue-700 font-semibold'
-                  : 'border-gray-200 hover:border-gray-400 text-gray-600'
+              className={`flex items-center justify-center w-10 h-10 cursor-pointer ${
+                value === n ? LIKERT_SELECTED : LIKERT_UNSELECTED
               }`}
             >
               <input
@@ -82,6 +83,10 @@ export default function QuestionRenderer({
               {n}
             </label>
           ))}
+          <div className="w-full flex justify-between mt-1">
+            <span className="text-xs text-fg-subtle">Not at all</span>
+            <span className="text-xs text-fg-subtle">Extremely</span>
+          </div>
         </div>
       )}
 
@@ -90,10 +95,8 @@ export default function QuestionRenderer({
           {options.map((opt) => (
             <label
               key={opt.id}
-              className={`flex items-center gap-3 px-3 py-2 rounded-md border cursor-pointer transition-colors ${
-                value === opt.id
-                  ? 'bg-blue-50 border-blue-400 text-blue-700'
-                  : 'border-gray-200 hover:border-gray-400 text-gray-700'
+              className={`flex items-center gap-3 px-3 cursor-pointer ${
+                value === opt.id ? LIKERT_SELECTED : LIKERT_UNSELECTED
               }`}
             >
               <input
@@ -117,10 +120,8 @@ export default function QuestionRenderer({
             return (
               <label
                 key={opt.id}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md border cursor-pointer transition-colors ${
-                  selected
-                    ? 'bg-blue-50 border-blue-400 text-blue-700'
-                    : 'border-gray-200 hover:border-gray-400 text-gray-700'
+                className={`flex items-center gap-3 px-3 cursor-pointer ${
+                  selected ? LIKERT_SELECTED : LIKERT_UNSELECTED
                 }`}
               >
                 <input
@@ -150,7 +151,7 @@ export default function QuestionRenderer({
           maxLength={500}
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm text-gray-900"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full"
           placeholder="Your answer..."
         />
       )}
@@ -161,7 +162,7 @@ export default function QuestionRenderer({
           maxLength={2000}
           value={typeof value === 'string' ? value : ''}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm text-gray-900 resize-y"
+          className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus w-full resize-y"
           placeholder="Your answer..."
         />
       )}
