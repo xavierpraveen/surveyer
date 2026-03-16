@@ -175,7 +175,7 @@ export default function SurveyWizard({
 
   if (!currentSection) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-fg-muted">
         No sections available.
       </div>
     )
@@ -185,19 +185,19 @@ export default function SurveyWizard({
     <div className="relative">
       {/* Resume Banner */}
       {showResumeBanner && (
-        <div className="mb-4 flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-4 py-3 text-sm">
-          <span className="text-blue-800">
+        <div className="mb-4 flex items-center justify-between bg-brand-muted border border-brand rounded-lg px-4 py-3 text-sm">
+          <span className="text-brand-text">
             Your progress has been saved.{' '}
             <button
               onClick={handleResumeContinue}
-              className="font-medium underline hover:no-underline"
+              className="font-semibold underline hover:no-underline"
             >
               Continue &rarr;
             </button>
           </span>
           <button
             onClick={() => setShowResumeBanner(false)}
-            className="ml-4 text-blue-600 hover:text-blue-800 font-medium text-base leading-none"
+            className="ml-4 text-brand hover:text-brand-hover font-medium text-base leading-none"
             aria-label="Dismiss banner"
           >
             &times;
@@ -213,10 +213,10 @@ export default function SurveyWizard({
       />
 
       {/* Section content */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">{currentSection.title}</h2>
+      <div className="bg-surface border border-border rounded-lg shadow-sm p-6">
+        <h2 className="text-xl font-bold tracking-snug text-fg mb-6">{currentSection.title}</h2>
         {currentSection.description && (
-          <p className="text-sm text-gray-500 mb-6">{currentSection.description}</p>
+          <p className="text-sm text-fg-muted mb-6">{currentSection.description}</p>
         )}
 
         <div className="space-y-2">
@@ -237,17 +237,20 @@ export default function SurveyWizard({
         </div>
 
         {submitError && (
-          <div className="mt-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+          <div
+            className="mt-4 bg-error-muted border border-error text-error-text text-sm px-4 py-3 rounded-md"
+            role="alert"
+          >
             {submitError}
           </div>
         )}
 
         {/* Navigation */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
           <button
             onClick={handleBack}
             disabled={currentSectionIndex === 0}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Back
           </button>
@@ -255,7 +258,7 @@ export default function SurveyWizard({
           <button
             onClick={handleNext}
             disabled={isSubmitting}
-            className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Submitting...' : isLastSection ? 'Submit' : 'Next'}
           </button>
@@ -264,9 +267,17 @@ export default function SurveyWizard({
 
       {/* Save status indicator */}
       <div
-        className={`fixed bottom-4 right-4 text-xs transition-opacity duration-500 ${
+        className={`fixed bottom-4 right-4 transition-opacity duration-500 ${
           saveStatus === 'idle' ? 'opacity-0' : 'opacity-100'
-        } ${saveStatus === 'error' ? 'text-red-500' : 'text-gray-500'}`}
+        } ${
+          saveStatus === 'saving'
+            ? 'text-xs text-fg-muted animate-pulse'
+            : saveStatus === 'saved'
+            ? 'text-xs text-success-text'
+            : saveStatus === 'error'
+            ? 'text-xs text-error-text'
+            : 'text-xs text-fg-subtle'
+        }`}
       >
         {saveStatus === 'saving' && 'Saving...'}
         {saveStatus === 'saved' && 'Saved \u2713'}
