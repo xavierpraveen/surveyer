@@ -104,7 +104,14 @@ Plans:
   5. All form inputs follow the spec pattern; survey Likert scale buttons use the spec-defined selected/unselected/hover states
   6. No regressions: all admin flows (survey CRUD, action items, settings) and employee flows (dashboard, survey wizard, confirmation) remain fully functional after restyling
   7. The app loads without console errors; no Tailwind class warnings for undefined tokens
-**Plans**: TBD
+**Plans**: 5 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Design token infrastructure: globals.css (21 CSS custom properties), tailwind.config.ts (full token mapping), layout.tsx (Inter font), TopNav.tsx, (admin)/layout.tsx, (employee)/layout.tsx
+- [ ] 05-02-PLAN.md — Admin components restyling: all 14 files in src/components/admin/
+- [ ] 05-03-PLAN.md — Survey components restyling: SurveyWizard, QuestionRenderer, SurveyProgressBar, ConditionalQuestion
+- [ ] 05-04-PLAN.md — Analytics components restyling: 7 analytics/ components + CycleSelector
+- [ ] 05-05-PLAN.md — Page files restyling: 16 page files across admin, employee, auth, results, and public survey routes + human visual verification
 
 ## Progress
 
@@ -117,4 +124,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Survey Engine | 5/5 | Complete    | 2026-03-15 |
 | 3. Analytics and Dashboards | 4/4 | Complete    | 2026-03-15 |
 | 4. Actions, Publication and Admin | 5/5 | Complete   | 2026-03-15 |
-| 5. Brand Redesign | 0/TBD | Pending | — |
+| 5. Brand Redesign | 0/5 | Pending | — |
