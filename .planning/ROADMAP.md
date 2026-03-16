@@ -133,11 +133,15 @@ Plans:
 **Gap Closure**: Closes ANALYTICS-11 and DASH-07 gaps from v1.0 milestone audit
 **Requirements**: ANALYTICS-11, DASH-07
 **Success Criteria** (what must be TRUE):
-  1. Manager dashboard (`/dashboard` for manager role) renders an "Action Plans" section below team scores showing action items filtered to the manager's department — sourced from `action_items` table with `visibility = 'public'` and matching department
+  1. Manager dashboard (`/dashboard` for manager role) renders an "Action Plans" section below team scores showing action items filtered to the manager's department — sourced from `action_items` table with `is_public = true` and matching department
   2. `src/lib/ai/summarizer.ts` exports a `SummarizationProvider` interface, a `ThemeSummary` type, and a `NullSummarizationProvider` implementation that returns empty themes — enabling v2 LLM integration without touching call sites
   3. ANALYTICS-11 and DASH-07 checkboxes are `[x]` in REQUIREMENTS.md
   4. No regressions: existing manager dashboard team-scores display is unchanged
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — AI summarization provider interface: src/lib/ai/summarizer.ts with SummarizationProvider interface, ThemeSummary type, NullSummarizationProvider class, and default summarizer export
+- [ ] 07-02-PLAN.md — Manager dashboard Action Plans section: inline RSC query for department-filtered public action items, card list with status/priority badges, empty state
 
 ## Progress
 
@@ -152,4 +156,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 4. Actions, Publication and Admin | 5/5 | Complete   | 2026-03-15 |
 | 5. Brand Redesign | 5/5 | Complete   | 2026-03-16 |
 | 6. Critical Bug Fixes | 0/TBD | Not Started | — |
-| 7. Feature Gap Closure | 0/TBD | Not Started | — |
+| 7. Feature Gap Closure | 0/2 | Not Started | — |
