@@ -2,6 +2,7 @@
 import 'server-only'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
+import { normalizeRole } from '@/lib/constants/roles'
 import type { PublicationSnapshot, SnapshotData } from '@/lib/types/phase4'
 import type { DimensionScore, QualitativeTheme, PublicAction } from '@/lib/types/analytics'
 
@@ -33,9 +34,9 @@ export async function createPublicationSnapshot(
   const { user, authError } = await getAuthenticatedUser()
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
-  const role = user.app_metadata?.role as string | undefined
-  if (!role || !['admin'].includes(role)) {
-    return { success: false, error: 'Forbidden: admin role required' }
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
   }
 
   // 1. Fetch survey and verify it is closed
