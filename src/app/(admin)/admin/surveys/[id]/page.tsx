@@ -61,7 +61,7 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
     const { data: questionsData } = await db
       .from('questions')
       .select('*')
-      .in('section_id', sectionIds)
+      .in('survey_section_id', sectionIds)
       .order('display_order', { ascending: true })
     allQuestions = (questionsData ?? []) as SurveyQuestion[]
   }
@@ -133,11 +133,11 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
   // Determine active section
   const activeSectionId = activeSectionParam ?? rawSections[0]?.id ?? null
   const activeSection = rawSections.find((s) => s.id === activeSectionId) ?? null
-  const activeSectionQuestions = allQuestions.filter((q) => q.section_id === activeSectionId)
+  const activeSectionQuestions = allQuestions.filter((q) => q.survey_section_id === activeSectionId)
 
   // Build sections with metadata
   const sectionsWithMeta = rawSections.map((section) => {
-    const sectionQuestions = allQuestions.filter((q) => q.section_id === section.id)
+    const sectionQuestions = allQuestions.filter((q) => q.survey_section_id === section.id)
     return {
       ...section,
       questionCount: sectionQuestions.length,

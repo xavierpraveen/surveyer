@@ -119,7 +119,7 @@ export default async function SurveyPage({ params }: PageProps) {
   const { data: questionsData } = await db
     .from('questions')
     .select('*')
-    .in('section_id', sectionIds)
+    .in('survey_section_id', sectionIds)
     .order('display_order', { ascending: true })
 
   const allQuestions: SurveyQuestion[] = (questionsData ?? []) as SurveyQuestion[]
@@ -127,7 +127,7 @@ export default async function SurveyPage({ params }: PageProps) {
   // Build questionsMap: sectionId -> questions[]
   const questionsMap: Record<string, SurveyQuestion[]> = {}
   for (const section of filteredSections) {
-    questionsMap[section.id] = allQuestions.filter((q) => q.section_id === section.id)
+    questionsMap[section.id] = allQuestions.filter((q) => q.survey_section_id === section.id)
   }
 
   // Fetch options for all questions

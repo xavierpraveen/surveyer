@@ -448,7 +448,7 @@ export default function QuestionEditor({ questions, sectionId, dimensions }: Pro
     setAddError(null)
 
     const input: Record<string, unknown> = {
-      section_id: sectionId,
+      survey_section_id: sectionId,
       text: newState.text.trim(),
       question_type: newState.question_type,
       is_required: newState.is_required,
