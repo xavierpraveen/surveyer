@@ -158,7 +158,7 @@ export async function createQuestion(
   const { count } = await db
     .from('questions')
     .select('*', { count: 'exact', head: true })
-    .eq('section_id', questionFields.section_id)
+    .eq('survey_section_id', questionFields.survey_section_id)
 
   const stableQuestionId = crypto.randomUUID()
 
@@ -360,7 +360,7 @@ export async function duplicateSurvey(
     const { data: qs, error: questionsFetchError } = await db
       .from('questions')
       .select('*')
-      .in('section_id', sectionIds)
+      .in('survey_section_id', sectionIds)
       .order('display_order')
 
     if (questionsFetchError) {
@@ -436,13 +436,13 @@ export async function duplicateSurvey(
   // Duplicate questions — preserve stable_question_id
   const questionIdMap: Record<string, string> = {}
   for (const question of questions) {
-    const { id: questionId, section_id, created_at: _qca, ...questionFields } = question
-    const newSectionId = sectionIdMap[section_id]
+    const { id: questionId, survey_section_id, created_at: _qca, ...questionFields } = question
+    const newSectionId = sectionIdMap[survey_section_id]
     if (!newSectionId) continue
 
     const { data: newQuestion, error: newQuestionError } = await db
       .from('questions')
-      .insert({ ...questionFields, section_id: newSectionId })
+      .insert({ ...questionFields, survey_section_id: newSectionId })
       .select()
       .single()
 
