@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Completed 06-01-PLAN.md — BUG-01 fixed, survey_section_id column name now used everywhere
-last_updated: "2026-03-16T08:10:09.000Z"
+stopped_at: Completed 06-03-PLAN.md — REQUIREMENTS.md synced to 97/99, AUTH-06 closed with inline consolidation note
+last_updated: "2026-03-16T10:54:12.807Z"
 last_activity: "2026-03-16 — Phase 5 complete: all 5 plans executed, full brand redesign shipped, 16 page files + 14 components + 6 infra files restyled"
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 26
-  completed_plans: 22
+  completed_plans: 24
   percent: 100
 ---
 
@@ -72,6 +72,7 @@ Progress: [██████████] 100%
 | Phase 05-brand-redesign P05 | 7min | 2 tasks | 16 files |
 | Phase 06-critical-bug-fixes P01 | 3min | 3 tasks | 7 files |
 | Phase 06-critical-bug-fixes P02 | 2min | 2 tasks | 2 files |
+| Phase 06-critical-bug-fixes P03 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -140,6 +141,7 @@ Recent decisions affecting current work:
 - [Phase 05-brand-redesign]: Actions page badge colors updated to spec semantic tokens (error/warning/success/brand-muted) replacing ad-hoc Tailwind palette classes
 - [Phase 06-critical-bug-fixes]: survey_section_id is the canonical DB column name — PostgREST silently ignores unknown filter columns causing full-table returns; all section_id references renamed
 - [Phase 06-critical-bug-fixes]: AppRole expanded to 6 roles with ROLE_ROUTES as single source of truth; ADMIN_ROLES export added; v1 consolidation documented inline in roles.ts and middleware.ts
+- [Phase 06-critical-bug-fixes]: REQUIREMENTS.md is the authoritative v1 completion signal — stale checkboxes were creating false signals about pending work
 
 ### Pending Todos
 
@@ -154,6 +156,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-16T08:10:09.000Z
-Stopped at: Completed 06-01-PLAN.md — BUG-01 fixed, survey_section_id column name now used everywhere
+Last session: 2026-03-16T10:54:12.804Z
+Stopped at: Completed 06-03-PLAN.md — REQUIREMENTS.md synced to 97/99, AUTH-06 closed with inline consolidation note
 Resume file: None

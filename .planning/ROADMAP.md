@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Analytics and Dashboards** - Scoring engine (Postgres views/RPC), derived_metrics, leadership dashboard, public results page, privacy threshold enforcement (completed 2026-03-15)
 - [x] **Phase 4: Actions, Publication and Admin** - Action tracking, immutable publication snapshots, transparency page, admin interfaces, qualitative tagging (completed 2026-03-15)
 - [x] **Phase 5: Brand Redesign** - Full visual identity update: semantic design token system, Tailwind config, globals.css, TopNav component, all component restylings across admin and employee surfaces (completed 2026-03-16)
-- [ ] **Phase 6: Critical Bug Fixes** - Fix `section_id`→`survey_section_id` column mismatch in all query code, extend ROLE_ROUTES to document v1 role consolidation and satisfy AUTH-06, sync REQUIREMENTS.md checkboxes for already-implemented requirements, add BRAND requirements to REQUIREMENTS.md
+- [x] **Phase 6: Critical Bug Fixes** - Fix `section_id`→`survey_section_id` column mismatch in all query code, extend ROLE_ROUTES to document v1 role consolidation and satisfy AUTH-06, sync REQUIREMENTS.md checkboxes for already-implemented requirements, add BRAND requirements to REQUIREMENTS.md (completed 2026-03-16)
 - [ ] **Phase 7: Feature Gap Closure** - Implement manager dashboard action plans section (DASH-07) and AI summarization provider interface stub (ANALYTICS-11)
 
 ## Phase Details
@@ -160,5 +160,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Analytics and Dashboards | 4/4 | Complete    | 2026-03-15 |
 | 4. Actions, Publication and Admin | 5/5 | Complete   | 2026-03-15 |
 | 5. Brand Redesign | 5/5 | Complete   | 2026-03-16 |
-| 6. Critical Bug Fixes | 1/3 | In Progress|  |
+| 6. Critical Bug Fixes | 3/3 | Complete   | 2026-03-16 |
 | 7. Feature Gap Closure | 0/2 | Not Started | — |
