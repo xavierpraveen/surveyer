@@ -77,7 +77,7 @@
 - [x] **DASH-04**: Leadership dashboard supports filters by department, role, tenure band, and survey period
 - [x] **DASH-05**: Manager dashboard shows team participation rate (using participation tokens, no individual identities)
 - [x] **DASH-06**: Manager dashboard shows team-level dimension scores only when team respondent count meets the privacy threshold
-- [ ] **DASH-07**: Manager dashboard shows action plans relevant to their team/department
+- [x] **DASH-07**: Manager dashboard shows action plans relevant to their team/department
 - [x] **DASH-08**: Public internal results dashboard (`/results`) shows: participation rate, company-wide dimension scores, top themes, committed actions, action progress, transparency notes
 - [x] **DASH-09**: Public internal results dashboard is accessible to all authenticated employees without role restriction
 
@@ -202,7 +202,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANALYTICS-01 – ANALYTICS-10 | Phase 3 | Complete |
 | ANALYTICS-11 | Phase 7 | Done |
 | DASH-01 – DASH-06, DASH-08 – DASH-09 | Phase 3 | Complete |
-| DASH-07 | Phase 7 | Pending |
+| DASH-07 | Phase 7 | Done |
 | ACTIONS-01 – ACTIONS-06 | Phase 4 | Complete |
 | PUBLISH-01 – PUBLISH-05 | Phase 4 | Complete |
 | ADMIN-01 – ADMIN-09 | Phase 4 | Complete |
@@ -210,8 +210,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 - v1 requirements: 99 total (AUTH:10, SCHEMA:4, PRIVACY:7, DX:5, SURVEY:13, RESPONSE:10, DIM:3, ANALYTICS:11, DASH:9, ACTIONS:6, PUBLISH:5, ADMIN:9, BRAND:7)
-- Implemented [x]: 98/99
-- Pending [ ]: 1 (DASH-07 — closing in Phase 7)
+- Implemented [x]: 99/99
+- Pending [ ]: 0
 - Unmapped: 0 ✓
 
 Note: BRAND-01–07 added to REQUIREMENTS.md via Phase 6 gap closure. AUTH-06 closed in Phase 6 (BUG-02 role routing fixed; v1 consolidation: manager/leadership/hr_admin/survey_analyst all route to /admin via ROLE_ROUTES). ANALYTICS-11 and DASH-07 closing in Phase 7.
