@@ -1,57 +1,42 @@
 // ─── Role Types ───────────────────────────────────────────────────────────────
 
 /**
- * All role values that can be stored in Supabase app_metadata.role (AUTH-07).
- * v1 consolidation: manager, leadership, hr_admin, survey_analyst all route to
- * the /admin area. Dedicated sub-routes per role are a v2 concern (separate
- * dashboards per role with different data scopes). In v1, the admin area serves
- * all elevated roles.
+ * v1 application roles. All elevated JWT roles (manager, leadership, hr_admin,
+ * survey_analyst) normalize to 'admin'. Use normalizeRole() to convert a raw
+ * Supabase JWT role string to an AppRole before any role check.
  */
-export type AppRole =
-  | 'employee'
-  | 'manager'
-  | 'leadership'
-  | 'admin'
-  | 'hr_admin'
-  | 'survey_analyst'
+export type AppRole = 'employee' | 'admin'
 
-export const APP_ROLES: readonly AppRole[] = [
-  'employee',
+// ─── Raw JWT Role Normalization ───────────────────────────────────────────────
+
+/**
+ * Raw Supabase app_metadata.role values that map to the 'admin' AppRole.
+ * 'employee' is the default for everything not in this list (including undefined).
+ */
+export const ADMIN_ROLES: readonly string[] = [
   'manager',
   'leadership',
   'admin',
   'hr_admin',
   'survey_analyst',
 ]
+
+/**
+ * Maps any raw JWT role string to an AppRole.
+ * Unknown or missing roles default to 'employee'.
+ */
+export function normalizeRole(raw: string | undefined): AppRole {
+  if (raw && ADMIN_ROLES.includes(raw)) return 'admin'
+  return 'employee'
+}
 
 // ─── Route Map ────────────────────────────────────────────────────────────────
 
 /**
- * AUTH-06: Maps each role to its home route.
- *
- * v1 consolidation decision: manager, leadership, hr_admin, and survey_analyst
- * all share the /admin area. This is an intentional v1 scope reduction — a
- * single admin surface is sufficient for the ~87-person org in v1. Role-specific
- * dashboards (e.g. /manager/dashboard, /leadership/dashboard) are deferred to v2.
+ * AUTH-06: Maps each AppRole to its home route.
+ * All elevated roles normalize to 'admin' before this lookup.
  */
 export const ROLE_ROUTES: Record<AppRole, string> = {
   employee: '/dashboard',
-  // v1 consolidation: all elevated roles → /admin (see comment above)
-  manager: '/admin',
-  leadership: '/admin',
   admin: '/admin',
-  hr_admin: '/admin',
-  survey_analyst: '/admin',
 }
-
-/**
- * Roles that map to the admin area in v1.
- * Used by middleware to determine route protection (non-employee = can access /admin).
- */
-export const ADMIN_ROLES: readonly AppRole[] = [
-  'manager',
-  'leadership',
-  'admin',
-  'hr_admin',
-  'survey_analyst',
-]
