@@ -19,6 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Brand Redesign** - Full visual identity update: semantic design token system, Tailwind config, globals.css, TopNav component, all component restylings across admin and employee surfaces (completed 2026-03-16)
 - [x] **Phase 6: Critical Bug Fixes** - Fix `section_id`→`survey_section_id` column mismatch in all query code, extend ROLE_ROUTES to document v1 role consolidation and satisfy AUTH-06, sync REQUIREMENTS.md checkboxes for already-implemented requirements, add BRAND requirements to REQUIREMENTS.md (completed 2026-03-16)
 - [x] **Phase 7: Feature Gap Closure** - Implement manager dashboard action plans section (DASH-07) and AI summarization provider interface stub (ANALYTICS-11) (completed 2026-03-16)
+- [ ] **Phase 8: Response and Role Normalization Fixes** - Fix response_answers column names to unblock analytics pipeline (BUG-03); revert AppRole to employee|admin with normalizeRole() utility used by Server Actions (BUG-04 simplified)
 
 ## Phase Details
 
@@ -148,10 +149,26 @@ Plans:
 - [ ] 07-01-PLAN.md — AI summarization provider interface: src/lib/ai/summarizer.ts with SummarizationProvider interface, ThemeSummary type, NullSummarizationProvider class, and default summarizer export
 - [ ] 07-02-PLAN.md — Manager dashboard Action Plans section: inline RSC query for department-filtered public action items, card list with status/priority badges, empty state
 
+### Phase 8: Response and Role Normalization Fixes
+**Goal**: The analytics pipeline produces real data and every authenticated non-employee user can access the admin-area Server Actions they need — achieved by fixing two silent bugs (wrong column names on response insert; Server Actions reading raw JWT role instead of v1-normalized role)
+**Depends on**: Phase 7
+**Gap Closure**: Closes BUG-03 and BUG-04 from v1.0 milestone audit (re-run)
+**Requirements**: RESPONSE-06, RESPONSE-07, RESPONSE-08, ANALYTICS-01, ANALYTICS-02, ANALYTICS-03, ANALYTICS-05, ANALYTICS-07, ANALYTICS-09, ANALYTICS-10, DASH-01, DASH-02, DASH-03, DASH-04, DASH-05, DASH-06, DASH-07, DASH-08, PRIVACY-03
+**Success Criteria** (what must be TRUE):
+  1. `response_answers` rows have non-NULL `numeric_value`, `text_value`, `selected_options` after survey submission — verified by inspecting insert payloads in response.ts and public-response.ts
+  2. `AppRole` is `'employee' | 'admin'` in roles.ts; a `normalizeRole()` utility maps any raw JWT role string to one of those two values; middleware and all Server Actions use it
+  3. `computeDerivedMetrics`, `getLeadershipDashboardData`, and `getManagerDashboardData` in analytics.ts pass role guards for any non-employee user (including those with raw JWT roles of `leadership`, `manager`, etc.)
+  4. TypeScript compiles with zero errors; no `any` casts introduced beyond existing pattern
+**Plans**: 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — BUG-03 fix: rename answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in response.ts and public-response.ts
+- [ ] 08-02-PLAN.md — BUG-04 fix: revert AppRole to employee|admin with normalizeRole utility; update middleware.ts and analytics.ts role guards
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -162,3 +179,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 5. Brand Redesign | 5/5 | Complete   | 2026-03-16 |
 | 6. Critical Bug Fixes | 3/3 | Complete   | 2026-03-16 |
 | 7. Feature Gap Closure | 2/2 | Complete   | 2026-03-16 |
+| 8. Response and Role Normalization Fixes | 0/TBD | Not Started | — |
