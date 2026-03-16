@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: completed
 stopped_at: Completed 09-01-PLAN.md — createPublicationSnapshot role guard fixed with normalizeRole
-last_updated: "2026-03-16T12:33:37.528Z"
+last_updated: "2026-03-16T12:36:41.509Z"
 last_activity: "2026-03-16 — Phase 8 plan 01: fixed answer_text/answer_numeric/answer_options → text_value/numeric_value/selected_options in both submission paths"
 progress:
   total_phases: 9
