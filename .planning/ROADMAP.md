@@ -17,6 +17,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Analytics and Dashboards** - Scoring engine (Postgres views/RPC), derived_metrics, leadership dashboard, public results page, privacy threshold enforcement (completed 2026-03-15)
 - [x] **Phase 4: Actions, Publication and Admin** - Action tracking, immutable publication snapshots, transparency page, admin interfaces, qualitative tagging (completed 2026-03-15)
 - [x] **Phase 5: Brand Redesign** - Full visual identity update: semantic design token system, Tailwind config, globals.css, TopNav component, all component restylings across admin and employee surfaces (completed 2026-03-16)
+- [ ] **Phase 6: Critical Bug Fixes** - Fix `section_id`→`survey_section_id` column mismatch in all query code, extend ROLE_ROUTES to document v1 role consolidation and satisfy AUTH-06, sync REQUIREMENTS.md checkboxes for already-implemented requirements, add BRAND requirements to REQUIREMENTS.md
+- [ ] **Phase 7: Feature Gap Closure** - Implement manager dashboard action plans section (DASH-07) and AI summarization provider interface stub (ANALYTICS-11)
 
 ## Phase Details
 
@@ -113,10 +115,34 @@ Plans:
 - [ ] 05-04-PLAN.md — Analytics components restyling: 7 analytics/ components + CycleSelector
 - [ ] 05-05-PLAN.md — Page files restyling: 16 page files across admin, employee, auth, results, and public survey routes + human visual verification
 
+### Phase 6: Critical Bug Fixes
+**Goal**: All v1 requirements are correctly satisfied — the question-fetch column mismatch is fixed so multi-section surveys work correctly in production, role routing is explicitly documented for all v1 roles, and REQUIREMENTS.md checkboxes accurately reflect what is actually implemented
+**Depends on**: Phase 5
+**Gap Closure**: Closes BUG-01, BUG-02, and checkbox-sync gaps from v1.0 milestone audit
+**Requirements**: AUTH-06 (re-satisfy), ANALYTICS-04 (sync), DASH-01, DASH-02, DASH-03, DASH-04, ADMIN-02, ADMIN-03 (sync), BRAND-01–07 (add to REQUIREMENTS.md)
+**Success Criteria** (what must be TRUE):
+  1. All app queries use `survey_section_id` (not `section_id`) when filtering questions — verified by grep showing zero remaining `section_id` query references
+  2. `ROLE_ROUTES` and `AppRole` explicitly document v1 role consolidation; AUTH-06 checkbox is `[x]` with clear inline comment on intentional scope
+  3. REQUIREMENTS.md shows `[x]` for all 9 previously-unchecked-but-implemented requirements (DASH-01–04, ANALYTICS-04, ADMIN-02, ADMIN-03) and new BRAND-01–07 section added
+  4. Coverage count at bottom of REQUIREMENTS.md is updated to reflect true implemented count
+**Plans**: TBD
+
+### Phase 7: Feature Gap Closure
+**Goal**: The two genuinely unimplemented v1 requirements are delivered — the manager dashboard shows department-relevant action items, and an AI summarization provider interface exists as a clean integration point for v2 LLM work
+**Depends on**: Phase 6
+**Gap Closure**: Closes ANALYTICS-11 and DASH-07 gaps from v1.0 milestone audit
+**Requirements**: ANALYTICS-11, DASH-07
+**Success Criteria** (what must be TRUE):
+  1. Manager dashboard (`/dashboard` for manager role) renders an "Action Plans" section below team scores showing action items filtered to the manager's department — sourced from `action_items` table with `visibility = 'public'` and matching department
+  2. `src/lib/ai/summarizer.ts` exports a `SummarizationProvider` interface, a `ThemeSummary` type, and a `NullSummarizationProvider` implementation that returns empty themes — enabling v2 LLM integration without touching call sites
+  3. ANALYTICS-11 and DASH-07 checkboxes are `[x]` in REQUIREMENTS.md
+  4. No regressions: existing manager dashboard team-scores display is unchanged
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -125,3 +151,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 3. Analytics and Dashboards | 4/4 | Complete    | 2026-03-15 |
 | 4. Actions, Publication and Admin | 5/5 | Complete   | 2026-03-15 |
 | 5. Brand Redesign | 5/5 | Complete   | 2026-03-16 |
+| 6. Critical Bug Fixes | 0/TBD | Not Started | — |
+| 7. Feature Gap Closure | 0/TBD | Not Started | — |

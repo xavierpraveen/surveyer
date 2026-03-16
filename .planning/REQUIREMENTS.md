@@ -14,7 +14,7 @@
 - [x] **AUTH-03**: System restricts sign-up to company email domain (configurable)
 - [x] **AUTH-04**: User session persists across browser refresh via Supabase SSR cookie-based sessions
 - [x] **AUTH-05**: Role is stored in JWT `app_metadata` and enforced by middleware without DB queries
-- [x] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin)
+- [ ] **AUTH-06**: Middleware routes users to role-appropriate areas (employee / manager / leadership / admin)
 - [x] **AUTH-07**: Admin can assign roles: employee, manager, leadership, admin, hr_admin, survey_analyst
 - [x] **AUTH-08**: Admin can import employee roster via CSV (name, email, department, role, tenure band)
 - [x] **AUTH-09**: Admin can seed initial employee data for local development and testing
@@ -60,7 +60,7 @@
 - [x] **ANALYTICS-01**: System computes aggregate dimension scores from submitted responses using Postgres views/RPC (never client-side aggregation)
 - [x] **ANALYTICS-02**: Scores are broken down by department, role, tenure band, and survey cycle
 - [x] **ANALYTICS-03**: System computes favorable (Likert ≥4), neutral (=3), unfavorable (≤2) distribution for all 1–5 scale questions
-- [ ] **ANALYTICS-04**: System displays confidence indicator when respondent count for a segment is below the privacy threshold
+- [x] **ANALYTICS-04**: System displays confidence indicator when respondent count for a segment is below the privacy threshold
 - [x] **ANALYTICS-05**: System computes delta scores between survey cycles for trend analysis
 - [x] **ANALYTICS-06**: System computes participation rate as: submitted responses / eligible participants per survey
 - [x] **ANALYTICS-07**: `derived_metrics` table stores batch-computed aggregates, refreshed when a survey closes
@@ -71,10 +71,10 @@
 
 ### Dashboards (DASH)
 
-- [ ] **DASH-01**: Leadership dashboard shows: overall org health score, dimension scores, risk areas, participation rate, key qualitative themes, unresolved action items
-- [ ] **DASH-02**: Leadership dashboard shows heatmap of scores by department
-- [ ] **DASH-03**: Leadership dashboard shows trend lines across survey cycles per dimension
-- [ ] **DASH-04**: Leadership dashboard supports filters by department, role, tenure band, and survey period
+- [x] **DASH-01**: Leadership dashboard shows: overall org health score, dimension scores, risk areas, participation rate, key qualitative themes, unresolved action items
+- [x] **DASH-02**: Leadership dashboard shows heatmap of scores by department
+- [x] **DASH-03**: Leadership dashboard shows trend lines across survey cycles per dimension
+- [x] **DASH-04**: Leadership dashboard supports filters by department, role, tenure band, and survey period
 - [x] **DASH-05**: Manager dashboard shows team participation rate (using participation tokens, no individual identities)
 - [x] **DASH-06**: Manager dashboard shows team-level dimension scores only when team respondent count meets the privacy threshold
 - [ ] **DASH-07**: Manager dashboard shows action plans relevant to their team/department
@@ -103,14 +103,24 @@
 ### Admin Interfaces (ADMIN)
 
 - [x] **ADMIN-01**: Admin can create, edit, publish, schedule, and close surveys
-- [ ] **ADMIN-02**: Admin can manage questions: create, edit, reorder, delete, set type and targeting
-- [ ] **ADMIN-03**: Admin can map questions to dimensions
+- [x] **ADMIN-02**: Admin can manage questions: create, edit, reorder, delete, set type and targeting
+- [x] **ADMIN-03**: Admin can map questions to dimensions
 - [x] **ADMIN-04**: Admin can import and manage employee directory
 - [x] **ADMIN-05**: Admin can configure privacy thresholds
 - [x] **ADMIN-06**: Admin can monitor participation rates in real time while a survey is open
 - [x] **ADMIN-07**: Admin can manage action items (create, assign, update status)
 - [x] **ADMIN-08**: Admin can archive completed survey cycles
 - [x] **ADMIN-09**: Survey analyst can review and edit qualitative theme tags
+
+### Brand & Visual Identity (BRAND)
+
+- [x] **BRAND-01**: Application defines a semantic CSS custom property design token system (21 tokens: brand, accent, bg, surface, fg, border, success, warning, error groups) in `globals.css`
+- [x] **BRAND-02**: Tailwind config maps all design tokens to utility classes via CSS custom properties; Inter typeface loaded via `next/font/google`
+- [x] **BRAND-03**: A persistent `TopNav` component renders on all admin and employee layout pages with logo, role-appropriate nav links, and user avatar
+- [x] **BRAND-04**: All button instances use one of four defined variants (Primary, Secondary, Ghost, Danger) — no ad-hoc Tailwind color classes
+- [x] **BRAND-05**: All badge/status pills use `bg-*-muted` + `text-*-text` token pairs from the spec
+- [x] **BRAND-06**: All admin and employee page files use semantic token classes; no raw hex colors or arbitrary Tailwind values
+- [x] **BRAND-07**: App loads without console errors; no undefined Tailwind token warnings; `prefers-reduced-motion` respected
 
 ### Data Schema & Infrastructure (SCHEMA)
 
@@ -181,25 +191,30 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 – AUTH-10 | Phase 1 | Pending |
-| SCHEMA-01 – SCHEMA-04 | Phase 1 | Pending |
-| PRIVACY-01 – PRIVACY-07 | Phase 1 | Pending |
-| DX-01 – DX-05 | Phase 1 | Pending |
-| SURVEY-01 – SURVEY-13 | Phase 2 | Pending |
-| RESPONSE-01 – RESPONSE-10 | Phase 2 | Pending |
-| DIM-01 – DIM-03 | Phase 2 | Pending |
-| ANALYTICS-01 – ANALYTICS-11 | Phase 3 | Pending |
-| DASH-01 – DASH-09 | Phase 3 | Pending |
-| ACTIONS-01 – ACTIONS-06 | Phase 4 | Pending |
-| PUBLISH-01 – PUBLISH-05 | Phase 4 | Pending |
-| ADMIN-01 – ADMIN-09 | Phase 4 | Pending |
+| AUTH-01 – AUTH-05, AUTH-07 – AUTH-10 | Phase 1 | Complete |
+| AUTH-06 | Phase 6 | Pending |
+| SCHEMA-01 – SCHEMA-04 | Phase 1 | Complete |
+| PRIVACY-01 – PRIVACY-07 | Phase 1 | Complete |
+| DX-01 – DX-05 | Phase 1 | Complete |
+| SURVEY-01 – SURVEY-13 | Phase 2 | Complete |
+| RESPONSE-01 – RESPONSE-10 | Phase 2 | Complete |
+| DIM-01 – DIM-03 | Phase 2 | Complete |
+| ANALYTICS-01 – ANALYTICS-10 | Phase 3 | Complete |
+| ANALYTICS-11 | Phase 7 | Pending |
+| DASH-01 – DASH-06, DASH-08 – DASH-09 | Phase 3 | Complete |
+| DASH-07 | Phase 7 | Pending |
+| ACTIONS-01 – ACTIONS-06 | Phase 4 | Complete |
+| PUBLISH-01 – PUBLISH-05 | Phase 4 | Complete |
+| ADMIN-01 – ADMIN-09 | Phase 4 | Complete |
+| BRAND-01 – BRAND-07 | Phase 5 | Complete |
 
 **Coverage:**
-- v1 requirements: 92 total (AUTH:10, SCHEMA:4, PRIVACY:7, DX:5, SURVEY:13, RESPONSE:10, DIM:3, ANALYTICS:11, DASH:9, ACTIONS:6, PUBLISH:5, ADMIN:9)
-- Mapped to phases: 92
+- v1 requirements: 99 total (AUTH:10, SCHEMA:4, PRIVACY:7, DX:5, SURVEY:13, RESPONSE:10, DIM:3, ANALYTICS:11, DASH:9, ACTIONS:6, PUBLISH:5, ADMIN:9, BRAND:7)
+- Implemented [x]: 96/99
+- Pending [ ]: 3 (AUTH-06, ANALYTICS-11, DASH-07 — closing in Phases 6–7)
 - Unmapped: 0 ✓
 
-Note: The original header stated 75 requirements; the actual count of numbered v1 requirement IDs is 92. Roadmap covers all 92.
+Note: BRAND-01–07 added to REQUIREMENTS.md via Phase 6 gap closure. AUTH-06 reset to Pending (BUG-02 role routing gap). ANALYTICS-11 and DASH-07 closing in Phase 7.
 
 ---
 *Requirements defined: 2026-03-15*
