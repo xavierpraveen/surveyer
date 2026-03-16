@@ -67,7 +67,7 @@
 - [x] **ANALYTICS-08**: Privacy threshold enforcement: no aggregate data is returned when filtered result has fewer than the configured minimum respondents (default: 5); enforced server-side at the final filtered count, not per-filter
 - [x] **ANALYTICS-09**: Qualitative analysis: analyst can manually tag open-text responses with themes
 - [x] **ANALYTICS-10**: Qualitative analysis: system surfaces most frequent tags as "top recurring issues" and "top improvement suggestions"
-- [ ] **ANALYTICS-11**: AI summarization abstraction layer (provider interface) designed but no live LLM integration in v1; interface accepts raw text and returns structured themes
+- [x] **ANALYTICS-11**: AI summarization abstraction layer (provider interface) designed but no live LLM integration in v1; interface accepts raw text and returns structured themes
 
 ### Dashboards (DASH)
 
@@ -200,7 +200,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RESPONSE-01 – RESPONSE-10 | Phase 2 | Complete |
 | DIM-01 – DIM-03 | Phase 2 | Complete |
 | ANALYTICS-01 – ANALYTICS-10 | Phase 3 | Complete |
-| ANALYTICS-11 | Phase 7 | Pending |
+| ANALYTICS-11 | Phase 7 | Done |
 | DASH-01 – DASH-06, DASH-08 – DASH-09 | Phase 3 | Complete |
 | DASH-07 | Phase 7 | Pending |
 | ACTIONS-01 – ACTIONS-06 | Phase 4 | Complete |
@@ -210,8 +210,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 **Coverage:**
 - v1 requirements: 99 total (AUTH:10, SCHEMA:4, PRIVACY:7, DX:5, SURVEY:13, RESPONSE:10, DIM:3, ANALYTICS:11, DASH:9, ACTIONS:6, PUBLISH:5, ADMIN:9, BRAND:7)
-- Implemented [x]: 97/99
-- Pending [ ]: 2 (ANALYTICS-11, DASH-07 — closing in Phase 7)
+- Implemented [x]: 98/99
+- Pending [ ]: 1 (DASH-07 — closing in Phase 7)
 - Unmapped: 0 ✓
 
 Note: BRAND-01–07 added to REQUIREMENTS.md via Phase 6 gap closure. AUTH-06 closed in Phase 6 (BUG-02 role routing fixed; v1 consolidation: manager/leadership/hr_admin/survey_analyst all route to /admin via ROLE_ROUTES). ANALYTICS-11 and DASH-07 closing in Phase 7.
