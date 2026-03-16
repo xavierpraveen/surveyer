@@ -31,7 +31,14 @@ export default async function SurveyPage({ params }: PageProps) {
     redirect('/login')
   }
 
-  const userRole: string = (user.app_metadata?.role as string) ?? 'employee'
+  // Fetch user's department name for section targeting
+  const { data: profileData } = await db
+    .from('profiles')
+    .select('department_id, departments(name)')
+    .eq('id', user.id)
+    .single()
+  const userDepartment: string =
+    (profileData?.departments as { name?: string } | null)?.name ?? ''
 
   // Fetch survey
   const { data: surveyData, error: surveyError } = await db
@@ -55,17 +62,17 @@ export default async function SurveyPage({ params }: PageProps) {
   // If survey is not open, show message
   if (survey.status !== 'open') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">{survey.title}</h1>
-          <p className="text-gray-500">
+      <div className="max-w-3xl mx-auto p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="bg-surface border border-border rounded-lg shadow-sm p-8 max-w-md w-full text-center">
+          <h1 className="text-xl font-bold tracking-snug text-fg mb-2">{survey.title}</h1>
+          <p className="text-fg-muted">
             {survey.status === 'scheduled'
               ? 'This survey is not yet open. Please check back later.'
               : 'This survey is not currently open.'}
           </p>
           <a
             href="/dashboard"
-            className="mt-6 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+            className="mt-6 inline-flex items-center bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150"
           >
             Back to Dashboard
           </a>
@@ -83,21 +90,21 @@ export default async function SurveyPage({ params }: PageProps) {
 
   const allSections: SurveySection[] = (sectionsData ?? []) as SurveySection[]
 
-  // Filter sections by role targeting
+  // Filter sections by department targeting (empty target_roles = show to all)
   const filteredSections = allSections.filter((s) => {
     if (!s.target_roles || s.target_roles.length === 0) return true
-    return s.target_roles.includes('all') || s.target_roles.includes(userRole)
+    return userDepartment && s.target_roles.includes(userDepartment)
   })
 
   if (filteredSections.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">{survey.title}</h1>
-          <p className="text-gray-500">No sections in this survey are targeted to your role.</p>
+      <div className="max-w-3xl mx-auto p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="bg-surface border border-border rounded-lg shadow-sm p-8 max-w-md w-full text-center">
+          <h1 className="text-xl font-bold tracking-snug text-fg mb-2">{survey.title}</h1>
+          <p className="text-fg-muted">No sections in this survey are targeted to your role.</p>
           <a
             href="/dashboard"
-            className="mt-6 inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+            className="mt-6 inline-flex items-center bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150"
           >
             Back to Dashboard
           </a>
@@ -149,26 +156,24 @@ export default async function SurveyPage({ params }: PageProps) {
   const initialSectionIndex = initialDraft?.last_section_index ?? 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <a href="/dashboard" className="text-sm text-blue-600 hover:text-blue-700">
-            &larr; Back to Dashboard
-          </a>
-          <h1 className="text-2xl font-semibold text-gray-900 mt-3">{survey.title}</h1>
-          {survey.description && (
-            <p className="text-gray-600 mt-1">{survey.description}</p>
-          )}
-        </div>
-        <SurveyWizard
-          survey={survey}
-          sections={filteredSections}
-          questionsMap={questionsMap}
-          optionsMap={optionsMap}
-          initialDraft={initialDraft}
-          initialSectionIndex={initialSectionIndex}
-        />
+    <div className="max-w-3xl mx-auto p-8">
+      <div className="mb-6">
+        <a href="/dashboard" className="text-sm text-brand-text hover:underline">
+          &larr; Back to Dashboard
+        </a>
+        <h1 className="text-2xl font-extrabold tracking-snug text-fg mt-3">{survey.title}</h1>
+        {survey.description && (
+          <p className="text-fg-muted mt-1">{survey.description}</p>
+        )}
       </div>
+      <SurveyWizard
+        survey={survey}
+        sections={filteredSections}
+        questionsMap={questionsMap}
+        optionsMap={optionsMap}
+        initialDraft={initialDraft}
+        initialSectionIndex={initialSectionIndex}
+      />
     </div>
   )
 }

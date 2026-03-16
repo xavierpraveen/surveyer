@@ -22,12 +22,12 @@ export default async function PublicConfirmationPage({ params }: PageProps) {
   const survey = surveyData as Pick<Survey, 'title' | 'description'> | null
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-8">
+      <div className="bg-surface border border-border rounded-lg shadow-sm p-8 max-w-md w-full text-center">
         {/* Success icon */}
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-success-muted flex items-center justify-center">
           <svg
-            className="w-8 h-8 text-green-600"
+            className="w-8 h-8 text-success"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -41,18 +41,18 @@ export default async function PublicConfirmationPage({ params }: PageProps) {
           </svg>
         </div>
 
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Thank you for your response!</h1>
+        <h1 className="text-xl font-bold tracking-snug text-fg mb-2">Thank you for your response!</h1>
 
         {survey?.title && (
-          <p className="text-gray-500 mb-4">{survey.title}</p>
+          <p className="text-fg-muted mb-4">{survey.title}</p>
         )}
 
-        <p className="text-sm text-gray-600 mb-6">
+        <p className="text-sm text-fg-muted mb-6">
           Your response has been recorded anonymously. Leadership reviews all submissions
           to build a better workplace.
         </p>
 
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-fg-subtle">
           You may close this page. Your submission is complete.
         </p>
       </div>

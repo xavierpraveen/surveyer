@@ -31,7 +31,7 @@ function StatusBadge({
 }) {
   if (submissionStatus === 'submitted') {
     return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-surface-2 text-fg-muted">
         COMPLETED
       </span>
     )
@@ -39,7 +39,7 @@ function StatusBadge({
 
   if (survey.status === 'scheduled') {
     return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-brand-muted text-brand-text">
         UPCOMING
       </span>
     )
@@ -49,13 +49,13 @@ function StatusBadge({
     const days = getDaysRemaining(survey.closes_at)
     if (days !== null && days <= 7) {
       return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+        <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-warning-muted text-warning-text">
           CLOSES IN {days}d
         </span>
       )
     }
     return (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
+      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold bg-success-muted text-success-text">
         OPEN
       </span>
     )
@@ -75,7 +75,7 @@ function SurveyCardCTA({
     return (
       <Link
         href={`/surveys/${survey.id}/confirmation`}
-        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-slate-600 rounded-md hover:bg-slate-700 transition-colors"
+        className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 inline-flex items-center"
       >
         View Submission
       </Link>
@@ -86,7 +86,7 @@ function SurveyCardCTA({
     return (
       <button
         disabled
-        className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-400 bg-gray-100 rounded-md cursor-not-allowed"
+        className="bg-surface-2 border border-border text-fg-subtle font-medium text-sm px-3.5 py-2 rounded-md cursor-not-allowed disabled:opacity-50 inline-flex items-center"
       >
         Coming soon
       </button>
@@ -98,7 +98,7 @@ function SurveyCardCTA({
     return (
       <Link
         href={`/surveys/${survey.id}`}
-        className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+        className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 inline-flex items-center"
       >
         {label}
       </Link>
@@ -121,36 +121,14 @@ export default async function EmployeeDashboardPage() {
 
   const userRole: string = (user.app_metadata?.role as string) ?? 'employee'
 
-  // Fetch surveys that are open or scheduled
+  // Fetch surveys that are open or scheduled — all employees see all active surveys
   const { data: surveysData } = await db
     .from('surveys')
     .select('*')
     .in('status', ['open', 'scheduled'])
     .order('created_at', { ascending: false })
 
-  const allSurveys: Survey[] = (surveysData ?? []) as Survey[]
-
-  // Filter surveys by role targeting — keep surveys with at least one section matching user's role or 'all'
-  const filteredSurveys: Survey[] = []
-  for (const survey of allSurveys) {
-    const { data: sections } = await db
-      .from('survey_sections')
-      .select('target_roles')
-      .eq('survey_id', survey.id)
-
-    const hasMatchingSection = (sections ?? []).some((s: { target_roles: string[] }) => {
-      return (
-        !s.target_roles ||
-        s.target_roles.length === 0 ||
-        s.target_roles.includes('all') ||
-        s.target_roles.includes(userRole)
-      )
-    })
-
-    if (hasMatchingSection) {
-      filteredSurveys.push(survey)
-    }
-  }
+  const filteredSurveys: Survey[] = (surveysData ?? []) as Survey[]
 
   // Also include surveys the user has already submitted (participation_tokens)
   const { data: tokenData } = await db
@@ -195,60 +173,70 @@ export default async function EmployeeDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-semibold text-gray-900">My Surveys</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Surveys available for your role
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">
-              {user.email} &middot; {userRole}
-            </span>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-gray-800 rounded-md hover:bg-gray-900 transition-colors"
-              >
-                Sign out
-              </button>
-            </form>
-          </div>
+    <div className="max-w-3xl mx-auto p-8">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-2xl font-extrabold tracking-snug text-fg">My Surveys</h1>
+          <p className="text-sm text-fg-muted mt-1">
+            Surveys available for your role
+          </p>
         </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-fg-muted">
+            {user.email} &middot; {userRole}
+          </span>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150"
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
+      </div>
 
-        {surveyCards.length === 0 ? (
-          <div className="text-center py-16 text-gray-500">
-            <p className="text-lg">No surveys available right now.</p>
-            <p className="text-sm mt-2">Check back later for new surveys.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {surveyCards.map(({ survey, submissionStatus }) => (
-              <div
-                key={survey.id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col gap-4"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <h2 className="font-semibold text-gray-900 text-base leading-tight">
-                    {survey.title}
-                  </h2>
-                  <StatusBadge survey={survey} submissionStatus={submissionStatus} />
-                </div>
-
-                {survey.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">{survey.description}</p>
-                )}
-
-                <div className="mt-auto pt-2">
-                  <SurveyCardCTA survey={survey} submissionStatus={submissionStatus} />
-                </div>
+      {surveyCards.length === 0 ? (
+        <div className="text-sm text-fg-muted text-center py-12">
+          <p className="text-base">No surveys available right now.</p>
+          <p className="mt-2">Check back later for new surveys.</p>
+          <a
+            href="/results"
+            className="mt-6 inline-flex items-center text-sm text-brand-text hover:underline"
+          >
+            View published results
+          </a>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4">
+          {surveyCards.map(({ survey, submissionStatus }) => (
+            <div
+              key={survey.id}
+              className="bg-surface border border-border rounded-lg shadow-sm p-5 hover:border-indigo-300 hover:shadow-md transition-all duration-150 flex flex-col gap-4"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <h2 className="font-bold tracking-tight text-fg text-base leading-tight">
+                  {survey.title}
+                </h2>
+                <StatusBadge survey={survey} submissionStatus={submissionStatus} />
               </div>
-            ))}
-          </div>
-        )}
+
+              {survey.description && (
+                <p className="text-sm text-fg-muted line-clamp-2">{survey.description}</p>
+              )}
+
+              <div className="mt-auto pt-2">
+                <SurveyCardCTA survey={survey} submissionStatus={submissionStatus} />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-8 pt-4 border-t border-border">
+        <a href="/results" className="text-sm text-brand-text hover:underline">
+          View published survey results →
+        </a>
       </div>
     </div>
   )

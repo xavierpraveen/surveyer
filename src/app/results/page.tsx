@@ -39,10 +39,10 @@ function groupActionsByStatus(actions: PublicAction[]): ActionGroup[] {
 
   // Order: In Progress, Planned, Blocked, Completed
   const groups: ActionGroup[] = [
-    { label: 'In Progress', colorClass: 'bg-blue-100 text-blue-700', actions: inProgress },
-    { label: 'Planned', colorClass: 'bg-gray-100 text-gray-600', actions: planned },
-    { label: 'Blocked', colorClass: 'bg-red-100 text-red-700', actions: blocked },
-    { label: 'Completed', colorClass: 'bg-green-100 text-green-700', actions: completed },
+    { label: 'In Progress', colorClass: 'bg-warning-muted text-warning-text', actions: inProgress },
+    { label: 'Planned', colorClass: 'bg-brand-muted text-brand-text', actions: planned },
+    { label: 'Blocked', colorClass: 'bg-error-muted text-error-text', actions: blocked },
+    { label: 'Completed', colorClass: 'bg-success-muted text-success-text', actions: completed },
   ]
 
   // Only return groups that have actions
@@ -52,9 +52,9 @@ function groupActionsByStatus(actions: PublicAction[]): ActionGroup[] {
 // ─── Health score color ────────────────────────────────────────────────────────
 
 function healthScoreColor(score: number): string {
-  if (score >= 4.0) return 'text-green-600'
-  if (score >= 3.0) return 'text-yellow-600'
-  return 'text-red-600'
+  if (score >= 4.0) return 'text-success'
+  if (score >= 3.0) return 'text-warning'
+  return 'text-error'
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -73,10 +73,10 @@ export default async function ResultsPage({ searchParams }: PageProps) {
   // Error or no data state
   if (!result.success || !result.data.hasData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="text-center max-w-md px-4">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Company Results</h1>
-          <p className="text-gray-500">
+          <h1 className="text-2xl font-extrabold tracking-snug text-fg mb-2">Company Results</h1>
+          <p className="text-fg-muted">
             Results will appear here after the first survey cycle closes and metrics are computed.
           </p>
           {publishedCycles.length > 0 && (
@@ -107,8 +107,8 @@ export default async function ResultsPage({ searchParams }: PageProps) {
   const actionGroups = groupActionsByStatus(publicActions)
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-bg">
+      <div className="max-w-6xl mx-auto p-8">
 
         {/* Cycle selector */}
         {publishedCycles.length > 0 && (
@@ -122,62 +122,62 @@ export default async function ResultsPage({ searchParams }: PageProps) {
         )}
 
         {/* Hero section */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <div className="bg-surface border border-border rounded-lg shadow-sm p-6 mb-6">
           <div className="mb-4">
-            <h1 className="text-2xl font-semibold text-gray-900">Company Survey Results</h1>
+            <h1 className="text-2xl font-extrabold tracking-snug text-fg">Company Survey Results</h1>
             {(surveyTitle || closedDateLabel) && (
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-fg-muted mt-1">
                 {surveyTitle}
                 {surveyTitle && closedDateLabel && ' · '}
                 {closedDateLabel}
               </p>
             )}
             {cycle && (
-              <span className="inline-flex items-center mt-2 text-xs bg-green-100 text-green-700 font-medium px-2 py-0.5 rounded-full">
-                (Published)
+              <span className="inline-flex items-center mt-2 text-xs bg-success-muted text-success-text font-semibold px-2 py-0.5 rounded-full">
+                Published
               </span>
             )}
           </div>
 
           {/* KPI row */}
           {kpis && (
-            <div className="flex flex-wrap gap-6 pt-4 border-t border-gray-100">
+            <div className="flex flex-wrap gap-6 pt-4 border-t border-border">
               {/* Overall Health Score */}
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                <span className="text-xs font-semibold text-fg-subtle uppercase tracking-[0.07em] mb-1">
                   Overall Health Score
                 </span>
                 {kpis.overallHealthScore !== null ? (
                   <span
-                    className={`text-3xl font-bold ${healthScoreColor(kpis.overallHealthScore)}`}
+                    className={`text-3xl font-bold tabular-nums ${healthScoreColor(kpis.overallHealthScore)}`}
                   >
                     {kpis.overallHealthScore.toFixed(1)}
-                    <span className="text-lg font-normal text-gray-400"> / 5</span>
+                    <span className="text-lg font-normal text-fg-subtle"> / 5</span>
                   </span>
                 ) : (
-                  <span className="text-gray-400 font-mono text-xl">---</span>
+                  <span className="text-fg-subtle font-mono text-xl">---</span>
                 )}
               </div>
 
               {/* Participation Rate */}
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                <span className="text-xs font-semibold text-fg-subtle uppercase tracking-[0.07em] mb-1">
                   Participation Rate
                 </span>
-                <span className="text-3xl font-bold text-gray-900">
+                <span className="text-3xl font-bold text-fg tabular-nums">
                   {kpis.participationRate}
-                  <span className="text-lg font-normal text-gray-400">% participated</span>
+                  <span className="text-lg font-normal text-fg-subtle">% participated</span>
                 </span>
               </div>
 
               {/* Total Responses */}
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                <span className="text-xs font-semibold text-fg-subtle uppercase tracking-[0.07em] mb-1">
                   Total Responses
                 </span>
-                <span className="text-3xl font-bold text-gray-900">
+                <span className="text-3xl font-bold text-fg tabular-nums">
                   {kpis.totalResponses}
-                  <span className="text-lg font-normal text-gray-400"> responses</span>
+                  <span className="text-lg font-normal text-fg-subtle"> responses</span>
                 </span>
               </div>
             </div>
@@ -185,35 +185,35 @@ export default async function ResultsPage({ searchParams }: PageProps) {
         </div>
 
         {/* Section: Dimension Scores */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Dimension Scores</h2>
+        <div className="bg-surface border border-border rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-bold tracking-snug text-fg mb-4">Dimension Scores</h2>
           {dimensionScores.length === 0 ? (
-            <p className="text-gray-500 text-sm">No dimension scores available.</p>
+            <p className="text-fg-muted text-sm">No dimension scores available.</p>
           ) : (
             <DimensionBarChart scores={dimensionScores} />
           )}
         </div>
 
         {/* Section: Qualitative Themes */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">Qualitative Themes</h2>
+        <div className="bg-surface border border-border rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-xl font-bold tracking-snug text-fg mb-4">Qualitative Themes</h2>
           <QualitativeThemePanel themes={qualitativeThemes} />
         </div>
 
         {/* Section: Committed Actions */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h2 className="text-lg font-medium text-gray-900 mb-4">What We&apos;re Doing About It</h2>
+        <div className="bg-surface border border-border rounded-lg shadow-sm p-6">
+          <h2 className="text-xl font-bold tracking-snug text-fg mb-4">What We&apos;re Doing About It</h2>
 
           {publicActions.length === 0 ? (
-            <p className="text-gray-500 text-sm">No public action items yet.</p>
+            <p className="text-fg-muted text-sm">No public action items yet.</p>
           ) : (
             <div>
               {actionGroups.map((group) => (
                 <div key={group.label} className="mb-6 last:mb-0">
-                  <h3 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
+                  <h3 className="text-base font-bold tracking-tight text-fg mb-3 flex items-center gap-2">
                     {group.label}
                     <span
-                      className={`text-xs rounded-full px-2 py-0.5 ${group.colorClass}`}
+                      className={`text-xs rounded-full px-2 py-0.5 font-semibold ${group.colorClass}`}
                     >
                       {group.actions.length}
                     </span>
@@ -222,16 +222,16 @@ export default async function ResultsPage({ searchParams }: PageProps) {
                     {group.actions.map((action) => (
                       <div
                         key={action.id}
-                        className="bg-white border border-gray-200 rounded-lg p-4"
+                        className="bg-surface border border-border rounded-lg p-4"
                       >
-                        <p className="font-medium text-gray-900">{action.title}</p>
+                        <p className="font-medium text-fg">{action.title}</p>
                         {action.problemStatement && (
-                          <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                          <p className="text-sm text-fg-muted mt-1 line-clamp-2">
                             {action.problemStatement}
                           </p>
                         )}
                         {(action.departmentName || action.targetDate) && (
-                          <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                          <div className="flex items-center gap-3 mt-2 text-xs text-fg-subtle">
                             {action.departmentName && <span>{action.departmentName}</span>}
                             {action.departmentName && action.targetDate && (
                               <span>·</span>

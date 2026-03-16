@@ -25,21 +25,24 @@ export default function MagicLinkPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-sm border border-gray-200">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-2">Sign in with magic link</h1>
-        <p className="text-sm text-gray-500 mb-6">
-          Enter your company email and we&apos;ll send you a sign-in link.
-        </p>
+    <div className="min-h-screen bg-bg flex items-center justify-center p-4">
+      <div className="bg-surface border border-border rounded-lg shadow-md p-8 w-full max-w-sm">
+        {/* Logo mark */}
+        <div className="flex items-center gap-2 justify-center mb-6">
+          <div className="w-8 h-8 rounded-md bg-gradient-to-br from-brand to-accent flex-shrink-0" />
+          <span className="text-fg font-extrabold text-sm tracking-tight">Surveyer</span>
+        </div>
+
+        <h1 className="text-xl font-bold tracking-snug text-fg text-center mb-6">Sign in with magic link</h1>
 
         {success ? (
-          <div className="text-sm text-green-700 bg-green-50 px-4 py-3 rounded-md border border-green-200">
+          <div className="text-sm text-success-text bg-success-muted px-4 py-3 rounded-md border border-success text-center">
             {success}
           </div>
         ) : (
           <form action={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="block text-sm font-medium text-fg mb-1">
                 Email
               </label>
               <input
@@ -48,28 +51,28 @@ export default function MagicLinkPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg placeholder:text-fg-subtle focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
                 placeholder="you@company.com"
               />
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-md">{error}</p>
+              <p className="text-xs text-error-text bg-error-muted px-3 py-2 rounded-md" role="alert">{error}</p>
             )}
 
             <button
               type="submit"
               disabled={pending}
-              className="w-full py-2 px-4 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {pending ? 'Sending...' : 'Send magic link'}
             </button>
           </form>
         )}
 
-        <p className="mt-4 text-center text-sm text-gray-500">
+        <p className="mt-4 text-center text-sm text-fg-muted">
           Have a password?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline">
+          <Link href="/login" className="text-brand-text hover:underline text-sm">
             Sign in with email
           </Link>
         </p>

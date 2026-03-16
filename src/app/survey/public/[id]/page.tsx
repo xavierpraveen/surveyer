@@ -98,14 +98,14 @@ export default async function PublicSurveyPage({ params }: PageProps) {
   const confirmationPath = `/survey/public/${surveyId}/confirmation`
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-bg">
+      <div className="max-w-3xl mx-auto p-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">{survey.title}</h1>
+          <h1 className="text-2xl font-extrabold tracking-snug text-fg">{survey.title}</h1>
           {survey.description && (
-            <p className="text-gray-600 mt-1">{survey.description}</p>
+            <p className="text-fg-muted mt-1">{survey.description}</p>
           )}
-          <p className="text-xs text-gray-400 mt-2">
+          <p className="text-xs text-fg-subtle mt-2">
             Your response is anonymous and collected without a login.
           </p>
         </div>
@@ -138,12 +138,12 @@ function SurveyUnavailable({
         : 'This survey is not currently available for public responses.'
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-8">
+      <div className="bg-surface border border-border rounded-lg shadow-sm p-8 max-w-md w-full text-center">
         {surveyTitle && (
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">{surveyTitle}</h1>
+          <h1 className="text-xl font-bold tracking-snug text-fg mb-2">{surveyTitle}</h1>
         )}
-        <p className="text-gray-500">{message}</p>
+        <p className="text-fg-muted">{message}</p>
       </div>
     </div>
   )
@@ -151,11 +151,11 @@ function SurveyUnavailable({
 
 function PublicAlreadySubmitted({ surveyTitle }: { surveyTitle: string }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 max-w-md w-full text-center">
-        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+    <div className="min-h-screen bg-bg flex items-center justify-center p-8">
+      <div className="bg-surface border border-border rounded-lg shadow-sm p-8 max-w-md w-full text-center">
+        <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-success-muted flex items-center justify-center">
           <svg
-            className="w-6 h-6 text-green-600"
+            className="w-6 h-6 text-success"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -168,8 +168,8 @@ function PublicAlreadySubmitted({ surveyTitle }: { surveyTitle: string }) {
             />
           </svg>
         </div>
-        <h1 className="text-xl font-semibold text-gray-900 mb-2">{surveyTitle}</h1>
-        <p className="text-gray-600">
+        <h1 className="text-xl font-bold tracking-snug text-fg mb-2">{surveyTitle}</h1>
+        <p className="text-fg-muted">
           You&apos;ve already submitted this survey. Thank you for your participation.
         </p>
       </div>
