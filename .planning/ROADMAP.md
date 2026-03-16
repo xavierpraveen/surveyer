@@ -128,9 +128,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [x] 06-01-PLAN.md — BUG-01 fix: rename section_id → survey_section_id across all 7 query/type/component files
-- [ ] 06-02-PLAN.md — BUG-02 fix: expand AppRole to all 6 roles, annotate ROLE_ROUTES with v1 consolidation, update middleware normalization (AUTH-06)
-- [ ] 06-03-PLAN.md — REQUIREMENTS.md checkbox sync: check AUTH-06, DASH-01–04, ANALYTICS-04, ADMIN-02, ADMIN-03; update coverage count
+- [x] 06-01-PLAN.md — BUG-01 fix: rename section_id → survey_section_id across all 7 query/type/component files (completed 2026-03-16)
+- [x] 06-02-PLAN.md — BUG-02 fix: expand AppRole to all 6 roles, annotate ROLE_ROUTES with v1 consolidation, update middleware normalization (AUTH-06) (completed 2026-03-16)
+- [x] 06-03-PLAN.md — REQUIREMENTS.md checkbox sync: check AUTH-06, DASH-01–04, ANALYTICS-04, ADMIN-02, ADMIN-03; update coverage count (completed 2026-03-16)
 
 ### Phase 7: Feature Gap Closure
 **Goal**: The two genuinely unimplemented v1 requirements are delivered — the manager dashboard shows department-relevant action items, and an AI summarization provider interface exists as a clean integration point for v2 LLM work
