@@ -28,18 +28,23 @@ Organizational health survey platform — employees submit anonymous surveys; le
    ```bash
    supabase start
    ```
-   This outputs your local credentials. Copy the values into `.env.local`:
-   - `NEXT_PUBLIC_SUPABASE_URL` → "API URL" from output
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` → "anon key" from output
-   - `SUPABASE_SERVICE_ROLE_KEY` → "service_role key" from output
+   The local Supabase instance uses fixed default credentials — copy these into `.env.local`:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+   SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+   SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+   ALLOWED_EMAIL_DOMAIN=acme.dev
+   ```
+   > These are the standard Supabase local development keys — they are the same for every developer and are not secrets.
 
 4. **Apply migrations and seed data**
    ```bash
    supabase db reset
    ```
-   This applies all migrations in `supabase/migrations/` and seeds the database.
+   This applies all 8 migrations in `supabase/migrations/` and seeds the database with 18 test users, a complete diagnostic survey, and all 12 org health dimensions.
 
-5. **Generate TypeScript types from schema**
+5. **Generate TypeScript types from schema** *(optional — stub types ship with the repo)*
    ```bash
    pnpm db:types
    ```
@@ -49,6 +54,14 @@ Organizational health survey platform — employees submit anonymous surveys; le
    pnpm dev
    ```
    App runs at [http://localhost:3000](http://localhost:3000)
+
+### Local Dev Tools
+
+| Tool | URL | Purpose |
+|------|-----|---------|
+| App | http://localhost:3000 | Next.js dev server |
+| Supabase Studio | http://127.0.0.1:54323 | DB browser, table editor, SQL runner |
+| Mailpit | http://127.0.0.1:54324 | Email sandbox (catches all auth emails) |
 
 ---
 
