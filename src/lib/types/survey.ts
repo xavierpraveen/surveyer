@@ -104,9 +104,9 @@ export interface ResponseAnswer {
   id: string
   response_id: string
   question_id: string
-  answer_text: string | null
-  answer_numeric: number | null
-  answer_options: unknown | null // jsonb — array of option ids or values
+  text_value: string | null
+  numeric_value: number | null
+  selected_options: unknown | null // jsonb — array of option ids or values
 }
 
 export interface ResponseDraft {
