@@ -21,6 +21,9 @@ const TENURE_BAND_LABELS: Record<string, string> = {
   more_than_10yr: '10+ years',
 }
 
+const INPUT_CLASS =
+  'border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus'
+
 export default function FilterBar({
   availableSurveys,
   departments,
@@ -84,14 +87,14 @@ export default function FilterBar({
   }
 
   return (
-    <div className="sticky top-0 z-20 bg-white border-b border-gray-200 px-6 py-3 flex items-center gap-4 flex-wrap">
+    <div className="flex flex-wrap items-end gap-4 bg-surface border border-border rounded-lg p-4 mb-6">
       {/* Survey Period */}
-      <div className="flex items-center gap-2">
-        <label className="text-xs font-medium text-gray-500 whitespace-nowrap">Survey</label>
+      <div>
+        <label className="block text-sm font-semibold text-fg mb-1">Survey</label>
         <select
           value={surveyId}
           onChange={(e) => handleSurveyChange(e.target.value)}
-          className="text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+          className={INPUT_CLASS}
         >
           <option value="">All Surveys</option>
           {availableSurveys.map((s) => (
@@ -104,12 +107,12 @@ export default function FilterBar({
 
       {/* Department */}
       {departments.length > 0 && (
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-gray-500 whitespace-nowrap">Department</label>
+        <div>
+          <label className="block text-sm font-semibold text-fg mb-1">Department</label>
           <select
             value={department}
             onChange={(e) => handleDepartmentChange(e.target.value)}
-            className="text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+            className={INPUT_CLASS}
           >
             <option value="">All Departments</option>
             {departments.map((d) => (
@@ -123,12 +126,12 @@ export default function FilterBar({
 
       {/* Role */}
       {roles.length > 0 && (
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-gray-500 whitespace-nowrap">Role</label>
+        <div>
+          <label className="block text-sm font-semibold text-fg mb-1">Role</label>
           <select
             value={role}
             onChange={(e) => handleRoleChange(e.target.value)}
-            className="text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+            className={INPUT_CLASS}
           >
             <option value="">All Roles</option>
             {roles.map((r) => (
@@ -142,12 +145,12 @@ export default function FilterBar({
 
       {/* Tenure Band */}
       {tenureBands.length > 0 && (
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-gray-500 whitespace-nowrap">Tenure</label>
+        <div>
+          <label className="block text-sm font-semibold text-fg mb-1">Tenure</label>
           <select
             value={tenureBand}
             onChange={(e) => handleTenureBandChange(e.target.value)}
-            className="text-sm border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"
+            className={INPUT_CLASS}
           >
             <option value="">All Tenures</option>
             {tenureBands.map((t) => (
@@ -161,8 +164,8 @@ export default function FilterBar({
 
       {/* Loading spinner */}
       {isPending && (
-        <div className="ml-2 flex items-center gap-1.5 text-xs text-blue-600">
-          <div className="w-3.5 h-3.5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="ml-2 flex items-center gap-1.5 text-xs text-brand">
+          <div className="w-3.5 h-3.5 border-2 border-brand border-t-transparent rounded-full animate-spin" />
           <span>Loading…</span>
         </div>
       )}

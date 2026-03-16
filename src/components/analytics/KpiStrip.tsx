@@ -6,9 +6,9 @@ interface KpiStripProps {
 }
 
 function scoreColor(score: number): string {
-  if (score >= 4.0) return 'text-green-600'
-  if (score >= 3.0) return 'text-yellow-600'
-  return 'text-red-600'
+  if (score >= 4.0) return 'text-success-text'
+  if (score >= 3.0) return 'text-warning-text'
+  return 'text-error-text'
 }
 
 interface KpiCardProps {
@@ -18,16 +18,16 @@ interface KpiCardProps {
 
 function KpiCard({ label, children }: KpiCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex-1 min-w-0">
-      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{label}</p>
-      <div className="text-2xl font-bold text-gray-900">{children}</div>
+    <div className="bg-surface border border-border rounded-lg shadow-sm p-5 flex-1 min-w-0">
+      <p className="text-xs text-fg-subtle font-medium uppercase tracking-[0.07em] mb-1">{label}</p>
+      <div className="text-2xl font-extrabold tracking-snug text-fg tabular-nums">{children}</div>
     </div>
   )
 }
 
 export default function KpiStrip({ kpis }: KpiStripProps) {
   return (
-    <div className="flex items-stretch gap-4 flex-wrap">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <KpiCard label="Overall Health Score">
         {kpis.overallHealthScore !== null ? (
           <span className={scoreColor(kpis.overallHealthScore)}>
@@ -51,7 +51,7 @@ export default function KpiStrip({ kpis }: KpiStripProps) {
       </KpiCard>
 
       <KpiCard label="Below Threshold">
-        <span className={kpis.dimensionsBelowThreshold > 0 ? 'text-yellow-600' : 'text-gray-900'}>
+        <span className={kpis.dimensionsBelowThreshold > 0 ? 'text-warning-text' : 'text-fg'}>
           {kpis.dimensionsBelowThreshold} segment{kpis.dimensionsBelowThreshold !== 1 ? 's' : ''}
         </span>
       </KpiCard>

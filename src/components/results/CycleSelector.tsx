@@ -29,12 +29,12 @@ export default function CycleSelector({
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm text-gray-600 font-medium">Viewing:</span>
+    <div className="flex items-center gap-3">
+      <label className="text-sm font-semibold text-fg mb-1">Viewing:</label>
       <select
         value={currentCycleId ?? ''}
         onChange={handleChange}
-        className="text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border border-border rounded-md bg-surface px-3 py-2 text-sm text-fg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-border-focus"
       >
         <option value="">Current (Live)</option>
         {cycles.map((cycle) => (
