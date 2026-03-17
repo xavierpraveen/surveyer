@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import type { Survey, SurveySection, SurveyQuestion, Dimension } from '@/lib/types/survey'
+import { normalizeQuestionRow } from '@/lib/actions/survey-compat'
 import SurveyStatusBanner from '@/components/admin/SurveyStatusBanner'
 import SectionSidebar from '@/components/admin/SectionSidebar'
 import QuestionEditor from '@/components/admin/QuestionEditor'
@@ -52,7 +53,26 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
     .eq('survey_id', id)
     .order('display_order', { ascending: true })
 
-  const rawSections = (sectionsData ?? []) as SurveySection[]
+  let rawSections = (sectionsData ?? []) as SurveySection[]
+
+  if (rawSections.length === 0) {
+    await dbAdmin
+      .from('survey_sections')
+      .insert({
+        survey_id: id,
+        title: 'About You',
+        description: 'Add respondent profile and context questions here.',
+        target_roles: ['all'],
+        display_order: 0,
+      })
+
+    const { data: fallbackSectionsData } = await db
+      .from('survey_sections')
+      .select('*')
+      .eq('survey_id', id)
+      .order('display_order', { ascending: true })
+    rawSections = (fallbackSectionsData ?? []) as SurveySection[]
+  }
 
   // Fetch all questions for this survey (across all sections)
   let allQuestions: SurveyQuestion[] = []
@@ -63,7 +83,7 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
       .select('*')
       .in('survey_section_id', sectionIds)
       .order('display_order', { ascending: true })
-    allQuestions = (questionsData ?? []) as SurveyQuestion[]
+    allQuestions = ((questionsData ?? []) as Record<string, unknown>[]).map(normalizeQuestionRow)
   }
 
   // Fetch dimensions

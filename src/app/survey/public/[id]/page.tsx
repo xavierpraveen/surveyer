@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import PublicSurveyClient from './PublicSurveyClient'
+import { normalizeQuestionRow } from '@/lib/actions/survey-compat'
 import type {
   Survey,
   SurveySection,
@@ -68,7 +69,7 @@ export default async function PublicSurveyPage({ params }: PageProps) {
     .in('survey_section_id', sectionIds)
     .order('display_order', { ascending: true })
 
-  const allQuestions: SurveyQuestion[] = (questionsData ?? []) as SurveyQuestion[]
+  const allQuestions: SurveyQuestion[] = ((questionsData ?? []) as Record<string, unknown>[]).map(normalizeQuestionRow)
 
   const questionsMap: Record<string, SurveyQuestion[]> = {}
   for (const section of sections) {

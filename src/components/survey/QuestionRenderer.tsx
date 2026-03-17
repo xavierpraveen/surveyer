@@ -9,6 +9,12 @@ interface QuestionRendererProps {
   onChange: (value: unknown) => void
 }
 
+type QuestionLike = SurveyQuestion & {
+  // Legacy DB column names still present in seeded/local data
+  type?: SurveyQuestion['question_type']
+  required?: boolean
+}
+
 const LIKERT_5_LABELS: Record<number, string> = {
   1: 'Strongly Disagree',
   2: 'Disagree',
@@ -28,16 +34,17 @@ export default function QuestionRenderer({
   value,
   onChange,
 }: QuestionRendererProps) {
-  const { question_type, text, is_required, id } = question
+  const { questionType, isRequired } = getQuestionRenderMeta(question)
+  const { text, id } = question
 
   return (
     <div className="mb-6">
       <p className="text-sm font-semibold text-fg mb-3">
         {text}
-        {is_required && <span className="text-error ml-1" aria-label="required">*</span>}
+        {isRequired && <span className="text-error ml-1" aria-label="required">*</span>}
       </p>
 
-      {question_type === 'likert_5' && (
+      {questionType === 'likert_5' && (
         <div className="flex flex-wrap gap-3">
           {[1, 2, 3, 4, 5].map((n) => (
             <label
@@ -63,7 +70,7 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {question_type === 'likert_10' && (
+      {questionType === 'likert_10' && (
         <div className="flex flex-wrap gap-2">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
             <label
@@ -90,7 +97,7 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {question_type === 'single_select' && (
+      {questionType === 'single_select' && (
         <div className="flex flex-col gap-2">
           {options.map((opt) => (
             <label
@@ -113,7 +120,7 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {question_type === 'multi_select' && (
+      {questionType === 'multi_select' && (
         <div className="flex flex-col gap-2">
           {options.map((opt) => {
             const selected = Array.isArray(value) && value.includes(opt.id)
@@ -145,7 +152,7 @@ export default function QuestionRenderer({
         </div>
       )}
 
-      {question_type === 'short_text' && (
+      {questionType === 'short_text' && (
         <input
           type="text"
           maxLength={500}
@@ -156,7 +163,7 @@ export default function QuestionRenderer({
         />
       )}
 
-      {question_type === 'long_text' && (
+      {questionType === 'long_text' && (
         <textarea
           rows={4}
           maxLength={2000}
@@ -168,4 +175,13 @@ export default function QuestionRenderer({
       )}
     </div>
   )
+}
+
+export function getQuestionRenderMeta(question: QuestionLike): {
+  questionType: SurveyQuestion['question_type'] | undefined
+  isRequired: boolean
+} {
+  const questionType = question.question_type ?? question.type
+  const isRequired = Boolean(question.is_required ?? question.required ?? false)
+  return { questionType, isRequired }
 }

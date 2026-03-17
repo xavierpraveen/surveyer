@@ -68,7 +68,7 @@ export const createQuestionSchema = z.object({
   text: z.string().min(1, 'Question text is required').max(1000, 'Question text must be at most 1000 characters'),
   question_type: questionTypeSchema,
   is_required: z.boolean(),
-  conditional_rule: conditionalRuleSchema.optional(),
+  conditional_rule: conditionalRuleSchema.nullable().optional(),
   options: z.array(questionOptionInputSchema).optional(),
 })
 

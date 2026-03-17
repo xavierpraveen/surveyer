@@ -106,3 +106,15 @@ export interface ParticipationRow {
   responded: number
   rate: number   // 0-100 percentage
 }
+
+// Employee directory row for admin listing
+export interface EmployeeDirectoryRow {
+  id: string
+  name: string
+  email: string
+  department: string | null
+  role: string | null
+  tenureBand: string | null
+  isActive: boolean
+  createdAt: string
+}

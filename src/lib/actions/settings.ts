@@ -3,7 +3,15 @@ import 'server-only'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { normalizeRole } from '@/lib/constants/roles'
-import type { AppSettings, EmployeeImportRow, ImportResult, ParticipationRow } from '@/lib/types/phase4'
+import type {
+  AppSettings,
+  EmployeeDirectoryRow,
+  EmployeeImportRow,
+  ImportResult,
+  ParticipationRow,
+} from '@/lib/types/phase4'
+import { normalizeEmployeeDirectoryRow } from './settings-employee-compat'
+import { buildParticipationRows } from './settings-participation-compat'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabaseAdmin as any
@@ -203,18 +211,21 @@ export async function getParticipationForOpenSurvey(): Promise<
   if (authError || !user) return { success: false, error: 'Unauthorized' }
 
   // Find currently open survey
-  const { data: openSurvey, error: surveyError } = await db
+  const { data: openSurveyRows, error: surveyError } = await db
     .from('surveys')
     .select('id')
     .eq('status', 'open')
-    .single()
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  const openSurvey = ((openSurveyRows as Array<{ id: string }> | null) ?? [])[0]
 
   if (surveyError || !openSurvey) {
     // No open survey — return empty array
     return { success: true, data: [] }
   }
 
-  const { id: surveyId } = openSurvey as { id: string }
+  const { id: surveyId } = openSurvey
 
   // Fetch participation data from v_participation_rates
   // View may have either old schema (survey_id, title, submitted_count)
@@ -226,20 +237,75 @@ export async function getParticipationForOpenSurvey(): Promise<
 
   if (partError) return { success: false, error: partError.message }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const rows: ParticipationRow[] = ((partData as any[]) ?? []).map((r) => {
-    // Support both old schema (submitted_count) and new schema (token_count)
-    const eligible = Number(r.eligible_count ?? 0)
-    const responded = Number(r.token_count ?? r.submitted_count ?? 0)
-    const rate = eligible > 0 ? Math.round((responded / eligible) * 100) : 0
-    return {
-      department: r.department_name ?? r.title ?? 'Unknown',
-      departmentId: r.department_id ?? null,
-      eligible,
-      responded,
-      rate,
+  // Eligible-by-department baseline so open surveys with zero responses still
+  // render rows (responded=0) instead of appearing empty.
+  const { data: eligibleData, error: eligibleError } = await db
+    .from('profiles')
+    .select('department_id, departments(name), is_active')
+    .eq('is_active', true)
+
+  if (eligibleError) return { success: false, error: eligibleError.message }
+
+  const eligibleCounts = new Map<string, { department_id: string | null; department_name: string | null; eligible_count: number }>()
+  for (const row of ((eligibleData as Array<{
+    department_id: string | null
+    departments: { name?: string } | Array<{ name?: string }> | null
+    department?: string | null
+    department_name?: string | null
+  }>) ?? [])) {
+    const deptId = row.department_id ?? null
+    const deptName =
+      (Array.isArray(row.departments)
+        ? row.departments[0]?.name
+        : row.departments?.name) ??
+      row.department ??
+      row.department_name ??
+      'Unknown'
+    const key = deptId ?? `name:${deptName}`
+    const prev = eligibleCounts.get(key)
+    if (prev) {
+      prev.eligible_count += 1
+    } else {
+      eligibleCounts.set(key, {
+        department_id: deptId,
+        department_name: deptName,
+        eligible_count: 1,
+      })
     }
-  })
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const rows: ParticipationRow[] = buildParticipationRows((partData as any[]) ?? [], Array.from(eligibleCounts.values()))
+
+  return { success: true, data: rows }
+}
+
+// ─── getEmployeeDirectory ─────────────────────────────────────────────────────
+
+/**
+ * Returns employee/profile rows for admin verification after roster import.
+ */
+export async function getEmployeeDirectory(): Promise<
+  { success: true; data: EmployeeDirectoryRow[] } | { success: false; error: string }
+> {
+  const { user, authError } = await getAuthenticatedUser()
+  if (authError || !user) return { success: false, error: 'Unauthorized' }
+
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
+  }
+
+  const { data, error } = await db
+    .from('profiles')
+    .select('id, full_name, email, tenure_band, is_active, created_at, departments(name), roles(name)')
+    .order('created_at', { ascending: false })
+
+  if (error) return { success: false, error: error.message }
+
+  const rows = ((data as Record<string, unknown>[] | null) ?? []).map((row) =>
+    normalizeEmployeeDirectoryRow(row)
+  )
 
   return { success: true, data: rows }
 }

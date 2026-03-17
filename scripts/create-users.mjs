@@ -46,15 +46,37 @@ const users = [
   { id: '33300000-0000-0000-0000-000000000016', email: 'olivia.park@acme.dev',   role: 'admin',    full_name: 'Olivia Park' },
 ]
 
+const commonHeaders = {
+  'Content-Type': 'application/json',
+  Authorization: `Bearer ${SERVICE_KEY}`,
+  apikey: SERVICE_KEY,
+}
+
+async function findUserIdByEmail(email) {
+  const target = email.toLowerCase()
+  let page = 1
+
+  while (true) {
+    const res = await fetch(
+      `${SUPABASE_URL}/auth/v1/admin/users?page=${page}&per_page=100`,
+      { headers: commonHeaders }
+    )
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok || !Array.isArray(data.users)) return null
+
+    const found = data.users.find((u) => (u.email || '').toLowerCase() === target)
+    if (found?.id) return found.id
+
+    if (data.users.length < 100) return null
+    page += 1
+  }
+}
+
 async function upsertUser(user) {
   // Try to create first
   const res = await fetch(`${SUPABASE_URL}/auth/v1/admin/users`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SERVICE_KEY}`,
-      'apikey': SERVICE_KEY,
-    },
+    headers: commonHeaders,
     body: JSON.stringify({
       email: user.email,
       password: 'password123',
@@ -67,29 +89,34 @@ async function upsertUser(user) {
   const data = await res.json()
 
   if (!res.ok) {
-    if (data.msg?.includes('already been registered') || data.code === 'email_exists') {
+    const alreadyExists =
+      data.msg?.includes('already been registered') ||
+      data.code === 'email_exists' ||
+      data.code === '23505' ||
+      data.message?.includes('duplicate key value')
+
+    if (alreadyExists) {
       console.log(`  ⚠ ${user.email} already exists — updating app_metadata`)
-      // Update existing user's app_metadata
-      const listRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?email=${encodeURIComponent(user.email)}`, {
-        headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'apikey': SERVICE_KEY }
-      })
-      const listData = await listRes.json()
-      const existingId = listData.users?.[0]?.id
+      // Resolve existing user id via admin list and update role/password.
+      const existingId = await findUserIdByEmail(user.email)
       if (existingId) {
-        await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${existingId}`, {
+        const updateRes = await fetch(`${SUPABASE_URL}/auth/v1/admin/users/${existingId}`, {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SERVICE_KEY}`,
-            'apikey': SERVICE_KEY,
-          },
+          headers: commonHeaders,
           body: JSON.stringify({
             password: 'password123',
             email_confirm: true,
             app_metadata: { role: user.role },
           }),
         })
-        console.log(`  ✓ Updated ${user.email} (role: ${user.role})`)
+        if (updateRes.ok) {
+          console.log(`  ✓ Updated ${user.email} (role: ${user.role})`)
+        } else {
+          const updateData = await updateRes.json().catch(() => ({}))
+          console.error(`  ✗ ${user.email}: update failed ${JSON.stringify(updateData)}`)
+        }
+      } else {
+        console.error(`  ✗ ${user.email}: exists but id resolution failed`)
       }
     } else {
       console.error(`  ✗ ${user.email}: ${JSON.stringify(data)}`)

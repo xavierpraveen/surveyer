@@ -1,0 +1,19 @@
+name,email,department,role,tenure_band
+Alice Chen,alice.chen@acme.dev,Engineering,employee,1-2y
+Bob Kim,bob.kim@acme.dev,Engineering,employee,2-5y
+Carol Patel,carol.patel@acme.dev,Quality Assurance,employee,0-6m
+David Nguyen,david.nguyen@acme.dev,Sales & Business,employee,6-12m
+Eve Rodriguez,eve.rodriguez@acme.dev,HR & Operations,employee,5y+
+Frank Osei,frank.osei@acme.dev,Engineering,employee,2-5y
+Grace Li,grace.li@acme.dev,Quality Assurance,employee,1-2y
+Henry Muller,henry.muller@acme.dev,Sales & Business,employee,0-6m
+Ruby Santos,ruby.santos@acme.dev,Sales & Business,employee,1-2y
+Iris Yamamoto,iris.yamamoto@acme.dev,Engineering,manager,5y+
+Jake Solomon,jake.solomon@acme.dev,Sales & Business,manager,2-5y
+Karen Brooks,karen.brooks@acme.dev,HR & Operations,manager,6-12m
+Leo Torres,leo.torres@acme.dev,Leadership,leadership,5y+
+Maya Johnson,maya.johnson@acme.dev,Leadership,leadership,2-5y
+Noah Hassan,noah.hassan@acme.dev,HR & Operations,admin,5y+
+Olivia Park,olivia.park@acme.dev,Engineering,admin,2-5y
+Peter White,peter.white@acme.dev,HR & Operations,hr_admin,1-2y
+Quinn Garcia,quinn.garcia@acme.dev,Engineering,survey_analyst,2-5y

@@ -1073,3 +1073,27 @@ VALUES
    'high', 'identified',
    'Architecture RFC template adopted and used for at least 5 new decisions within the next quarter. Template stored in team wiki.',
    FALSE);
+
+-- ---------------------------------------------------------------------------
+-- FIX: Create GoTrue identities for seeded users so password login works
+-- ---------------------------------------------------------------------------
+INSERT INTO auth.identities (
+  id,
+  provider_id,
+  user_id,
+  identity_data,
+  provider,
+  created_at,
+  updated_at
+)
+SELECT 
+  gen_random_uuid(),
+  id::text,
+  id,
+  jsonb_build_object('sub', id::text, 'email', email),
+  'email',
+  created_at,
+  updated_at
+FROM auth.users
+WHERE email IS NOT NULL
+ON CONFLICT DO NOTHING;

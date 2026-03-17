@@ -1,8 +1,9 @@
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getAppSettings } from '@/lib/actions/settings'
+import { getEmployeeDirectory } from '@/lib/actions/settings'
 import { getParticipationForOpenSurvey } from '@/lib/actions/settings'
 import SettingsTabs from '@/components/admin/SettingsTabs'
-import type { ParticipationRow } from '@/lib/types/phase4'
+import type { EmployeeDirectoryRow, ParticipationRow } from '@/lib/types/phase4'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabaseAdmin as any
@@ -42,6 +43,12 @@ export default async function SettingsPage() {
     ? participationResult.data
     : []
 
+  // 4. Fetch employee directory for Directory tab
+  const employeeDirectoryResult = await getEmployeeDirectory()
+  const initialEmployees: EmployeeDirectoryRow[] = employeeDirectoryResult.success
+    ? employeeDirectoryResult.data
+    : []
+
   return (
     <div className="max-w-6xl mx-auto p-8">
       <h1 className="text-2xl font-extrabold tracking-snug text-fg mb-6">Admin Settings</h1>
@@ -49,6 +56,7 @@ export default async function SettingsPage() {
         initialSettings={initialSettings}
         initialSurveys={initialSurveys}
         initialParticipation={initialParticipation}
+        initialEmployees={initialEmployees}
       />
     </div>
   )

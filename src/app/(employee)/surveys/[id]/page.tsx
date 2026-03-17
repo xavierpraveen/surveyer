@@ -3,6 +3,8 @@ import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { getMyDraft, checkSubmissionStatus } from '@/lib/actions/response'
 import SurveyWizard from '@/components/survey/SurveyWizard'
+import { sectionTargetsDepartment } from '@/lib/survey-targeting'
+import { normalizeQuestionRow } from '@/lib/actions/survey-compat'
 import type {
   Survey,
   SurveySection,
@@ -92,8 +94,7 @@ export default async function SurveyPage({ params }: PageProps) {
 
   // Filter sections by department targeting (empty target_roles = show to all)
   const filteredSections = allSections.filter((s) => {
-    if (!s.target_roles || s.target_roles.length === 0) return true
-    return userDepartment && s.target_roles.includes(userDepartment)
+    return sectionTargetsDepartment(s.target_roles, userDepartment)
   })
 
   if (filteredSections.length === 0) {
@@ -122,7 +123,7 @@ export default async function SurveyPage({ params }: PageProps) {
     .in('survey_section_id', sectionIds)
     .order('display_order', { ascending: true })
 
-  const allQuestions: SurveyQuestion[] = (questionsData ?? []) as SurveyQuestion[]
+  const allQuestions: SurveyQuestion[] = ((questionsData ?? []) as Record<string, unknown>[]).map(normalizeQuestionRow)
 
   // Build questionsMap: sectionId -> questions[]
   const questionsMap: Record<string, SurveyQuestion[]> = {}

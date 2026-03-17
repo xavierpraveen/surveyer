@@ -8,6 +8,20 @@ interface ConditionalQuestionProps {
   children: React.ReactNode
 }
 
+function isValidRule(rule: unknown): rule is ConditionalRule {
+  if (!rule || typeof rule !== 'object') return false
+  const candidate = rule as Partial<ConditionalRule>
+  const validOperator = ['eq', 'neq', 'gt', 'lt', 'gte', 'lte'].includes(
+    String(candidate.operator ?? '')
+  )
+  return (
+    typeof candidate.question_id === 'string' &&
+    candidate.question_id.length > 0 &&
+    validOperator &&
+    typeof candidate.value === 'string'
+  )
+}
+
 function evaluateRule(rule: ConditionalRule, answers: Record<string, unknown>): boolean {
   const answerValue = answers[rule.question_id]
 
@@ -35,12 +49,22 @@ function evaluateRule(rule: ConditionalRule, answers: Record<string, unknown>): 
   }
 }
 
+export function isConditionalVisible(
+  rule: ConditionalRule | null | undefined,
+  answers: Record<string, unknown>
+): boolean {
+  // Invalid or missing rule means "always visible" to avoid runtime crashes
+  // from malformed legacy payloads.
+  if (!isValidRule(rule)) return true
+  return evaluateRule(rule, answers)
+}
+
 export default function ConditionalQuestion({
   rule,
   answers,
   children,
 }: ConditionalQuestionProps) {
-  const isVisible = rule === null || evaluateRule(rule, answers)
+  const isVisible = isConditionalVisible(rule ?? null, answers)
 
   return (
     <div

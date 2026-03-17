@@ -255,12 +255,19 @@ describe('getParticipationForOpenSurvey', () => {
     let callCount = 0
     mockDb.from.mockImplementation(() => {
       callCount++
-      if (callCount === 1) return makeChainable({ data: { id: 'sv-open', status: 'open' }, error: null })
-      // v_participation_rates
+      if (callCount === 1) return makeChainable({ data: [{ id: 'sv-open' }], error: null })
+      if (callCount === 2) {
+        return makeChainable({
+          data: [{ department_name: 'Engineering', department_id: 'dept-1', token_count: 8 }],
+          error: null,
+        })
+      }
       return makeChainable({
-        data: [
-          { department_name: 'Engineering', department_id: 'dept-1', eligible_count: 10, token_count: 8 },
-        ],
+        data: Array.from({ length: 10 }).map(() => ({
+          department_id: 'dept-1',
+          departments: { name: 'Engineering' },
+          is_active: true,
+        })),
         error: null,
       })
     })
@@ -271,11 +278,81 @@ describe('getParticipationForOpenSurvey', () => {
     if (result.success) {
       expect(result.data.length).toBe(1)
       expect(result.data[0].department).toBe('Engineering')
-      expect(typeof result.data[0].rate).toBe('number')
+      expect(result.data[0].eligible).toBe(10)
+      expect(result.data[0].responded).toBe(8)
+      expect(result.data[0].rate).toBe(80)
+    }
+  })
+
+  test('falls back when departments join returns array rows', async () => {
+    mockUserWithRole('admin')
+    let callCount = 0
+    mockDb.from.mockImplementation(() => {
+      callCount++
+      if (callCount === 1) return makeChainable({ data: [{ id: 'sv-open' }], error: null })
+      if (callCount === 2) return makeChainable({ data: [], error: null })
+      return makeChainable({
+        data: [
+          { department_id: 'dept-2', departments: [{ name: 'QA' }], is_active: true },
+          { department_id: 'dept-2', departments: [{ name: 'QA' }], is_active: true },
+          { department_id: 'dept-2', departments: [{ name: 'QA' }], is_active: true },
+          { department_id: 'dept-2', departments: [{ name: 'QA' }], is_active: true },
+          { department_id: 'dept-2', departments: [{ name: 'QA' }], is_active: true },
+        ],
+        error: null,
+      })
+    })
+
+    const { getParticipationForOpenSurvey } = await import('./settings')
+    const result = await getParticipationForOpenSurvey()
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toEqual([
+        { department: 'QA', departmentId: 'dept-2', eligible: 5, responded: 0, rate: 0 },
+      ])
+    }
+  })
+
+  test('falls back to legacy department_name when joins are missing', async () => {
+    mockUserWithRole('admin')
+    let callCount = 0
+    mockDb.from.mockImplementation(() => {
+      callCount++
+      if (callCount === 1) return makeChainable({ data: [{ id: 'sv-open' }], error: null })
+      if (callCount === 2) return makeChainable({ data: [], error: null })
+      return makeChainable({
+        data: [
+          { department_id: null, departments: null, department_name: 'Marketing', is_active: true },
+          { department_id: null, departments: null, department_name: 'Marketing', is_active: true },
+          { department_id: null, departments: null, department_name: 'Marketing', is_active: true },
+        ],
+        error: null,
+      })
+    })
+
+    const { getParticipationForOpenSurvey } = await import('./settings')
+    const result = await getParticipationForOpenSurvey()
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toEqual([
+        { department: 'Marketing', departmentId: null, eligible: 3, responded: 0, rate: 0 },
+      ])
     }
   })
 
   test('returns empty array when no survey is currently open', async () => {
+    mockUserWithRole('admin')
+    mockDb.from.mockReturnValue(makeChainable({ data: [], error: null }))
+
+    const { getParticipationForOpenSurvey } = await import('./settings')
+    const result = await getParticipationForOpenSurvey()
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data).toEqual([])
+    }
+  })
+
+  test('returns empty array when no survey is currently open (legacy error)', async () => {
     mockUserWithRole('admin')
     mockDb.from.mockReturnValue(makeChainable({ data: null, error: { message: 'Not found' } }))
 

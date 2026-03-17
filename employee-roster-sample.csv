@@ -1,0 +1,19 @@
+full_name,email,department,role,tenure_band,work_type,is_active
+Alice Chen,alice.chen@acme.dev,Engineering,Software Engineer,1-2y,hybrid,true
+Bob Kim,bob.kim@acme.dev,Engineering,Software Engineer,2-5y,remote,true
+Carol Patel,carol.patel@acme.dev,Quality Assurance,QA Engineer,0-6m,onsite,true
+David Nguyen,david.nguyen@acme.dev,Sales & Business,Sales Representative,6-12m,remote,true
+Eve Rodriguez,eve.rodriguez@acme.dev,HR & Operations,HR Specialist,5y+,hybrid,true
+Frank Osei,frank.osei@acme.dev,Engineering,Product Manager,2-5y,remote,true
+Grace Li,grace.li@acme.dev,Quality Assurance,QA Engineer,1-2y,hybrid,true
+Henry Muller,henry.muller@acme.dev,Sales & Business,Marketing Specialist,0-6m,onsite,true
+Iris Yamamoto,iris.yamamoto@acme.dev,Engineering,Architect,5y+,hybrid,true
+Jake Solomon,jake.solomon@acme.dev,Sales & Business,Product Manager,2-5y,onsite,true
+Karen Brooks,karen.brooks@acme.dev,HR & Operations,HR Specialist,6-12m,hybrid,true
+Leo Torres,leo.torres@acme.dev,Leadership,Executive,5y+,onsite,true
+Maya Johnson,maya.johnson@acme.dev,Leadership,Executive,2-5y,hybrid,true
+Noah Hassan,noah.hassan@acme.dev,HR & Operations,Executive,5y+,onsite,true
+Olivia Park,olivia.park@acme.dev,Engineering,Software Engineer,2-5y,hybrid,true
+Peter White,peter.white@acme.dev,HR & Operations,HR Specialist,1-2y,onsite,true
+Quinn Garcia,quinn.garcia@acme.dev,Engineering,Architect,2-5y,remote,true
+Ruby Santos,ruby.santos@acme.dev,Sales & Business,Sales Representative,1-2y,remote,true

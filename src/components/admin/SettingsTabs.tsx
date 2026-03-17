@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import type { AppSettings, ParticipationRow } from '@/lib/types/phase4'
+import type { AppSettings, EmployeeDirectoryRow, ParticipationRow } from '@/lib/types/phase4'
 import EmployeeImportTab from './EmployeeImportTab'
+import EmployeeDirectoryTab from './EmployeeDirectoryTab'
 import PrivacySettingsTab from './PrivacySettingsTab'
 import ParticipationMonitorTab from './ParticipationMonitorTab'
 import CyclesTab from './CyclesTab'
@@ -19,12 +20,14 @@ interface SettingsTabsProps {
   initialSettings: AppSettings
   initialSurveys: SurveyItem[]
   initialParticipation: ParticipationRow[]
+  initialEmployees: EmployeeDirectoryRow[]
 }
 
-type TabId = 'employees' | 'privacy' | 'participation' | 'cycles'
+type TabId = 'employees' | 'directory' | 'privacy' | 'participation' | 'cycles'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'employees', label: 'Employees' },
+  { id: 'directory', label: 'Employee Directory' },
   { id: 'privacy', label: 'Privacy' },
   { id: 'participation', label: 'Participation' },
   { id: 'cycles', label: 'Cycles' },
@@ -34,6 +37,7 @@ export default function SettingsTabs({
   initialSettings,
   initialSurveys,
   initialParticipation,
+  initialEmployees,
 }: SettingsTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('employees')
 
@@ -60,6 +64,9 @@ export default function SettingsTabs({
       {/* Tab content */}
       <div className="p-6">
         {activeTab === 'employees' && <EmployeeImportTab />}
+        {activeTab === 'directory' && (
+          <EmployeeDirectoryTab rows={initialEmployees} />
+        )}
         {activeTab === 'privacy' && (
           <PrivacySettingsTab initialSettings={initialSettings} />
         )}

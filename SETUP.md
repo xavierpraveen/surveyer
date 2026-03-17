@@ -94,7 +94,7 @@ App runs at http://localhost:3000
 
 **DB migrations not applied**: Run `scripts/production-setup.sql` in Supabase SQL Editor.
 
-**Login fails**: Run `node scripts/fix-passwords.mjs` to reset all passwords to `password123`.
+**Login fails (local development)**: Run `pnpm auth:repair-local` to repair local auth instance/user token fields and reset seed user passwords in-place.
 
 **`column does not exist` errors**: The Phase 4 migration hasn't been applied. Run migration 7 above.
 
@@ -124,6 +124,7 @@ supabase/
 scripts/
   create-users.mjs     — Create test users via Auth Admin API
   fix-passwords.mjs    — Reset all test user passwords
+  repair-local-auth.mjs — Repair local Supabase auth/login state in-place
   production-setup.sql — Idempotent SQL for missing migrations
   debug-connection.mjs — Debug DB connectivity issues
 ```

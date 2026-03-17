@@ -5,6 +5,16 @@ import {
   saveDraftSchema,
   submitResponseSchema,
 } from '@/lib/validations/survey'
+import {
+  buildLegacyDraftPayload,
+  buildModernDraftPayload,
+  getSurveyAnonymousFlag,
+  mapAnswerValueForStorage,
+  normalizeDraftRow,
+  shouldRetryWithLegacyDraftColumns,
+  shouldRetryWithLegacySurveyColumns,
+} from './response-draft-compat'
+import { getMissingColumnName } from './survey-compat'
 import type {
   ResponseDraft,
   SurveyResponse,
@@ -32,25 +42,54 @@ export async function saveDraft(
   }
 
   const { survey_id, answers, last_section_index } = parsed.data
+  const nowIso = new Date().toISOString()
+  const modernPayload = buildModernDraftPayload({
+    survey_id,
+    user_id: user.id,
+    answers,
+    last_section_index,
+    nowIso,
+  })
 
   // Upsert on (survey_id, user_id) — use supabaseAdmin to bypass RLS on write
-  const { data, error } = await db
+  const modernAttempt = await db
     .from('response_drafts')
     .upsert(
-      {
-        survey_id,
-        user_id: user.id,
-        answers,
-        last_section_index,
-        updated_at: new Date().toISOString(),
-      },
+      modernPayload,
       { onConflict: 'survey_id,user_id' }
     )
     .select()
     .single()
 
-  if (error) return { success: false, error: error.message }
-  return { success: true, data: data as ResponseDraft }
+  if (!modernAttempt.error) {
+    const normalized = normalizeDraftRow(modernAttempt.data as Record<string, unknown> | null)
+    if (!normalized) return { success: false, error: 'Failed to load saved draft' }
+    return { success: true, data: normalized }
+  }
+
+  if (!shouldRetryWithLegacyDraftColumns(modernAttempt.error)) {
+    return { success: false, error: modernAttempt.error.message }
+  }
+
+  const legacyPayload = buildLegacyDraftPayload({
+    survey_id,
+    user_id: user.id,
+    answers,
+    last_section_index,
+    nowIso,
+  })
+
+  const legacyAttempt = await db
+    .from('response_drafts')
+    .upsert(legacyPayload, { onConflict: 'survey_id,user_id' })
+    .select()
+    .single()
+
+  if (legacyAttempt.error) return { success: false, error: legacyAttempt.error.message }
+
+  const normalized = normalizeDraftRow(legacyAttempt.data as Record<string, unknown> | null)
+  if (!normalized) return { success: false, error: 'Failed to load saved draft' }
+  return { success: true, data: normalized }
 }
 
 export async function getMyDraft(
@@ -70,7 +109,10 @@ export async function getMyDraft(
     .maybeSingle()
 
   if (error) return { success: false, error: error.message }
-  return { success: true, data: data as ResponseDraft | null }
+  return {
+    success: true,
+    data: normalizeDraftRow((data as Record<string, unknown> | null) ?? null),
+  }
 }
 
 // ─── Submission Status ────────────────────────────────────────────────────────
@@ -141,31 +183,84 @@ export async function submitResponse(
   }
 
   // (2) Fetch survey to determine anonymity settings
-  const { data: survey, error: surveyFetchError } = await db
+  const modernSurveyFetch = await db
     .from('surveys')
     .select('is_anonymous')
     .eq('id', survey_id)
     .single()
 
-  if (surveyFetchError || !survey) {
+  let surveyRow = modernSurveyFetch.data as Record<string, unknown> | null
+  let surveyFetchError = modernSurveyFetch.error
+
+  if (surveyFetchError && shouldRetryWithLegacySurveyColumns(surveyFetchError)) {
+    const legacySurveyFetch = await db
+      .from('surveys')
+      .select('anonymous_mode')
+      .eq('id', survey_id)
+      .single()
+
+    surveyRow = legacySurveyFetch.data as Record<string, unknown> | null
+    surveyFetchError = legacySurveyFetch.error
+  }
+
+  const isAnonymous = getSurveyAnonymousFlag(surveyRow)
+  if (surveyFetchError || isAnonymous === null) {
     return { success: false, error: 'Survey not found' }
   }
 
-  const isAnonymous = (survey as { is_anonymous: boolean }).is_anonymous
-
-  // (3) Fetch profile snapshot metadata — stored as snapshot on responses, not as live FKs
-  const { data: profile } = await db
+  // (3) Fetch profile snapshot metadata with modern+legacy compatibility
+  const modernProfileFetch = await db
     .from('profiles')
-    .select('department, role, tenure_band, work_type')
+    .select('department_id, role_id, tenure_band, work_type, departments(name), roles(name)')
     .eq('id', user.id)
     .maybeSingle()
 
-  const profileSnapshot = profile as {
+  type ModernProfile = {
+    department_id: string | null
+    role_id: string | null
+    tenure_band: string | null
+    work_type: string | null
+    departments: { name?: string } | Array<{ name?: string }> | null
+    roles: { name?: string } | Array<{ name?: string }> | null
+  }
+  type LegacyProfile = {
     department: string | null
     role: string | null
     tenure_band: string | null
     work_type: string | null
-  } | null
+  }
+
+  let responseDepartment: string | null = null
+  let responseRole: string | null = null
+  let responseTenureBand: string | null = null
+  let responseWorkType: string | null = null
+  let tokenDepartmentId: string | null = null
+  let tokenRoleId: string | null = null
+
+  if (!modernProfileFetch.error) {
+    const modern = modernProfileFetch.data as ModernProfile | null
+    tokenDepartmentId = modern?.department_id ?? null
+    tokenRoleId = modern?.role_id ?? null
+    responseTenureBand = modern?.tenure_band ?? null
+    responseWorkType = modern?.work_type ?? null
+    responseDepartment = Array.isArray(modern?.departments)
+      ? (modern?.departments[0]?.name ?? null)
+      : (modern?.departments?.name ?? null)
+    responseRole = Array.isArray(modern?.roles)
+      ? (modern?.roles[0]?.name ?? null)
+      : (modern?.roles?.name ?? null)
+  } else if (getMissingColumnName(modernProfileFetch.error)) {
+    const legacyProfileFetch = await db
+      .from('profiles')
+      .select('department, role, tenure_band, work_type')
+      .eq('id', user.id)
+      .maybeSingle()
+    const legacy = legacyProfileFetch.data as LegacyProfile | null
+    responseDepartment = legacy?.department ?? null
+    responseRole = legacy?.role ?? null
+    responseTenureBand = legacy?.tenure_band ?? null
+    responseWorkType = legacy?.work_type ?? null
+  }
 
   // (4) Insert response row
   // user_id is NULL for anonymous surveys — anonymity enforced at schema level
@@ -176,10 +271,10 @@ export async function submitResponse(
       user_id: isAnonymous ? null : user.id,
       is_anonymous: isAnonymous,
       submitted_at: new Date().toISOString(),
-      department: profileSnapshot?.department ?? null,
-      role: profileSnapshot?.role ?? null,
-      tenure_band: profileSnapshot?.tenure_band ?? null,
-      work_type: profileSnapshot?.work_type ?? null,
+      department: responseDepartment,
+      role: responseRole,
+      tenure_band: responseTenureBand,
+      work_type: responseWorkType,
     })
     .select()
     .single()
@@ -192,9 +287,7 @@ export async function submitResponse(
   const answerRows = Object.entries(answers).map(([question_id, value]) => ({
     response_id: responseId,
     question_id,
-    text_value: typeof value === 'string' ? value : null,
-    numeric_value: typeof value === 'number' ? value : null,
-    selected_options: Array.isArray(value) ? value : null,
+    ...mapAnswerValueForStorage(value),
   }))
 
   if (answerRows.length > 0) {
@@ -204,15 +297,30 @@ export async function submitResponse(
 
   // (6) Insert participation_tokens row
   // participation_tokens and responses share ONLY survey_id — structurally impossible to join them
-  const { error: tokenInsertError } = await db
+  const tokenInsert = await db
     .from('participation_tokens')
     .insert({
       survey_id,
       user_id: user.id,
       submitted_at: new Date().toISOString(),
+      department_id: tokenDepartmentId,
+      role_id: tokenRoleId,
+      tenure_band: responseTenureBand,
     })
 
-  if (tokenInsertError) return { success: false, error: tokenInsertError.message }
+  if (tokenInsert.error) {
+    const missing = getMissingColumnName(tokenInsert.error)
+    if (!missing) return { success: false, error: tokenInsert.error.message }
+
+    const fallbackInsert = await db
+      .from('participation_tokens')
+      .insert({
+        survey_id,
+        user_id: user.id,
+        submitted_at: new Date().toISOString(),
+      })
+    if (fallbackInsert.error) return { success: false, error: fallbackInsert.error.message }
+  }
 
   // (7) Delete response_drafts row
   await db

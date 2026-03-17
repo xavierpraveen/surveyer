@@ -113,3 +113,4 @@ All seed users have password: `password123`
 | `pnpm test` | Run all tests |
 | `pnpm test:watch` | Run tests in watch mode |
 | `pnpm db:types` | Regenerate TypeScript types from local Supabase schema |
+| `pnpm auth:repair-local` | Repair local Supabase auth/login state when seeded users cannot sign in |

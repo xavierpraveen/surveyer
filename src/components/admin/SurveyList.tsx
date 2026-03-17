@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { Survey, SurveyStatus } from '@/lib/types/survey'
-import { duplicateSurvey } from '@/lib/actions/survey'
+import { deleteSurvey, duplicateSurvey } from '@/lib/actions/survey'
 
 interface Props {
   surveys: Survey[]
@@ -20,6 +20,7 @@ const STATUS_BADGE: Record<SurveyStatus, string> = {
 export default function SurveyList({ surveys }: Props) {
   const router = useRouter()
   const [duplicating, setDuplicating] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   async function handleDuplicate(surveyId: string) {
@@ -29,6 +30,19 @@ export default function SurveyList({ surveys }: Props) {
     setDuplicating(null)
     if (!result.success) {
       setError(result.error ?? 'Failed to duplicate survey')
+    } else {
+      router.refresh()
+    }
+  }
+
+  async function handleDelete(surveyId: string, surveyTitle: string) {
+    if (!window.confirm(`Delete "${surveyTitle}" survey? This cannot be undone.`)) return
+    setDeleting(surveyId)
+    setError(null)
+    const result = await deleteSurvey(surveyId)
+    setDeleting(null)
+    if (!result.success) {
+      setError(result.error ?? 'Failed to delete survey')
     } else {
       router.refresh()
     }
@@ -102,10 +116,17 @@ export default function SurveyList({ surveys }: Props) {
                       </Link>
                       <button
                         onClick={() => handleDuplicate(survey.id)}
-                        disabled={duplicating === survey.id}
+                        disabled={duplicating === survey.id || deleting === survey.id}
                         className="bg-transparent hover:bg-brand-muted text-brand font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none disabled:opacity-50"
                       >
                         {duplicating === survey.id ? 'Copying...' : 'Duplicate'}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(survey.id, survey.title)}
+                        disabled={duplicating === survey.id || deleting === survey.id}
+                        className="bg-error hover:bg-error-text text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none disabled:opacity-50"
+                      >
+                        {deleting === survey.id ? 'Deleting...' : 'Delete'}
                       </button>
                     </div>
                   </td>
