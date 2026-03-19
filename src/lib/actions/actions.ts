@@ -54,6 +54,48 @@ async function getAuthenticatedUser() {
   return { user, authError }
 }
 
+// ─── Action owner email notification ─────────────────────────────────────────
+
+async function notifyActionOwner(
+  ownerId: string,
+  actionTitle: string,
+  isNew: boolean
+): Promise<void> {
+  const resendApiKey = process.env.RESEND_API_KEY
+  const fromEmail = process.env.RESEND_FROM_EMAIL
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (!resendApiKey || !fromEmail || !appUrl) return
+
+  const { data: ownerData } = await db
+    .from('profiles')
+    .select('email, full_name')
+    .eq('id', ownerId)
+    .single()
+
+  if (!ownerData) return
+
+  const owner = ownerData as { email: string; full_name: string | null }
+  const subject = isNew
+    ? `Action item assigned: ${actionTitle}`
+    : `Action item updated: ${actionTitle}`
+  const html = isNew
+    ? `<p>Hi ${owner.full_name || 'there'},</p><p>You have been assigned an action item: <strong>${actionTitle}</strong>.</p><p><a href="${appUrl}/admin">View in dashboard</a></p>`
+    : `<p>Hi ${owner.full_name || 'there'},</p><p>An action item you own has been updated: <strong>${actionTitle}</strong>.</p><p><a href="${appUrl}/admin">View in dashboard</a></p>`
+
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from: fromEmail, to: [owner.email], subject, html }),
+    })
+  } catch {
+    // fire-and-forget
+  }
+}
+
 // ─── Row mapper ────────────────────────────────────────────────────────────────
 
 function mapActionItem(row: Record<string, unknown>, ownerName?: string | null, departmentName?: string | null): ActionItem {
@@ -113,7 +155,12 @@ export async function createActionItem(
     .single()
 
   if (error) return { success: false, error: error.message }
-  return { success: true, data: mapActionItem(data as Record<string, unknown>) }
+
+  const actionItem = mapActionItem(data as Record<string, unknown>)
+  if (actionItem.ownerId) {
+    notifyActionOwner(actionItem.ownerId, actionItem.title, true).catch(() => {})
+  }
+  return { success: true, data: actionItem }
 }
 
 // ─── updateActionItem ─────────────────────────────────────────────────────────
@@ -156,7 +203,12 @@ export async function updateActionItem(
 
   if (error) return { success: false, error: error.message }
   if (!data) return { success: false, error: 'Action item not found' }
-  return { success: true, data: mapActionItem(data as Record<string, unknown>) }
+
+  const actionItem = mapActionItem(data as Record<string, unknown>)
+  if (actionItem.ownerId) {
+    notifyActionOwner(actionItem.ownerId, actionItem.title, false).catch(() => {})
+  }
+  return { success: true, data: actionItem }
 }
 
 // ─── deleteActionItem ─────────────────────────────────────────────────────────

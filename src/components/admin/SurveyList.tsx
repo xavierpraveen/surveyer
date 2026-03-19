@@ -55,12 +55,20 @@ export default function SurveyList({ surveys }: Props) {
           <h1 className="text-2xl font-extrabold tracking-snug text-fg">Surveys</h1>
           <p className="text-sm text-fg-muted mt-1">{surveys.length} survey{surveys.length !== 1 ? 's' : ''}</p>
         </div>
-        <Link
-          href="/admin/surveys/new"
-          className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
-        >
-          New Survey
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/admin/surveys/compare"
+            className="bg-surface-2 hover:bg-border border border-border text-fg-muted font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150"
+          >
+            Compare Surveys
+          </Link>
+          <Link
+            href="/admin/surveys/new"
+            className="bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
+          >
+            New Survey
+          </Link>
+        </div>
       </div>
 
       {error && (

@@ -36,14 +36,14 @@ if (!SUPABASE_URL || !SERVICE_KEY) {
 
 const users = [
   // Employees
-  { id: '33300000-0000-0000-0000-000000000001', email: 'alice.chen@acme.dev',    role: 'employee', full_name: 'Alice Chen' },
-  { id: '33300000-0000-0000-0000-000000000002', email: 'bob.kim@acme.dev',       role: 'employee', full_name: 'Bob Kim' },
-  { id: '33300000-0000-0000-0000-000000000003', email: 'carol.patel@acme.dev',   role: 'employee', full_name: 'Carol Patel' },
-  { id: '33300000-0000-0000-0000-000000000004', email: 'david.nguyen@acme.dev',  role: 'employee', full_name: 'David Nguyen' },
-  { id: '33300000-0000-0000-0000-000000000005', email: 'eve.rodriguez@acme.dev', role: 'employee', full_name: 'Eve Rodriguez' },
+  // { id: '33300000-0000-0000-0000-000000000001', email: 'alice.chen@acme.dev',    role: 'employee', full_name: 'Alice Chen' },
+  // { id: '33300000-0000-0000-0000-000000000002', email: 'bob.kim@acme.dev',       role: 'employee', full_name: 'Bob Kim' },
+  // { id: '33300000-0000-0000-0000-000000000003', email: 'carol.patel@acme.dev',   role: 'employee', full_name: 'Carol Patel' },
+  // { id: '33300000-0000-0000-0000-000000000004', email: 'david.nguyen@acme.dev',  role: 'employee', full_name: 'David Nguyen' },
+  { id: '33300000-0000-0000-0000-000000000005', email: 'prabh@calib.dev', role: 'employee', full_name: 'Eve Rodriguez' },
   // Admins
-  { id: '33300000-0000-0000-0000-000000000015', email: 'noah.hassan@acme.dev',   role: 'admin',    full_name: 'Noah Hassan' },
-  { id: '33300000-0000-0000-0000-000000000016', email: 'olivia.park@acme.dev',   role: 'admin',    full_name: 'Olivia Park' },
+  { id: '33300000-0000-0000-0000-000000000015', email: 'mahesh@calib.dev',   role: 'admin',    full_name: 'Noah Hassan' },
+  // { id: '33300000-0000-0000-0000-000000000016', email: 'olivia.park@acme.dev',   role: 'admin',    full_name: 'Olivia Park' },
 ]
 
 const commonHeaders = {

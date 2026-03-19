@@ -16,10 +16,154 @@ import type {
   PublicAction,
   OrgKpis,
 } from '@/lib/types/analytics'
+import { computeImprovementInsights } from '@/lib/improvement-insights'
 
 // Untyped admin client — Database types are a stub until supabase gen types is re-run
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabaseAdmin as any
+
+function slugifyLabel(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+async function ensureDerivedMetricsIfMissing(surveyId: string): Promise<void> {
+  const { count } = await db
+    .from('derived_metrics')
+    .select('*', { count: 'exact', head: true })
+    .eq('survey_id', surveyId)
+
+  if (Number(count ?? 0) > 0) return
+
+  await db.rpc('compute_derived_metrics', { p_survey_id: surveyId })
+}
+
+/** Returns distinct survey_ids that have at least one derived_metrics row. */
+async function getSurveysWithComputedMetrics(): Promise<string[]> {
+  const { data } = await db
+    .from('derived_metrics')
+    .select('survey_id')
+  return [...new Set(((data as { survey_id: string }[] | null) ?? []).map(r => r.survey_id))]
+}
+
+async function getSectionFallbackDimensionScores(surveyId: string): Promise<DimensionScore[]> {
+  const { data, error } = await db
+    .from('response_answers')
+    .select(
+      'numeric_value, questions!inner(type, survey_sections!inner(id, title)), responses!inner(survey_id)'
+    )
+    .eq('responses.survey_id', surveyId)
+    .in('questions.type', ['likert_5', 'likert_10'])
+    .not('numeric_value', 'is', null)
+
+  if (error) return []
+
+  type Row = {
+    numeric_value: number | null
+    questions: {
+      type: 'likert_5' | 'likert_10'
+      survey_sections:
+        | { id: string; title: string }
+        | Array<{ id: string; title: string }>
+        | null
+    } | null
+  }
+
+  const bySection = new Map<string, { id: string; title: string; scores: number[] }>()
+  for (const row of ((data as Row[] | null) ?? [])) {
+    if (row.numeric_value === null || !row.questions) continue
+
+    const section = Array.isArray(row.questions.survey_sections)
+      ? row.questions.survey_sections[0]
+      : row.questions.survey_sections
+    if (!section) continue
+
+    const normalizedScore = row.questions.type === 'likert_10'
+      ? Number(row.numeric_value) / 2
+      : Number(row.numeric_value)
+
+    const key = section.id
+    const existing = bySection.get(key)
+    if (existing) {
+      existing.scores.push(normalizedScore)
+    } else {
+      bySection.set(key, { id: section.id, title: section.title, scores: [normalizedScore] })
+    }
+  }
+
+  const result: DimensionScore[] = Array.from(bySection.values()).map((section) => {
+    const avgScore = section.scores.length > 0
+      ? section.scores.reduce((sum, v) => sum + v, 0) / section.scores.length
+      : null
+    const respondentCount = section.scores.length
+    const belowThreshold = respondentCount < 5
+    return {
+      dimensionId: `section:${section.id}`,
+      dimensionName: section.title,
+      dimensionSlug: `section-${slugifyLabel(section.title)}`,
+      avgScore: belowThreshold ? null : avgScore,
+      favorablePct: null,
+      neutralPct: null,
+      unfavorablePct: null,
+      respondentCount,
+      belowThreshold,
+    }
+  })
+
+  return result.sort((a, b) => a.dimensionName.localeCompare(b.dimensionName))
+}
+
+async function getFallbackQualitativeThemes(
+  surveyId: string
+): Promise<QualitativeTheme[]> {
+  const { data, error } = await db
+    .from('response_answers')
+    .select(
+      'id, text_value, questions!inner(type, survey_sections!inner(title)), responses!inner(survey_id)'
+    )
+    .eq('responses.survey_id', surveyId)
+    .in('questions.type', ['short_text', 'long_text'])
+    .not('text_value', 'is', null)
+
+  if (error) return []
+
+  type Row = {
+    id: string
+    text_value: string | null
+    questions: {
+      survey_sections:
+        | { title: string }
+        | Array<{ title: string }>
+        | null
+    } | null
+  }
+
+  const grouped = new Map<string, string[]>()
+  for (const row of ((data as Row[] | null) ?? [])) {
+    const section = Array.isArray(row.questions?.survey_sections)
+      ? row.questions?.survey_sections[0]
+      : row.questions?.survey_sections
+    const sectionTitle = section?.title ?? 'General'
+    const text = (row.text_value ?? '').trim()
+    if (!text) continue
+    if (!grouped.has(sectionTitle)) grouped.set(sectionTitle, [])
+    grouped.get(sectionTitle)?.push(text)
+  }
+
+  return Array.from(grouped.entries())
+    .map(([sectionTitle, texts], idx) => ({
+      id: `fallback-${idx + 1}`,
+      theme: `${sectionTitle} feedback`,
+      tagCluster: [sectionTitle],
+      summary: texts[0]?.slice(0, 180) ?? null,
+      isPositive: false,
+      tagCount: texts.length,
+    }))
+    .sort((a, b) => b.tagCount - a.tagCount)
+    .slice(0, 8)
+}
 
 // ─── computeDerivedMetrics ────────────────────────────────────────────────────
 
@@ -90,10 +234,7 @@ export async function getLeadershipDashboardData(
       .from('surveys')
       .select('id')
       .eq('status', 'closed')
-      .in(
-        'id',
-        db.from('derived_metrics').select('survey_id')
-      )
+      .in('id', await getSurveysWithComputedMetrics())
       .order('closes_at', { ascending: false })
       .limit(1)
       .single()
@@ -105,6 +246,9 @@ export async function getLeadershipDashboardData(
           overallHealthScore: null,
           participationRate: 0,
           totalResponses: 0,
+          pendingResponses: 0,
+          completionDeltaPct: null,
+          completedActionPct: null,
           surveyPeriod: '',
           dimensionsBelowThreshold: 0,
           surveyId: '',
@@ -421,10 +565,7 @@ export async function getLeadershipDashboardData(
     .from('surveys')
     .select('id, title, closes_at')
     .eq('status', 'closed')
-    .in(
-      'id',
-      db.from('derived_metrics').select('survey_id')
-    )
+    .in('id', await getSurveysWithComputedMetrics())
     .order('closes_at', { ascending: false })
 
   if (availSurveysError) return { success: false, error: availSurveysError.message }
@@ -452,15 +593,50 @@ export async function getLeadershipDashboardData(
     .select('*', { count: 'exact', head: true })
     .eq('is_active', true)
 
+  const eligibleTotal = Number(eligibleCount ?? 0)
   const participationRate =
-    eligibleCount && eligibleCount > 0
-      ? Math.round((totalResponses / eligibleCount) * 100)
+    eligibleTotal > 0
+      ? Math.min(Math.round((totalResponses / eligibleTotal) * 100), 100)
       : 0
+  const pendingResponses = Math.max(eligibleTotal - totalResponses, 0)
+
+  // Delta vs previous closed/computed cycle
+  let completionDeltaPct: number | null = null
+  const { data: prevSurveyRows } = await db
+    .from('surveys')
+    .select('id')
+    .eq('status', 'closed')
+    .neq('id', targetSurveyId)
+    .in('id', await getSurveysWithComputedMetrics())
+    .order('closes_at', { ascending: false })
+    .limit(1)
+
+  const previousSurveyId = ((prevSurveyRows as Array<{ id: string }> | null) ?? [])[0]?.id
+  if (previousSurveyId) {
+    const { data: prevPartRows } = await db
+      .from('v_participation_rates')
+      .select('*')
+      .eq('survey_id', previousSurveyId)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const prevTotal = ((prevPartRows as any[]) ?? [])
+      .reduce((sum: number, r: any) => sum + Number(r.token_count ?? r.submitted_count ?? 0), 0)
+    const prevRate = eligibleTotal > 0 ? Math.round((prevTotal / eligibleTotal) * 100) : 0
+    completionDeltaPct = participationRate - prevRate
+  }
+
+  const completedActions = publicActions.filter((a) => a.status === 'completed').length
+  const completedActionPct =
+    publicActions.length > 0
+      ? Math.round((completedActions / publicActions.length) * 100)
+      : null
 
   const kpis: OrgKpis = {
     overallHealthScore,
     participationRate,
     totalResponses,
+    pendingResponses,
+    completionDeltaPct,
+    completedActionPct,
     surveyPeriod,
     dimensionsBelowThreshold: dimensionScores.filter((d) => d.belowThreshold).length,
     surveyId: survey.id,
@@ -560,10 +736,7 @@ export async function getManagerDashboardData(): Promise<
     .from('surveys')
     .select('id, title')
     .eq('status', 'closed')
-    .in(
-      'id',
-      db.from('derived_metrics').select('survey_id')
-    )
+    .in('id', await getSurveysWithComputedMetrics())
     .order('closes_at', { ascending: false })
     .limit(1)
     .single()
@@ -682,6 +855,8 @@ export async function getPublicResultsData(
     return { success: false, error: 'Unauthorized' }
   }
 
+  let forcedSurveyId: string | null = null
+
   // ── 0. If cycleId provided, try to load from published snapshot ────────────
   if (cycleId) {
     const { data: snapData, error: snapError } = await db
@@ -692,44 +867,53 @@ export async function getPublicResultsData(
 
     if (!snapError && snapData) {
       const snap = (snapData as { snapshot_data: Record<string, unknown> }).snapshot_data
-      return {
-        success: true,
-        data: {
-          hasData: true,
-          surveyTitle: (snap.surveyTitle as string) ?? null,
-          surveyClosedAt: null,
-          kpis: {
-            overallHealthScore: null,
-            participationRate: (snap.participationRate as number) ?? 0,
-            totalResponses: (snap.totalResponses as number) ?? 0,
+      const snapDimensionScores = (snap.dimensionScores as DimensionScore[]) ?? []
+      if (snapDimensionScores.length === 0) {
+        // Snapshot exists but no score payload — fall through to live rebuild path.
+        forcedSurveyId = cycleId
+      } else {
+        return {
+          success: true,
+          data: {
+            hasData: true,
+            surveyTitle: (snap.surveyTitle as string) ?? null,
+            surveyClosedAt: null,
+            kpis: {
+              overallHealthScore: null,
+              participationRate: (snap.participationRate as number) ?? 0,
+              totalResponses: (snap.totalResponses as number) ?? 0,
+            },
+            dimensionScores: snapDimensionScores,
+            improvementInsights: computeImprovementInsights(snapDimensionScores),
+            qualitativeThemes: (snap.qualitativeThemes as QualitativeTheme[]) ?? [],
+            publicActions: (snap.publicActions as PublicAction[]) ?? [],
           },
-          dimensionScores: (snap.dimensionScores as DimensionScore[]) ?? [],
-          qualitativeThemes: (snap.qualitativeThemes as QualitativeTheme[]) ?? [],
-          publicActions: (snap.publicActions as PublicAction[]) ?? [],
-        },
+        }
       }
     }
     // If snapshot not found for this cycleId, fall through to live path
   }
 
-  // ── 1. Most recent closed+computed survey ─────────────────────────────────
-  // Fetch survey_ids that have derived_metrics first (subqueries not supported in supabase-js)
-  const { data: surveyIdsWithMetrics } = await db
-    .from('derived_metrics')
-    .select('survey_id')
-  const surveyIdsArr = [...new Set(
-    ((surveyIdsWithMetrics as Array<{ survey_id: string }>) ?? []).map((r) => r.survey_id)
-  )]
+  // No snapshot found but cycleId was provided — use live data for this survey
+  if (cycleId && !forcedSurveyId) {
+    forcedSurveyId = cycleId
+  }
 
-  const latestQuery = db
+  // ── 1. Most recent closed survey (or explicit cycle) ───────────────────────
+  let latestQuery = db
     .from('surveys')
     .select('id, title, closes_at')
     .eq('status', 'closed')
     .order('closes_at', { ascending: false })
     .limit(1)
 
-  if (surveyIdsArr.length > 0) {
-    latestQuery.in('id', surveyIdsArr)
+  if (forcedSurveyId) {
+    latestQuery = db
+      .from('surveys')
+      .select('id, title, closes_at')
+      .eq('id', forcedSurveyId)
+      .eq('status', 'closed')
+      .limit(1)
   }
 
   const { data: latestSurveyRaw, error: latestError } = await latestQuery.single()
@@ -743,6 +927,7 @@ export async function getPublicResultsData(
         surveyClosedAt: null,
         kpis: null,
         dimensionScores: [],
+        improvementInsights: null,
         qualitativeThemes: [],
         publicActions: [],
       },
@@ -755,6 +940,8 @@ export async function getPublicResultsData(
     closes_at: string | null
   }
 
+  await ensureDerivedMetricsIfMissing(latestSurvey.id)
+
   // ── 2. Company-wide dimension scores ──────────────────────────────────────
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: rawDimScores, error: dimError } = await (supabase as any).rpc(
@@ -764,7 +951,7 @@ export async function getPublicResultsData(
 
   if (dimError) return { success: false, error: dimError.message }
 
-  const dimensionScores: DimensionScore[] = (
+  let dimensionScores: DimensionScore[] = (
     (rawDimScores as Array<{
       dimension_id: string
       dimension_name: string
@@ -787,6 +974,10 @@ export async function getPublicResultsData(
     respondentCount: Number(row.respondent_count),
     belowThreshold: row.below_threshold,
   }))
+  if (dimensionScores.length === 0) {
+    dimensionScores = await getSectionFallbackDimensionScores(latestSurvey.id)
+  }
+  const improvementInsights = computeImprovementInsights(dimensionScores)
 
   // ── 3. Participation (total, supports old+new view schema) ───────────────
   const { data: partRaw } = await db
@@ -805,7 +996,7 @@ export async function getPublicResultsData(
 
   const participationRate =
     eligibleCount && eligibleCount > 0
-      ? Math.round((totalResponses / eligibleCount) * 100)
+      ? Math.min(Math.round((totalResponses / eligibleCount) * 100), 100)
       : 0
 
   const validScores = dimensionScores
@@ -824,7 +1015,7 @@ export async function getPublicResultsData(
 
   if (themesError) return { success: false, error: themesError.message }
 
-  const qualitativeThemes: QualitativeTheme[] = (
+  let qualitativeThemes: QualitativeTheme[] = (
     (themesRaw as Array<{
       id: string
       theme: string
@@ -840,6 +1031,9 @@ export async function getPublicResultsData(
     isPositive: t.is_positive,
     tagCount: (t.tag_cluster ?? []).length,
   }))
+  if (qualitativeThemes.length === 0) {
+    qualitativeThemes = await getFallbackQualitativeThemes(latestSurvey.id)
+  }
 
   // ── 5. Public action items ─────────────────────────────────────────────────
   let actionsRaw: unknown[] = []
@@ -894,8 +1088,138 @@ export async function getPublicResultsData(
         totalResponses,
       },
       dimensionScores,
+      improvementInsights,
       qualitativeThemes,
       publicActions,
     },
+  }
+}
+
+// ─── CSV Export ───────────────────────────────────────────────────────────────
+
+/**
+ * Exports anonymized survey results as a CSV string.
+ * Includes survey metadata, dimension scores, and qualitative themes.
+ * No user identifiers are included.
+ */
+export async function exportResultsCsv(
+  cycleId: string | null
+): Promise<{ success: true; data: string; filename: string } | { success: false; error: string }> {
+  const result = await getPublicResultsData(cycleId)
+  if (!result.success) return { success: false, error: result.error }
+  if (!result.data.hasData) return { success: false, error: 'No results data available yet.' }
+
+  const { surveyTitle, kpis, dimensionScores, qualitativeThemes } = result.data
+
+  function csvRow(...cells: (string | number | null | undefined)[]): string {
+    return cells.map((c) => {
+      const s = c === null || c === undefined ? '' : String(c)
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? `"${s.replace(/"/g, '""')}"`
+        : s
+    }).join(',')
+  }
+
+  const lines: string[] = []
+
+  // Survey metadata
+  lines.push(csvRow('Survey', surveyTitle ?? 'N/A'))
+  if (kpis) {
+    lines.push(csvRow('Overall Health Score', kpis.overallHealthScore?.toFixed(2) ?? 'N/A'))
+    lines.push(csvRow('Participation Rate', `${kpis.participationRate}%`))
+    lines.push(csvRow('Total Responses', kpis.totalResponses))
+  }
+  lines.push('')
+
+  // Dimension scores
+  lines.push('Dimension Scores')
+  lines.push(csvRow('Dimension', 'Avg Score', 'Respondents', 'Below Threshold'))
+  for (const d of dimensionScores) {
+    lines.push(csvRow(
+      d.dimensionName,
+      d.avgScore !== null ? d.avgScore.toFixed(2) : 'N/A',
+      d.respondentCount,
+      d.belowThreshold ? 'Yes' : 'No'
+    ))
+  }
+  lines.push('')
+
+  // Qualitative themes
+  lines.push('Qualitative Themes')
+  lines.push(csvRow('Theme', 'Type', 'Tag Count', 'Summary'))
+  for (const t of qualitativeThemes) {
+    lines.push(csvRow(
+      t.theme,
+      t.isPositive ? 'Suggestion' : 'Issue',
+      t.tagCount,
+      t.summary ?? ''
+    ))
+  }
+
+  const slug = (surveyTitle ?? 'results').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40)
+  const filename = `${slug}-results.csv`
+
+  return { success: true, data: lines.join('\n'), filename }
+}
+
+// ─── Closed surveys index ──────────────────────────────────────────────────────
+
+export async function getClosedSurveys(): Promise<
+  | {
+      success: true
+      data: Array<{
+        id: string
+        title: string
+        description: string | null
+        openedAt: string | null
+        closedAt: string | null
+        hasSnapshot: boolean
+        totalResponses: number
+      }>
+    }
+  | { success: false; error: string }
+> {
+  const supabase = await createSupabaseServerClient()
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+  if (authError || !user) return { success: false, error: 'Unauthorized' }
+
+  const { data: surveys, error } = await db
+    .from('surveys')
+    .select('id, title, description, opens_at, closes_at')
+    .eq('status', 'closed')
+    .order('closes_at', { ascending: false })
+
+  if (error) return { success: false, error: error.message }
+
+  const [snapshotsResult, participationResult] = await Promise.all([
+    db.from('publication_snapshots').select('survey_id'),
+    db.from('v_participation_rates').select('survey_id, token_count, submitted_count'),
+  ])
+
+  const publishedIds = new Set(
+    ((snapshotsResult.data as Array<{ survey_id: string }> | null) ?? []).map((s) => s.survey_id)
+  )
+
+  // Sum responses per survey from participation view
+  const responsesBySurvey = new Map<string, number>()
+  for (const row of (participationResult.data as Array<{ survey_id: string; token_count: number | null; submitted_count: number | null }> | null) ?? []) {
+    const count = Number(row.token_count ?? row.submitted_count ?? 0)
+    responsesBySurvey.set(row.survey_id, (responsesBySurvey.get(row.survey_id) ?? 0) + count)
+  }
+
+  return {
+    success: true,
+    data: ((surveys as Array<{ id: string; title: string; description: string | null; opens_at: string | null; closes_at: string | null }> | null) ?? []).map((s) => ({
+      id: s.id,
+      title: s.title,
+      description: s.description,
+      openedAt: s.opens_at,
+      closedAt: s.closes_at,
+      hasSnapshot: publishedIds.has(s.id),
+      totalResponses: responsesBySurvey.get(s.id) ?? 0,
+    })),
   }
 }

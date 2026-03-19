@@ -51,7 +51,7 @@ export function buildParticipationRows(
 
   return Array.from(eligibleMap.entries()).map(([deptId, meta]) => {
     const responded = respondedMap.get(deptId) ?? 0
-    const rate = meta.eligible > 0 ? Math.round((responded / meta.eligible) * 100) : 0
+    const rate = meta.eligible > 0 ? Math.min(Math.round((responded / meta.eligible) * 100), 100) : 0
     return {
       department: meta.name,
       departmentId: deptId.startsWith('name:') ? null : deptId,

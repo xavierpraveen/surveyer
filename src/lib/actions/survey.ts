@@ -34,6 +34,34 @@ import type {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabaseAdmin as any
 
+async function replaceSurveyRoleAudience(
+  surveyId: string,
+  targetRoleIds: string[]
+): Promise<{ success: true } | { success: false; error: string }> {
+  const { error: deleteError } = await db
+    .from('survey_audiences')
+    .delete()
+    .eq('survey_id', surveyId)
+    .not('target_role_id', 'is', null)
+
+  if (deleteError) return { success: false, error: deleteError.message }
+
+  if (targetRoleIds.length === 0) return { success: true }
+
+  const rows = targetRoleIds.map((roleId) => ({
+    survey_id: surveyId,
+    target_role_id: roleId,
+    target_department_id: null,
+  }))
+
+  const { error: insertError } = await db
+    .from('survey_audiences')
+    .insert(rows)
+
+  if (insertError) return { success: false, error: insertError.message }
+  return { success: true }
+}
+
 async function ensureDefaultSurveySection(surveyId: string): Promise<void> {
   const { count, error: countError } = await db
     .from('survey_sections')
@@ -84,6 +112,51 @@ async function insertQuestionOptions(
   return { success: true }
 }
 
+function normalizeQuestionTextForCompare(text: string): string {
+  return text.trim().replace(/\s+/g, ' ').toLowerCase()
+}
+
+async function isDuplicateQuestionTextInSurvey(
+  surveyId: string,
+  text: string,
+  excludeQuestionId?: string
+): Promise<boolean> {
+  const normalizedIncoming = normalizeQuestionTextForCompare(text)
+  if (!normalizedIncoming) return false
+
+  const { data: sectionRows, error: sectionError } = await db
+    .from('survey_sections')
+    .select('id')
+    .eq('survey_id', surveyId)
+
+  if (sectionError) return false
+
+  const sectionIds = ((sectionRows as Array<{ id: string }> | null) ?? []).map((s) => s.id)
+  if (sectionIds.length === 0) return false
+
+  const { data: questionRows, error: questionError } = await db
+    .from('questions')
+    .select('id, text')
+    .in('survey_section_id', sectionIds)
+
+  if (questionError) return false
+
+  return ((questionRows as Array<{ id: string; text: string }> | null) ?? []).some((q) => {
+    if (excludeQuestionId && q.id === excludeQuestionId) return false
+    return normalizeQuestionTextForCompare(q.text ?? '') === normalizedIncoming
+  })
+}
+
+async function hasResponsesForQuestion(questionId: string): Promise<boolean> {
+  const { count, error } = await db
+    .from('response_answers')
+    .select('*', { count: 'exact', head: true })
+    .eq('question_id', questionId)
+
+  if (error) return false
+  return (count ?? 0) > 0
+}
+
 // ─── Transition Matrix ────────────────────────────────────────────────────────
 
 const ALLOWED_TRANSITIONS: Record<SurveyStatus, SurveyStatus[]> = {
@@ -109,7 +182,9 @@ export async function createSurvey(
     return { success: false, error: 'Unauthorized' }
   }
 
-  const originalPayload: Record<string, unknown> = { ...parsed.data, created_by: user.id }
+  const targetRoleIds = Array.isArray(parsed.data.target_role_ids) ? parsed.data.target_role_ids : []
+  const { target_role_ids: _targetRoleIds, ...surveyFields } = parsed.data
+  const originalPayload: Record<string, unknown> = { ...surveyFields, created_by: user.id }
   let payload: Record<string, unknown> = { ...originalPayload }
   let lastError: { message?: string; code?: string } | null = null
 
@@ -122,6 +197,8 @@ export async function createSurvey(
 
     if (!insertResult.error) {
       const survey = normalizeSurveyRow(insertResult.data as Record<string, unknown>)
+      const audienceResult = await replaceSurveyRoleAudience(survey.id, targetRoleIds)
+      if (!audienceResult.success) return audienceResult
       await ensureDefaultSurveySection(survey.id)
       return { success: true, data: survey }
     }
@@ -167,7 +244,24 @@ export async function updateSurvey(
     return { success: false, error: parsed.error.errors[0].message }
   }
 
-  const { id, ...fields } = parsed.data
+  const { id, target_role_ids, ...fields } = parsed.data
+  const targetRoleIds = Array.isArray(target_role_ids) ? target_role_ids : null
+  const hasSurveyFieldUpdates = Object.keys(fields).length > 0
+
+  if (!hasSurveyFieldUpdates) {
+    if (targetRoleIds !== null) {
+      const audienceResult = await replaceSurveyRoleAudience(id, targetRoleIds)
+      if (!audienceResult.success) return audienceResult
+    }
+    const { data: unchangedSurvey, error: unchangedSurveyError } = await db
+      .from('surveys')
+      .select('*')
+      .eq('id', id)
+      .single()
+    if (unchangedSurveyError) return { success: false, error: unchangedSurveyError.message }
+    return { success: true, data: normalizeSurveyRow(unchangedSurvey as Record<string, unknown>) }
+  }
+
   const modernUpdate = await db
     .from('surveys')
     .update(fields)
@@ -176,6 +270,10 @@ export async function updateSurvey(
     .single()
 
   if (!modernUpdate.error) {
+    if (targetRoleIds !== null) {
+      const audienceResult = await replaceSurveyRoleAudience(id, targetRoleIds)
+      if (!audienceResult.success) return audienceResult
+    }
     return { success: true, data: normalizeSurveyRow(modernUpdate.data as Record<string, unknown>) }
   }
 
@@ -193,8 +291,45 @@ export async function updateSurvey(
 
   if (legacyUpdate.error) return { success: false, error: legacyUpdate.error.message }
   const survey = normalizeSurveyRow(legacyUpdate.data as Record<string, unknown>)
+  if (targetRoleIds !== null) {
+    const audienceResult = await replaceSurveyRoleAudience(id, targetRoleIds)
+    if (!audienceResult.success) return audienceResult
+  }
   await ensureDefaultSurveySection(survey.id)
   return { success: true, data: survey }
+}
+
+export async function getRoleOptions(): Promise<
+  { success: true; data: Array<{ id: string; name: string; slug: string }> } | { success: false; error: string }
+> {
+  const { data, error } = await db
+    .from('roles')
+    .select('id, name, slug')
+    .order('name', { ascending: true })
+
+  if (error) return { success: false, error: error.message }
+  return {
+    success: true,
+    data: ((data as Array<{ id: string; name: string; slug: string }> | null) ?? []),
+  }
+}
+
+export async function getSurveyAudienceRoleIds(
+  surveyId: string
+): Promise<{ success: true; data: string[] } | { success: false; error: string }> {
+  const { data, error } = await db
+    .from('survey_audiences')
+    .select('target_role_id')
+    .eq('survey_id', surveyId)
+    .not('target_role_id', 'is', null)
+
+  if (error) return { success: false, error: error.message }
+  return {
+    success: true,
+    data: (((data as Array<{ target_role_id: string | null }> | null) ?? [])
+      .map((row) => row.target_role_id)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0)),
+  }
 }
 
 // ─── Section Actions ──────────────────────────────────────────────────────────
@@ -272,6 +407,22 @@ export async function createQuestion(
   }
 
   const { options, ...questionFields } = parsed.data
+
+  const { data: sectionMeta, error: sectionMetaError } = await db
+    .from('survey_sections')
+    .select('survey_id')
+    .eq('id', questionFields.survey_section_id)
+    .single()
+
+  if (sectionMetaError || !sectionMeta) {
+    return { success: false, error: 'Survey section not found' }
+  }
+
+  const surveyId = (sectionMeta as { survey_id: string }).survey_id
+  const duplicate = await isDuplicateQuestionTextInSurvey(surveyId, questionFields.text)
+  if (duplicate) {
+    return { success: false, error: 'Question already exists in this survey' }
+  }
 
   const { count } = await db
     .from('questions')
@@ -357,6 +508,44 @@ export async function updateQuestion(
   }
 
   const { id, options, ...fields } = parsed.data
+  const { data: existingQuestion, error: existingError } = await db
+    .from('questions')
+    .select('id, survey_section_id, text, question_type, type')
+    .eq('id', id)
+    .single()
+
+  if (existingError || !existingQuestion) {
+    return { success: false, error: 'Question not found' }
+  }
+
+  const { data: sectionMeta, error: sectionMetaError } = await db
+    .from('survey_sections')
+    .select('survey_id')
+    .eq('id', (existingQuestion as { survey_section_id?: string }).survey_section_id)
+    .single()
+
+  if (!sectionMetaError && sectionMeta && typeof fields.text === 'string' && fields.text.trim().length > 0) {
+    const surveyId = (sectionMeta as { survey_id: string }).survey_id
+    const duplicate = await isDuplicateQuestionTextInSurvey(surveyId, fields.text, id)
+    if (duplicate) {
+      return { success: false, error: 'Question already exists in this survey' }
+    }
+  }
+
+  const hasResponses = await hasResponsesForQuestion(id)
+  if (hasResponses) {
+    const existingType = String(
+      (existingQuestion as { question_type?: string; type?: string }).question_type ??
+      (existingQuestion as { question_type?: string; type?: string }).type ??
+      ''
+    )
+    if (fields.question_type && fields.question_type !== existingType) {
+      return { success: false, error: 'Cannot change question type after responses are submitted' }
+    }
+    if (options !== undefined) {
+      return { success: false, error: 'Cannot change options after responses are submitted' }
+    }
+  }
   const modernUpdate = await db
     .from('questions')
     .update(fields)
@@ -415,6 +604,11 @@ export async function reorderQuestions(
 export async function deleteQuestion(
   questionId: string
 ): Promise<{ success: true } | { success: false; error: string }> {
+  const hasResponses = await hasResponsesForQuestion(questionId)
+  if (hasResponses) {
+    return { success: false, error: 'Cannot delete question after responses are submitted' }
+  }
+
   const { error } = await db.from('questions').delete().eq('id', questionId)
   if (error) return { success: false, error: error.message }
   return { success: true }
@@ -489,7 +683,74 @@ export async function transitionSurveyStatus(
     .single()
 
   if (error) return { success: false, error: error.message }
+
+  // Fire-and-forget: notify all eligible employees when survey opens
+  if (to_status === 'open') {
+    const survey = data as Survey
+    sendSurveyOpenNotifications(survey_id, survey.title).catch(() => {})
+  }
+
   return { success: true, data: data as Survey }
+}
+
+// ─── Survey open email notification ──────────────────────────────────────────
+
+async function sendSurveyOpenNotifications(surveyId: string, surveyTitle: string): Promise<void> {
+  const resendApiKey = process.env.RESEND_API_KEY
+  const fromEmail = process.env.RESEND_FROM_EMAIL
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (!resendApiKey || !fromEmail || !appUrl) return
+
+  const { data: employees } = await db
+    .from('profiles')
+    .select('email, full_name')
+    .eq('is_active', true)
+
+  if (!employees || employees.length === 0) return
+
+  // Insert in-app notifications for all eligible employees
+  const { data: responses } = await db
+    .from('responses')
+    .select('user_id')
+    .eq('survey_id', surveyId)
+
+  const respondedIds = new Set(
+    ((responses as Array<{ user_id: string }> | null) ?? []).map((r) => r.user_id)
+  )
+
+  const notifications = (employees as Array<{ email: string; full_name: string | null }>)
+    .filter((emp) => !respondedIds.has(emp.email)) // use email as fallback key
+    .map(() => ({
+      survey_id: surveyId,
+      kind: 'survey_open',
+      title: `New survey: ${surveyTitle}`,
+      message: `A new survey is now open: ${surveyTitle}. Please complete it at your earliest convenience.`,
+    }))
+
+  if (notifications.length > 0) {
+    await db.from('in_app_notifications').insert(notifications).catch(() => {})
+  }
+
+  // Send emails
+  for (const emp of employees as Array<{ email: string; full_name: string | null }>) {
+    try {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: fromEmail,
+          to: [emp.email],
+          subject: `New survey open: ${surveyTitle}`,
+          html: `<p>Hi ${emp.full_name || 'there'},</p><p>A new survey is now open: <strong>${surveyTitle}</strong>.</p><p>Please complete it at your earliest convenience.</p><p><a href="${appUrl}/dashboard">Go to your dashboard</a></p>`,
+        }),
+      })
+    } catch {
+      // Continue sending to remaining employees
+    }
+  }
 }
 
 // ─── Duplicate Survey ─────────────────────────────────────────────────────────
@@ -723,4 +984,55 @@ export async function deleteSurvey(
 
   if (deleteError) return { success: false, error: deleteError.message }
   return { success: true }
+}
+
+export type RespondentRow = {
+  userId: string
+  fullName: string | null
+  email: string | null
+  department: string | null
+  role: string | null
+  tenureBand: string | null
+  submittedAt: string
+}
+
+export async function getSurveyRespondents(
+  surveyId: string
+): Promise<
+  | { success: true; data: { respondents: RespondentRow[]; isAnonymous: boolean; total: number } }
+  | { success: false; error: string }
+> {
+  const { data: survey } = await db
+    .from('surveys')
+    .select('is_anonymous')
+    .eq('id', surveyId)
+    .single()
+  const isAnonymous = Boolean(survey?.is_anonymous)
+
+  const { data: tokens, error } = await db
+    .from('participation_tokens')
+    .select('user_id, submitted_at, tenure_band, profiles(full_name, email, departments(name), roles(name))')
+    .eq('survey_id', surveyId)
+    .order('submitted_at', { ascending: false })
+
+  if (error) return { success: false, error: error.message }
+
+  const respondents: RespondentRow[] = ((tokens as Record<string, unknown>[] | null) ?? []).map(
+    (token) => {
+      const profile = token.profiles as Record<string, unknown> | null
+      const dept = profile?.departments as Record<string, unknown> | null
+      const roleRow = profile?.roles as Record<string, unknown> | null
+      return {
+        userId: String(token.user_id),
+        fullName: isAnonymous ? null : ((profile?.full_name as string | null) ?? null),
+        email: isAnonymous ? null : ((profile?.email as string | null) ?? null),
+        department: (dept?.name as string | null) ?? null,
+        role: (roleRow?.name as string | null) ?? null,
+        tenureBand: (token.tenure_band as string | null) ?? null,
+        submittedAt: String(token.submitted_at ?? ''),
+      }
+    }
+  )
+
+  return { success: true, data: { respondents, isAnonymous, total: respondents.length } }
 }

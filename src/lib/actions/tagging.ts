@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { supabaseAdmin } from '@/lib/supabase/admin'
 import { normalizeRole } from '@/lib/constants/roles'
+import { summarizer } from '@/lib/ai/summarizer'
 import type { QualitativeTag, TaggableAnswer } from '@/lib/types/phase4'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -219,16 +220,27 @@ export async function generateThemes(
   }
 
   // 3. Filter to tags with count >= 2, sort descending, cap at 10
-  const themes = Array.from(tagFreq.entries())
+  const topTagEntries = Array.from(tagFreq.entries())
     .filter(([, count]) => count >= 2)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10)
-    .map(([tag]) => ({
+
+  const topTagLabels = topTagEntries.map(([tag]) => tag)
+
+  // 3a. Call AI summarizer for enriched theme labels + sentiment (falls back to null provider if unconfigured)
+  const aiThemes = await summarizer.summarizeThemes(topTagLabels, { maxThemes: 10 })
+
+  // 3b. Build theme rows — use AI output if available, otherwise fall back to tag labels
+  const themes = topTagLabels.map((tag, i) => {
+    const ai = aiThemes[i]
+    return {
       survey_id: surveyId,
-      theme: tag,
+      theme: ai?.theme ?? tag,
       tag_cluster: [tag],
-      is_positive: false,
-    }))
+      is_positive: ai?.sentiment === 'positive',
+      summary: ai?.representative_quote ?? null,
+    }
+  })
 
   // 4. DELETE existing themes for this survey (idempotent)
   const { error: deleteError } = await db

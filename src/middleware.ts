@@ -22,6 +22,9 @@ export async function middleware(request: NextRequest) {
   // Authenticated: redirect away from auth pages
   if (PUBLIC_ROUTES.some((r) => pathname.startsWith(r))) {
     const rawRole = user.app_metadata?.role as string | undefined
+    if (rawRole === 'manager') {
+      return NextResponse.redirect(new URL('/manager/dashboard', request.url))
+    }
     const nr = normalizeRole(rawRole)
     return NextResponse.redirect(new URL(ROLE_ROUTES[nr], request.url))
   }
@@ -29,6 +32,9 @@ export async function middleware(request: NextRequest) {
   // Redirect root "/" to role home
   if (pathname === '/') {
     const rawRole = user.app_metadata?.role as string | undefined
+    if (rawRole === 'manager') {
+      return NextResponse.redirect(new URL('/manager/dashboard', request.url))
+    }
     const nr = normalizeRole(rawRole)
     return NextResponse.redirect(new URL(ROLE_ROUTES[nr], request.url))
   }

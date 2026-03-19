@@ -1,12 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import type { AppSettings, EmployeeDirectoryRow, ParticipationRow } from '@/lib/types/phase4'
+import type { AppSettings, EmployeeDirectoryRow, ParticipationRow, ReminderPanelData } from '@/lib/types/phase4'
 import EmployeeImportTab from './EmployeeImportTab'
 import EmployeeDirectoryTab from './EmployeeDirectoryTab'
 import PrivacySettingsTab from './PrivacySettingsTab'
 import ParticipationMonitorTab from './ParticipationMonitorTab'
 import CyclesTab from './CyclesTab'
+import ReminderTab from './ReminderTab'
 
 interface SurveyItem {
   id: string
@@ -21,15 +22,17 @@ interface SettingsTabsProps {
   initialSurveys: SurveyItem[]
   initialParticipation: ParticipationRow[]
   initialEmployees: EmployeeDirectoryRow[]
+  initialReminderData: ReminderPanelData | null
 }
 
-type TabId = 'employees' | 'directory' | 'privacy' | 'participation' | 'cycles'
+type TabId = 'employees' | 'directory' | 'privacy' | 'participation' | 'reminders' | 'cycles'
 
 const TABS: { id: TabId; label: string }[] = [
   { id: 'employees', label: 'Employees' },
   { id: 'directory', label: 'Employee Directory' },
   { id: 'privacy', label: 'Privacy' },
   { id: 'participation', label: 'Participation' },
+  { id: 'reminders', label: 'Reminders' },
   { id: 'cycles', label: 'Cycles' },
 ]
 
@@ -38,6 +41,7 @@ export default function SettingsTabs({
   initialSurveys,
   initialParticipation,
   initialEmployees,
+  initialReminderData,
 }: SettingsTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('employees')
 
@@ -72,6 +76,9 @@ export default function SettingsTabs({
         )}
         {activeTab === 'participation' && (
           <ParticipationMonitorTab initialData={initialParticipation} />
+        )}
+        {activeTab === 'reminders' && (
+          <ReminderTab initialData={initialReminderData} />
         )}
         {activeTab === 'cycles' && (
           <CyclesTab initialSurveys={initialSurveys} />

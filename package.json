@@ -11,9 +11,12 @@
     "test:watch": "vitest",
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
     "auth:repair-local": "node scripts/repair-local-auth.mjs",
-    "survey:auto-submit": "node scripts/auto-submit-survey.mjs"
+    "survey:auto-submit": "node scripts/auto-submit-survey.mjs",
+    "survey:auto-complete": "node scripts/auto-complete-survey.mjs",
+    "survey:create": "node scripts/create-survey.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.80.0",
     "@supabase/ssr": "0.9.0",
     "@supabase/supabase-js": "^2.49.1",
     "next": "15.5.12",

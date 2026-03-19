@@ -36,6 +36,7 @@ export default function QuestionRenderer({
 }: QuestionRendererProps) {
   const { questionType, isRequired } = getQuestionRenderMeta(question)
   const { text, id } = question
+  const denseSingleSelect = questionType === 'single_select' && options.length >= 8
 
   return (
     <div className="mb-6">
@@ -98,13 +99,13 @@ export default function QuestionRenderer({
       )}
 
       {questionType === 'single_select' && (
-        <div className="flex flex-col gap-2">
+        <div className={denseSingleSelect ? 'grid grid-cols-1 md:grid-cols-2 gap-2' : 'flex flex-col gap-2'}>
           {options.map((opt) => (
             <label
               key={opt.id}
-              className={`flex items-center gap-3 px-3 cursor-pointer ${
+              className={`flex items-center gap-3 cursor-pointer ${
                 value === opt.id ? LIKERT_SELECTED : LIKERT_UNSELECTED
-              }`}
+              } ${denseSingleSelect ? 'px-2.5' : 'px-3'}`}
             >
               <input
                 type="radio"

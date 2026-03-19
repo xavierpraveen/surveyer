@@ -35,6 +35,7 @@ export const createSurveySchema = z.object({
   description: z.string().optional(),
   is_anonymous: z.boolean(),
   public_link_enabled: z.boolean(),
+  target_role_ids: z.array(z.string().uuid()).optional(),
   opens_at: z.string().datetime().optional(),
   closes_at: z.string().datetime().optional(),
 })

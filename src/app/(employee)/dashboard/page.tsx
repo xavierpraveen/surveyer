@@ -5,6 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase/admin'
 import { checkSubmissionStatus } from '@/lib/actions/response'
 import type { Survey, SurveyStatus, SubmissionStatus } from '@/lib/types/survey'
 import { signOut } from '@/lib/actions/auth'
+import { getTargetRoleIdsForSurvey, isSurveyVisibleToRole } from '@/lib/survey-audience'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const db = supabaseAdmin as any
@@ -161,6 +162,13 @@ export default async function EmployeeDashboardPage() {
   }
 
   const userRole: string = (user.app_metadata?.role as string) ?? 'employee'
+  const { data: profileData } = await db
+    .from('profiles')
+    .select('role_id')
+    .eq('id', user.id)
+    .single()
+  const userRoleId: string | null =
+    (profileData as { role_id: string | null } | null)?.role_id ?? null
 
   // Fetch surveys that are open or scheduled — all employees see all active surveys
   const { data: surveysData } = await db
@@ -193,6 +201,32 @@ export default async function EmployeeDashboardPage() {
 
     if (submittedSurveysData) {
       filteredSurveys.push(...(submittedSurveysData as Survey[]))
+    }
+  }
+
+  // Survey-level audience gate by selected role ids.
+  const allSurveyIds = [...new Set(filteredSurveys.map((s) => s.id))]
+  if (allSurveyIds.length > 0) {
+    const { data: audienceRows } = await db
+      .from('survey_audiences')
+      .select('survey_id, target_role_id')
+      .in('survey_id', allSurveyIds)
+      .not('target_role_id', 'is', null)
+
+    const audienceData =
+      ((audienceRows as Array<{ survey_id: string; target_role_id: string | null }> | null) ?? [])
+
+    const visibleSurveyIds = new Set(
+      allSurveyIds.filter((surveyId) => {
+        const targetRoleIds = getTargetRoleIdsForSurvey(audienceData, surveyId)
+        return isSurveyVisibleToRole(targetRoleIds, userRoleId)
+      })
+    )
+
+    for (let i = filteredSurveys.length - 1; i >= 0; i--) {
+      if (!visibleSurveyIds.has(filteredSurveys[i].id)) {
+        filteredSurveys.splice(i, 1)
+      }
     }
   }
 

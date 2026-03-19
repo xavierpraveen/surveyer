@@ -1,261 +1,113 @@
-import { getPublicResultsData } from '@/lib/actions/analytics'
-import { getPublishedCycles } from '@/lib/actions/publication'
-import DimensionBarChart from '@/components/analytics/DimensionBarChart'
-import QualitativeThemePanel from '@/components/analytics/QualitativeThemePanel'
-import CycleSelector from '@/components/results/CycleSelector'
-import type { PublicAction } from '@/lib/types/analytics'
+import { getClosedSurveys } from '@/lib/actions/analytics'
+import Link from 'next/link'
 
-// ─── Page props ───────────────────────────────────────────────────────────────
-
-interface PageProps {
-  searchParams: Promise<{ cycle?: string }>
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
-// ─── Action status grouping ───────────────────────────────────────────────────
-
-type ActionGroup = {
-  label: string
-  colorClass: string
-  actions: PublicAction[]
+function dateRange(openedAt: string | null, closedAt: string | null): string | null {
+  if (!openedAt && !closedAt) return null
+  if (openedAt && closedAt) return `${formatDate(openedAt)} – ${formatDate(closedAt)}`
+  if (closedAt) return `Closed ${formatDate(closedAt)}`
+  return null
 }
 
-function groupActionsByStatus(actions: PublicAction[]): ActionGroup[] {
-  const inProgress: PublicAction[] = []
-  const planned: PublicAction[] = []
-  const blocked: PublicAction[] = []
-  const completed: PublicAction[] = []
-
-  for (const action of actions) {
-    if (action.status === 'in_progress') {
-      inProgress.push(action)
-    } else if (action.status === 'identified' || action.status === 'planned') {
-      planned.push(action)
-    } else if (action.status === 'blocked') {
-      blocked.push(action)
-    } else if (action.status === 'completed') {
-      completed.push(action)
-    }
-  }
-
-  // Order: In Progress, Planned, Blocked, Completed
-  const groups: ActionGroup[] = [
-    { label: 'In Progress', colorClass: 'bg-warning-muted text-warning-text', actions: inProgress },
-    { label: 'Planned', colorClass: 'bg-brand-muted text-brand-text', actions: planned },
-    { label: 'Blocked', colorClass: 'bg-error-muted text-error-text', actions: blocked },
-    { label: 'Completed', colorClass: 'bg-success-muted text-success-text', actions: completed },
-  ]
-
-  // Only return groups that have actions
-  return groups.filter((g) => g.actions.length > 0)
-}
-
-// ─── Health score color ────────────────────────────────────────────────────────
-
-function healthScoreColor(score: number): string {
-  if (score >= 4.0) return 'text-success'
-  if (score >= 3.0) return 'text-warning'
-  return 'text-error'
-}
-
-// ─── Page ─────────────────────────────────────────────────────────────────────
-
-export default async function ResultsPage({ searchParams }: PageProps) {
-  const { cycle } = await searchParams
-
-  // Fetch published cycles for the selector and live data in parallel
-  const [publishedCyclesResult, result] = await Promise.all([
-    getPublishedCycles(),
-    getPublicResultsData(cycle || null),
-  ])
-
-  const publishedCycles = publishedCyclesResult.success ? publishedCyclesResult.data : []
-
-  // Error or no data state
-  if (!result.success || !result.data.hasData) {
-    return (
-      <div className="min-h-screen bg-bg flex items-center justify-center">
-        <div className="text-center max-w-md px-4">
-          <h1 className="text-2xl font-extrabold tracking-snug text-fg mb-2">Company Results</h1>
-          <p className="text-fg-muted">
-            Results will appear here after the first survey cycle closes and metrics are computed.
-          </p>
-          {publishedCycles.length > 0 && (
-            <div className="mt-6">
-              <CycleSelector
-                cycles={publishedCycles.map((c) => ({ ...c, isPublished: true }))}
-                currentCycleId={cycle || null}
-                liveSurveyId={null}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  const { surveyTitle, surveyClosedAt, kpis, dimensionScores, qualitativeThemes, publicActions } =
-    result.data
-
-  const closedDateLabel = surveyClosedAt
-    ? `Closed ${new Date(surveyClosedAt).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      })}`
-    : null
-
-  const actionGroups = groupActionsByStatus(publicActions)
+export default async function ResultsIndexPage() {
+  const result = await getClosedSurveys()
+  const surveys = result.success ? result.data : []
 
   return (
     <div className="min-h-screen bg-bg">
-      <div className="max-w-6xl mx-auto p-8">
+      <div className="max-w-3xl mx-auto p-6 md:p-8">
 
-        {/* Cycle selector */}
-        {publishedCycles.length > 0 && (
-          <div className="mb-4">
-            <CycleSelector
-              cycles={publishedCycles.map((c) => ({ ...c, isPublished: true }))}
-              currentCycleId={cycle || null}
-              liveSurveyId={null}
-            />
+        {/* Back button */}
+        <div className="mb-6">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 text-sm font-medium text-brand-text hover:underline"
+          >
+            <span aria-hidden="true">←</span>
+            <span>Back to Dashboard</span>
+          </Link>
+        </div>
+
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-extrabold tracking-snug text-fg">Company Survey Results</h1>
+          <p className="text-sm text-fg-muted mt-1">
+            {surveys.length > 0
+              ? `${surveys.length} closed survey cycle${surveys.length === 1 ? '' : 's'}`
+              : 'All closed survey cycles'}
+          </p>
+        </div>
+
+        {surveys.length === 0 ? (
+          <div className="border border-border rounded-xl p-8 text-center bg-surface">
+            <p className="text-fg font-semibold mb-1">No results yet</p>
+            <p className="text-sm text-fg-muted">Results will appear here once a survey cycle closes.</p>
           </div>
-        )}
-
-        {/* Hero section */}
-        <div className="bg-surface border border-border rounded-lg shadow-sm p-6 mb-6">
-          <div className="mb-4">
-            <h1 className="text-2xl font-extrabold tracking-snug text-fg">Company Survey Results</h1>
-            {(surveyTitle || closedDateLabel) && (
-              <p className="text-sm text-fg-muted mt-1">
-                {surveyTitle}
-                {surveyTitle && closedDateLabel && ' · '}
-                {closedDateLabel}
-              </p>
-            )}
-            {cycle && (
-              <span className="inline-flex items-center mt-2 text-xs bg-success-muted text-success-text font-semibold px-2 py-0.5 rounded-full">
-                Published
-              </span>
-            )}
-          </div>
-
-          {/* KPI row */}
-          {kpis && (
-            <div className="flex flex-wrap gap-6 pt-4 border-t border-border">
-              {/* Overall Health Score */}
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold text-fg-subtle uppercase tracking-[0.07em] mb-1">
-                  Overall Health Score
-                </span>
-                {kpis.overallHealthScore !== null ? (
-                  <span
-                    className={`text-3xl font-bold tabular-nums ${healthScoreColor(kpis.overallHealthScore)}`}
-                  >
-                    {kpis.overallHealthScore.toFixed(1)}
-                    <span className="text-lg font-normal text-fg-subtle"> / 5</span>
-                  </span>
-                ) : (
-                  <span className="text-fg-subtle font-mono text-xl">---</span>
-                )}
-              </div>
-
-              {/* Participation Rate */}
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold text-fg-subtle uppercase tracking-[0.07em] mb-1">
-                  Participation Rate
-                </span>
-                <span className="text-3xl font-bold text-fg tabular-nums">
-                  {kpis.participationRate}
-                  <span className="text-lg font-normal text-fg-subtle">% participated</span>
-                </span>
-              </div>
-
-              {/* Total Responses */}
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold text-fg-subtle uppercase tracking-[0.07em] mb-1">
-                  Total Responses
-                </span>
-                <span className="text-3xl font-bold text-fg tabular-nums">
-                  {kpis.totalResponses}
-                  <span className="text-lg font-normal text-fg-subtle"> responses</span>
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Section: Dimension Scores */}
-        <div className="bg-surface border border-border rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-bold tracking-snug text-fg mb-4">Dimension Scores</h2>
-          {dimensionScores.length === 0 ? (
-            <p className="text-fg-muted text-sm">No dimension scores available.</p>
-          ) : (
-            <DimensionBarChart scores={dimensionScores} />
-          )}
-        </div>
-
-        {/* Section: Qualitative Themes */}
-        <div className="bg-surface border border-border rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-xl font-bold tracking-snug text-fg mb-4">Qualitative Themes</h2>
-          <QualitativeThemePanel themes={qualitativeThemes} />
-        </div>
-
-        {/* Section: Committed Actions */}
-        <div className="bg-surface border border-border rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-bold tracking-snug text-fg mb-4">What We&apos;re Doing About It</h2>
-
-          {publicActions.length === 0 ? (
-            <p className="text-fg-muted text-sm">No public action items yet.</p>
-          ) : (
-            <div>
-              {actionGroups.map((group) => (
-                <div key={group.label} className="mb-6 last:mb-0">
-                  <h3 className="text-base font-bold tracking-tight text-fg mb-3 flex items-center gap-2">
-                    {group.label}
-                    <span
-                      className={`text-xs rounded-full px-2 py-0.5 font-semibold ${group.colorClass}`}
-                    >
-                      {group.actions.length}
-                    </span>
-                  </h3>
-                  <div className="space-y-3">
-                    {group.actions.map((action) => (
-                      <div
-                        key={action.id}
-                        className="bg-surface border border-border rounded-lg p-4"
-                      >
-                        <p className="font-medium text-fg">{action.title}</p>
-                        {action.problemStatement && (
-                          <p className="text-sm text-fg-muted mt-1 line-clamp-2">
-                            {action.problemStatement}
-                          </p>
-                        )}
-                        {(action.departmentName || action.targetDate) && (
-                          <div className="flex items-center gap-3 mt-2 text-xs text-fg-subtle">
-                            {action.departmentName && <span>{action.departmentName}</span>}
-                            {action.departmentName && action.targetDate && (
-                              <span>·</span>
-                            )}
-                            {action.targetDate && (
-                              <span>
-                                Target:{' '}
-                                {new Date(action.targetDate).toLocaleDateString('en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                                })}
-                              </span>
-                            )}
-                          </div>
+        ) : (
+          <div className="space-y-3">
+            {surveys.map((survey) => {
+              const range = dateRange(survey.openedAt, survey.closedAt)
+              return (
+                <Link
+                  key={survey.id}
+                  href={`/results/${survey.id}`}
+                  className="group block border border-border rounded-xl p-5 bg-surface hover:bg-surface-2 hover:border-brand-muted transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-semibold text-fg">{survey.title}</p>
+                        {survey.hasSnapshot && (
+                          <span className="text-[11px] bg-success-muted text-success-text px-2 py-0.5 rounded-full font-semibold">
+                            Published
+                          </span>
                         )}
                       </div>
-                    ))}
+
+                      {survey.description && (
+                        <p className="text-sm text-fg-muted mt-1 line-clamp-2">{survey.description}</p>
+                      )}
+
+                      <div className="flex items-center gap-3 mt-2 flex-wrap">
+                        {range && (
+                          <span className="inline-flex items-center gap-1 text-xs text-fg-subtle">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {range}
+                          </span>
+                        )}
+                        {survey.totalResponses > 0 && (
+                          <span className="inline-flex items-center gap-1 text-xs text-fg-subtle">
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
+                            </svg>
+                            {survey.totalResponses} {survey.totalResponses === 1 ? 'response' : 'responses'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex-shrink-0 flex items-center self-center">
+                      <svg
+                        className="w-4 h-4 text-fg-subtle group-hover:text-brand-text transition-colors"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )

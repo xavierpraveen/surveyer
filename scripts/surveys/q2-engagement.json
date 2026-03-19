@@ -1,0 +1,167 @@
+{
+  "title": "Employee Engagement Survey Q2 2026",
+  "description": "A quarterly pulse check on engagement, leadership trust, and growth opportunities.",
+  "anonymous_mode": false,
+  "status": "draft",
+  "sections": [
+    {
+      "title": "Engagement & Motivation",
+      "description": "How connected and motivated you feel at work.",
+      "target_roles": ["all"],
+      "questions": [
+        {
+          "text": "I feel motivated to go above and beyond in my work.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "I am proud to work at this organisation.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "I would recommend this company as a great place to work.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "What most energises you at work right now?",
+          "type": "short_text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "title": "Leadership & Trust",
+      "description": "Your experience with leadership communication and decision-making.",
+      "target_roles": ["all"],
+      "questions": [
+        {
+          "text": "Leadership communicates a clear direction for the company.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "I trust senior leadership to make the right decisions.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "My manager gives me helpful feedback on my performance.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "How would you describe leadership transparency?",
+          "type": "single_select",
+          "required": true,
+          "options": ["Very transparent", "Mostly transparent", "Somewhat transparent", "Not very transparent"]
+        }
+      ]
+    },
+    {
+      "title": "Growth & Development",
+      "description": "Opportunities for learning and career advancement.",
+      "target_roles": ["all"],
+      "questions": [
+        {
+          "text": "I have clear opportunities for growth and advancement here.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "I receive adequate support for professional development.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "Which development areas matter most to you?",
+          "type": "multi_select",
+          "required": false,
+          "options": ["Technical skills", "Leadership skills", "Communication", "Strategic thinking", "Cross-functional exposure"]
+        },
+        {
+          "text": "What one thing would most accelerate your growth here?",
+          "type": "long_text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "title": "Wellbeing & Workload",
+      "description": "Balance, sustainability, and your overall wellbeing at work.",
+      "target_roles": ["all"],
+      "questions": [
+        {
+          "text": "My workload is manageable on a day-to-day basis.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "I am able to maintain a healthy work-life balance.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "How often do you feel burned out?",
+          "type": "single_select",
+          "required": true,
+          "options": ["Never", "Rarely", "Sometimes", "Often", "Almost always"]
+        },
+        {
+          "text": "What would most improve your day-to-day work experience?",
+          "type": "long_text",
+          "required": false
+        }
+      ]
+    },
+    {
+      "title": "Team Collaboration",
+      "description": "Effectiveness and dynamics of your immediate team.",
+      "target_roles": ["all"],
+      "questions": [
+        {
+          "text": "My team works well together to achieve shared goals.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "I feel comfortable sharing my ideas and opinions with my team.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        },
+        {
+          "text": "Cross-team collaboration is effective in this organisation.",
+          "type": "likert_5",
+          "required": true,
+          "min_label": "Strongly Disagree",
+          "max_label": "Strongly Agree"
+        }
+      ]
+    }
+  ]
+}

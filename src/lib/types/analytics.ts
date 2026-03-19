@@ -27,6 +27,9 @@ export interface OrgKpis {
   overallHealthScore: number | null   // avg of all dimension avg_scores
   participationRate: number           // 0–100 percentage
   totalResponses: number
+  pendingResponses: number
+  completionDeltaPct: number | null   // current participation - previous cycle participation
+  completedActionPct: number | null   // completed actions out of all public actions
   surveyPeriod: string                // e.g. "Q1 2026"
   dimensionsBelowThreshold: number
   surveyId: string
@@ -84,6 +87,25 @@ export interface PublicAction {
   departmentName: string | null
 }
 
+export interface ImprovementArea {
+  dimensionId: string
+  dimensionName: string
+  dimensionSlug: string
+  avgScore: number
+  respondentCount: number
+  healthGap: number
+  priorityScore: number
+  urgency: 'high' | 'medium' | 'low'
+  rationale: string
+}
+
+export interface ImprovementInsights {
+  priorityAreas: ImprovementArea[]
+  criticalAreas: ImprovementArea[]
+  strengthAreas: ImprovementArea[]
+  recommendedFocus: ImprovementArea[]
+}
+
 // Full payload returned to leadership dashboard RSC
 export interface LeadershipDashboardData {
   kpis: OrgKpis
@@ -113,6 +135,7 @@ export interface PublicResultsData {
   surveyClosedAt: string | null
   kpis: Pick<OrgKpis, 'overallHealthScore' | 'participationRate' | 'totalResponses'> | null
   dimensionScores: DimensionScore[]
+  improvementInsights: ImprovementInsights | null
   qualitativeThemes: QualitativeTheme[]
   publicActions: PublicAction[]
 }

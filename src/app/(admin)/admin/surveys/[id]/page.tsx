@@ -7,6 +7,8 @@ import SurveyStatusBanner from '@/components/admin/SurveyStatusBanner'
 import SectionSidebar from '@/components/admin/SectionSidebar'
 import QuestionEditor from '@/components/admin/QuestionEditor'
 import PublishResultsButton from '@/components/admin/PublishResultsButton'
+import SurveyAudienceEditor from '@/components/admin/SurveyAudienceEditor'
+import { getRoleOptions, getSurveyAudienceRoleIds } from '@/lib/actions/survey'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const dbAdmin = supabaseAdmin as any
@@ -92,6 +94,10 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
     .select('*')
     .order('display_order', { ascending: true })
   const dimensions = (dimensionsData ?? []) as Dimension[]
+  const rolesResult = await getRoleOptions()
+  const audienceResult = await getSurveyAudienceRoleIds(id)
+  const roleOptions = rolesResult.success ? rolesResult.data : []
+  const targetRoleIds = audienceResult.success ? audienceResult.data : []
 
   // ── Publication data ──────────────────────────────────────────────────────
 
@@ -186,24 +192,40 @@ export default async function SurveyBuilderPage({ params, searchParams }: PagePr
         <SurveyStatusBanner survey={survey} />
       </div>
 
-      {/* Publication actions (only for closed surveys) */}
-      {survey.status === 'closed' && (
-        <div className="px-6 pt-3 flex items-center gap-3">
-          <PublishResultsButton
-            surveyId={survey.id}
-            surveyTitle={survey.title}
-            surveyStatus={survey.status}
-            hasExistingSnapshot={hasExistingSnapshot}
-            snapshotPreview={snapshotPreview}
-          />
-          <a
-            href={`/admin/surveys/${survey.id}/tags`}
-            className="text-sm text-brand-text hover:underline flex items-center gap-1"
-          >
-            Tag Responses
-          </a>
-        </div>
-      )}
+      <div className="px-6 pt-3">
+        <SurveyAudienceEditor
+          surveyId={id}
+          roleOptions={roleOptions}
+          initialTargetRoleIds={targetRoleIds}
+        />
+      </div>
+
+      {/* Survey actions */}
+      <div className="px-6 pt-3 flex items-center gap-3">
+        <a
+          href={`/admin/surveys/${survey.id}/responses`}
+          className="text-sm text-brand-text hover:underline flex items-center gap-1"
+        >
+          View Responses
+        </a>
+        {survey.status === 'closed' && (
+          <>
+            <PublishResultsButton
+              surveyId={survey.id}
+              surveyTitle={survey.title}
+              surveyStatus={survey.status}
+              hasExistingSnapshot={hasExistingSnapshot}
+              snapshotPreview={snapshotPreview}
+            />
+            <a
+              href={`/admin/surveys/${survey.id}/tags`}
+              className="text-sm text-brand-text hover:underline flex items-center gap-1"
+            >
+              Tag Responses
+            </a>
+          </>
+        )}
+      </div>
 
       {/* Builder layout */}
       <div className="flex" style={{ height: 'calc(100vh - 130px)' }}>

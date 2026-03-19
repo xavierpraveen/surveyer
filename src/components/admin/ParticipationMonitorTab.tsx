@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import type { ParticipationRow } from '@/lib/types/phase4'
-import { getParticipationForOpenSurvey } from '@/lib/actions/settings'
+import { getParticipationForOpenSurvey, sendSurveyReminders } from '@/lib/actions/settings'
 
 interface ParticipationMonitorTabProps {
   initialData: ParticipationRow[]
@@ -22,6 +22,8 @@ export default function ParticipationMonitorTab({
   const [data, setData] = useState<ParticipationRow[]>(initialData)
   const [lastUpdated, setLastUpdated] = useState<Date>(() => new Date())
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [isSendingReminders, setIsSendingReminders] = useState(false)
+  const [reminderResult, setReminderResult] = useState<string | null>(null)
 
   const refresh = useCallback(async () => {
     setIsRefreshing(true)
@@ -38,11 +40,28 @@ export default function ParticipationMonitorTab({
     return () => clearInterval(id) // MUST have cleanup
   }, [refresh])
 
+  const sendReminders = useCallback(async () => {
+    setIsSendingReminders(true)
+    setReminderResult(null)
+    const result = await sendSurveyReminders()
+    if (result.success) {
+      const { notified, emailed, emailSkipped } = result.data
+      setReminderResult(
+        emailSkipped
+          ? `In-app notifications sent to ${notified} pending respondents (email not configured).`
+          : `Notified ${notified} respondents — ${emailed} emails sent.`
+      )
+    } else {
+      setReminderResult(`Error: ${result.error}`)
+    }
+    setIsSendingReminders(false)
+  }, [])
+
   // Totals
   const totalEligible = data.reduce((sum, r) => sum + r.eligible, 0)
   const totalResponded = data.reduce((sum, r) => sum + r.responded, 0)
   const overallRate =
-    totalEligible > 0 ? Math.round((totalResponded / totalEligible) * 100) : 0
+    totalEligible > 0 ? Math.min(Math.round((totalResponded / totalEligible) * 100), 100) : 0
 
   return (
     <div>
@@ -54,6 +73,14 @@ export default function ParticipationMonitorTab({
             Last updated: {formatRelativeTime(lastUpdated)}
           </p>
         </div>
+        <div className="flex items-center gap-2">
+        <button
+          onClick={sendReminders}
+          disabled={isSendingReminders || data.length === 0}
+          className="bg-brand text-white font-medium text-sm px-3.5 py-2 rounded-md transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:outline-none"
+        >
+          {isSendingReminders ? 'Sending…' : 'Send Reminder'}
+        </button>
         <button
           onClick={refresh}
           disabled={isRefreshing}
@@ -86,7 +113,13 @@ export default function ParticipationMonitorTab({
             'Refresh'
           )}
         </button>
+        </div>
       </div>
+
+      {/* Reminder result feedback */}
+      {reminderResult && (
+        <p className="text-xs text-fg-muted mb-3">{reminderResult}</p>
+      )}
 
       {/* Empty state */}
       {data.length === 0 ? (

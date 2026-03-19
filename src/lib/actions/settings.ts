@@ -8,7 +8,9 @@ import type {
   EmployeeDirectoryRow,
   EmployeeImportRow,
   ImportResult,
+  PendingEmployeeRow,
   ParticipationRow,
+  ReminderPanelData,
 } from '@/lib/types/phase4'
 import { normalizeEmployeeDirectoryRow } from './settings-employee-compat'
 import { buildParticipationRows } from './settings-participation-compat'
@@ -308,4 +310,226 @@ export async function getEmployeeDirectory(): Promise<
   )
 
   return { success: true, data: rows }
+}
+
+// ─── Reminder workflow ────────────────────────────────────────────────────────
+
+async function getActiveSurveyIdAndTitle(): Promise<{ id: string; title: string } | null> {
+  const { data: openSurveyRows, error } = await db
+    .from('surveys')
+    .select('id, title')
+    .eq('status', 'open')
+    .order('created_at', { ascending: false })
+    .limit(1)
+
+  if (!error) {
+    const openSurvey = ((openSurveyRows as Array<{ id: string; title: string }> | null) ?? [])[0] ?? null
+    if (openSurvey) return openSurvey
+  }
+
+  // Fallback: scheduled surveys that are already within their active window.
+  const now = new Date()
+  const { data: scheduledRows, error: scheduledError } = await db
+    .from('surveys')
+    .select('id, title, opens_at, closes_at')
+    .eq('status', 'scheduled')
+    .order('opens_at', { ascending: false })
+    .limit(20)
+
+  if (scheduledError) return null
+
+  const activeScheduled = ((scheduledRows as Array<{
+    id: string
+    title: string
+    opens_at: string | null
+    closes_at: string | null
+  }> | null) ?? []).find((survey) => {
+    if (!survey.opens_at) return false
+    const opensAt = new Date(survey.opens_at)
+    const closesAt = survey.closes_at ? new Date(survey.closes_at) : null
+    return opensAt <= now && (!closesAt || closesAt > now)
+  })
+
+  if (!activeScheduled) return null
+  return { id: activeScheduled.id, title: activeScheduled.title }
+}
+
+function normalizePendingEmployee(row: Record<string, unknown>): PendingEmployeeRow {
+  const departments = row.departments as { name?: string } | Array<{ name?: string }> | null
+  const roles = row.roles as { name?: string } | Array<{ name?: string }> | null
+  const department = Array.isArray(departments)
+    ? (departments[0]?.name ?? null)
+    : (departments?.name ?? null)
+  const roleName = Array.isArray(roles)
+    ? (roles[0]?.name ?? null)
+    : (roles?.name ?? null)
+
+  return {
+    id: String(row.id ?? ''),
+    name:
+      (typeof row.full_name === 'string' && row.full_name) ||
+      (typeof row.name === 'string' && row.name) ||
+      'Unknown',
+    email: typeof row.email === 'string' ? row.email : '',
+    department: department ?? (typeof row.department === 'string' ? row.department : null),
+    role: roleName ?? (typeof row.role === 'string' ? row.role : null),
+  }
+}
+
+async function buildReminderPanelData(): Promise<
+  { success: true; data: ReminderPanelData | null } | { success: false; error: string }
+> {
+  const activeSurvey = await getActiveSurveyIdAndTitle()
+  if (!activeSurvey) return { success: true, data: null }
+
+  const modernEmployeesFetch = await db
+    .from('profiles')
+    .select('id, full_name, email, departments(name), roles(name)')
+    .eq('is_active', true)
+
+  let employeesRaw = modernEmployeesFetch.data
+  let employeesError = modernEmployeesFetch.error
+
+  if (employeesError) {
+    const legacyEmployeesFetch = await db
+      .from('profiles')
+      .select('id, name, email, department, role')
+      .eq('is_active', true)
+
+    employeesRaw = legacyEmployeesFetch.data
+    employeesError = legacyEmployeesFetch.error
+  }
+
+  if (employeesError) return { success: false, error: employeesError.message }
+
+  const employees = ((employeesRaw as Record<string, unknown>[] | null) ?? [])
+    .map((row) => normalizePendingEmployee(row))
+    .filter((row) => row.id && row.email)
+
+  const { data: tokenRows, error: tokenError } = await db
+    .from('participation_tokens')
+    .select('user_id')
+    .eq('survey_id', activeSurvey.id)
+
+  if (tokenError) return { success: false, error: tokenError.message }
+  const respondedUserIds = new Set(
+    ((tokenRows as Array<{ user_id: string }> | null) ?? []).map((r) => String(r.user_id))
+  )
+
+  const completedEmployees = employees.filter((emp) => respondedUserIds.has(emp.id))
+  const pendingEmployees = employees.filter((emp) => !respondedUserIds.has(emp.id))
+  return {
+    success: true,
+    data: {
+      surveyId: activeSurvey.id,
+      surveyTitle: activeSurvey.title,
+      totalEligible: employees.length,
+      totalResponded: completedEmployees.length,
+      pendingCount: pendingEmployees.length,
+      completedCount: completedEmployees.length,
+      pendingEmployees,
+      completedEmployees,
+    },
+  }
+}
+
+export async function getReminderPanelData(): Promise<
+  { success: true; data: ReminderPanelData | null } | { success: false; error: string }
+> {
+  const { user, authError } = await getAuthenticatedUser()
+  if (authError || !user) return { success: false, error: 'Unauthorized' }
+
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
+  }
+
+  return buildReminderPanelData()
+}
+
+async function sendReminderEmail(email: string, name: string, surveyTitle: string): Promise<boolean> {
+  const resendApiKey = process.env.RESEND_API_KEY
+  const fromEmail = process.env.RESEND_FROM_EMAIL
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (!resendApiKey || !fromEmail || !appUrl) {
+    return false
+  }
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [email],
+        subject: `Reminder: ${surveyTitle} survey is waiting for your response`,
+        html: `<p>Hi ${name || 'there'},</p><p>This is a reminder to complete <strong>${surveyTitle}</strong>.</p><p><a href="${appUrl}/dashboard">Open survey dashboard</a></p>`,
+      }),
+    })
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+export async function sendSurveyReminders(): Promise<
+  { success: true; data: { notified: number; emailed: number; emailSkipped: boolean } } | { success: false; error: string }
+> {
+  const { user, authError } = await getAuthenticatedUser()
+  if (authError || !user) return { success: false, error: 'Unauthorized' }
+
+  const role = normalizeRole(user.app_metadata?.role as string | undefined)
+  if (role !== 'admin') {
+    return { success: false, error: 'Forbidden' }
+  }
+
+  const panelResult = await buildReminderPanelData()
+  if (!panelResult.success) return panelResult
+  if (!panelResult.data) {
+    return { success: false, error: 'No open survey available' }
+  }
+
+  const panel = panelResult.data
+  if (panel.pendingEmployees.length === 0) {
+    return { success: true, data: { notified: 0, emailed: 0, emailSkipped: true } }
+  }
+
+  const notifications = panel.pendingEmployees.map((emp) => ({
+    user_id: emp.id,
+    survey_id: panel.surveyId,
+    kind: 'survey_reminder',
+    title: `Pending survey: ${panel.surveyTitle}`,
+    message: `Please complete your pending survey: ${panel.surveyTitle}`,
+  }))
+
+  const { error: notifyError } = await db
+    .from('in_app_notifications')
+    .insert(notifications)
+
+  if (notifyError) return { success: false, error: notifyError.message }
+
+  const emailConfigured =
+    Boolean(process.env.RESEND_API_KEY) &&
+    Boolean(process.env.RESEND_FROM_EMAIL) &&
+    Boolean(process.env.NEXT_PUBLIC_APP_URL)
+
+  let emailed = 0
+  if (emailConfigured) {
+    for (const emp of panel.pendingEmployees) {
+      const ok = await sendReminderEmail(emp.email, emp.name, panel.surveyTitle)
+      if (ok) emailed += 1
+    }
+  }
+
+  return {
+    success: true,
+    data: {
+      notified: panel.pendingEmployees.length,
+      emailed,
+      emailSkipped: !emailConfigured,
+    },
+  }
 }

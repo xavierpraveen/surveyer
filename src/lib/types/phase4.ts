@@ -107,6 +107,25 @@ export interface ParticipationRow {
   rate: number   // 0-100 percentage
 }
 
+export interface PendingEmployeeRow {
+  id: string
+  name: string
+  email: string
+  department: string | null
+  role: string | null
+}
+
+export interface ReminderPanelData {
+  surveyId: string
+  surveyTitle: string
+  totalEligible: number
+  totalResponded: number
+  pendingCount: number
+  completedCount: number
+  pendingEmployees: PendingEmployeeRow[]
+  completedEmployees: PendingEmployeeRow[]
+}
+
 // Employee directory row for admin listing
 export interface EmployeeDirectoryRow {
   id: string

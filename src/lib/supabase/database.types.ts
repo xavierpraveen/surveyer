@@ -310,6 +310,47 @@ export type Database = {
         }
         Relationships: []
       }
+      in_app_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          kind: string
+          message: string
+          survey_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          kind: string
+          message: string
+          survey_id?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          kind?: string
+          message?: string
+          survey_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "in_app_notifications_survey_id_fkey"
+            columns: ["survey_id"]
+            isOneToOne: false
+            referencedRelation: "surveys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       participation_tokens: {
         Row: {
           created_at: string | null
@@ -1088,6 +1129,23 @@ export type Database = {
           respondent_count: number
           unfavorable_pct: number
         }[]
+      }
+      normalize_question_text: { Args: { p_text: string }; Returns: string }
+      submit_survey_response_atomic: {
+        Args: {
+          p_answers: Json
+          p_department: string
+          p_is_anonymous: boolean
+          p_role: string
+          p_submitted_at?: string
+          p_survey_id: string
+          p_tenure_band: string
+          p_token_department_id?: string
+          p_token_role_id?: string
+          p_user_id: string
+          p_work_type: string
+        }
+        Returns: string
       }
     }
     Enums: {

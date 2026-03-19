@@ -6,7 +6,12 @@ import DimensionBarChart from '@/components/analytics/DimensionBarChart'
 import DepartmentHeatmap from '@/components/analytics/DepartmentHeatmap'
 import TrendLineChart from '@/components/analytics/TrendLineChart'
 import QualitativeThemePanel from '@/components/analytics/QualitativeThemePanel'
+import ImprovementInsightsPanel from '@/components/analytics/ImprovementInsightsPanel'
+import ParticipationOverviewChart from '@/components/analytics/ParticipationOverviewChart'
+import AnalyticsPanel from '@/components/analytics/AnalyticsPanel'
+import ActionStatusChart from '@/components/analytics/ActionStatusChart'
 import type { LeadershipDashboardData, PublicAction } from '@/lib/types/analytics'
+import { computeImprovementInsights } from '@/lib/improvement-insights'
 
 // ─── Action Items Section ─────────────────────────────────────────────────────
 
@@ -168,49 +173,68 @@ export default function FilterBarWrapper({
         </div>
       )}
 
-      <div className="px-6 py-6">
-        {/* Section 1: Dimension Scores */}
-        <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Dimension Scores</h2>
-          <DimensionBarChart scores={data.dimensionScores} />
-        </section>
+      <div className="px-6 py-6 space-y-4">
+        <AnalyticsPanel
+          title="Priority Improvement Intelligence"
+          subtitle="Combined view of urgency, score gap, and response impact."
+        >
+          <ImprovementInsightsPanel
+            insights={computeImprovementInsights(data.dimensionScores)}
+            embedded
+            title="Focus Areas"
+          />
+        </AnalyticsPanel>
 
-        {/* Section 2: Department Heatmap */}
-        <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Department Heatmap</h2>
-          <DepartmentHeatmap rows={data.heatmapRows} />
-        </section>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <AnalyticsPanel
+            title="Dimension Diagnostics"
+            subtitle="Current cycle scores across all measurable dimensions."
+          >
+            <DimensionBarChart scores={data.dimensionScores} />
+          </AnalyticsPanel>
+          <AnalyticsPanel
+            title="Trend Intelligence"
+            subtitle="Multi-cycle movement for each dimension."
+          >
+            <TrendLineChart trendPoints={data.trendPoints} />
+          </AnalyticsPanel>
+        </div>
 
-        {/* Section 3: Trends Across Cycles */}
-        <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Trends Across Cycles</h2>
-          <TrendLineChart trendPoints={data.trendPoints} />
-        </section>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <AnalyticsPanel
+            title="Department Heatmap"
+            subtitle="Cross-department performance matrix with privacy masking."
+          >
+            <DepartmentHeatmap rows={data.heatmapRows} />
+          </AnalyticsPanel>
+          <AnalyticsPanel
+            title="Participation Analytics"
+            subtitle="Response concentration by department."
+          >
+            <div className="mb-4">
+              <ParticipationOverviewChart rows={data.participationBreakdown} />
+            </div>
+            <ParticipationTable data={data.participationBreakdown} />
+          </AnalyticsPanel>
+        </div>
 
-        {/* Section 4: Participation by Department */}
-        <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Participation by Department
-          </h2>
-          <ParticipationTable data={data.participationBreakdown} />
-        </section>
-
-        {/* Section 5: Qualitative Themes */}
-        <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Qualitative Themes</h2>
-          <QualitativeThemePanel themes={data.qualitativeThemes} />
-        </section>
-
-        {/* Section 6 (7th total): Action Items — read-only */}
-        <section className="bg-white rounded-lg border border-gray-200 shadow-sm p-6 mb-6">
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Action Items</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
-              Public commitments from this survey cycle
-            </p>
-          </div>
-          <ActionItemsSection actions={data.publicActions} />
-        </section>
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+          <AnalyticsPanel
+            title="Qualitative Themes"
+            subtitle="Most frequent employee narrative signals."
+          >
+            <QualitativeThemePanel themes={data.qualitativeThemes} embedded />
+          </AnalyticsPanel>
+          <AnalyticsPanel
+            title="Action Execution"
+            subtitle="Public commitments and delivery status for this cycle."
+          >
+            <div className="mb-4">
+              <ActionStatusChart actions={data.publicActions} />
+            </div>
+            <ActionItemsSection actions={data.publicActions} />
+          </AnalyticsPanel>
+        </div>
       </div>
     </>
   )

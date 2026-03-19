@@ -5,6 +5,7 @@ import { getMyDraft, checkSubmissionStatus } from '@/lib/actions/response'
 import SurveyWizard from '@/components/survey/SurveyWizard'
 import { sectionTargetsDepartment } from '@/lib/survey-targeting'
 import { normalizeQuestionRow } from '@/lib/actions/survey-compat'
+import { getTargetRoleIdsForSurvey, isSurveyVisibleToRole } from '@/lib/survey-audience'
 import type {
   Survey,
   SurveySection,
@@ -36,11 +37,13 @@ export default async function SurveyPage({ params }: PageProps) {
   // Fetch user's department name for section targeting
   const { data: profileData } = await db
     .from('profiles')
-    .select('department_id, departments(name)')
+    .select('department_id, role_id, departments(name)')
     .eq('id', user.id)
     .single()
   const userDepartment: string =
     (profileData?.departments as { name?: string } | null)?.name ?? ''
+  const userRoleId: string | null =
+    (profileData as { role_id: string | null } | null)?.role_id ?? null
 
   // Fetch survey
   const { data: surveyData, error: surveyError } = await db
@@ -54,6 +57,35 @@ export default async function SurveyPage({ params }: PageProps) {
   }
 
   const survey = surveyData as Survey
+
+  // Survey-level role targeting (selected roles only).
+  const { data: audienceRows } = await db
+    .from('survey_audiences')
+    .select('survey_id, target_role_id')
+    .eq('survey_id', surveyId)
+    .not('target_role_id', 'is', null)
+
+  const targetRoleIds = getTargetRoleIdsForSurvey(
+    ((audienceRows as Array<{ survey_id: string; target_role_id: string | null }> | null) ?? []),
+    surveyId
+  )
+  const canAccessSurvey = isSurveyVisibleToRole(targetRoleIds, userRoleId)
+  if (!canAccessSurvey) {
+    return (
+      <div className="max-w-3xl mx-auto p-8 flex items-center justify-center min-h-[60vh]">
+        <div className="bg-surface border border-border rounded-lg shadow-sm p-8 max-w-md w-full text-center">
+          <h1 className="text-xl font-bold tracking-snug text-fg mb-2">{survey.title}</h1>
+          <p className="text-fg-muted">This survey is not assigned to your role.</p>
+          <a
+            href="/dashboard"
+            className="mt-6 inline-flex items-center bg-brand hover:bg-brand-hover text-white font-semibold text-sm px-3.5 py-2 rounded-md transition-colors duration-150"
+          >
+            Back to Dashboard
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   // Check if already submitted — redirect to confirmation (read-only)
   const statusResult = await checkSubmissionStatus(surveyId)
